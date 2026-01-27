@@ -2,6 +2,7 @@
 import Banner from "@/components/modules/homepage/Banner";
 import MenuCategory from "@/components/modules/homepage/MenuCategory";
 import PopularMeals from "@/components/modules/homepage/PopularMeals";
+import Testimonial from "@/components/modules/homepage/Testimonial";
 import TopRestaurants from "@/components/modules/homepage/TopRestaurants";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -15,6 +16,7 @@ export default function Home() {
       <MenuCategory />
       <PopularMeals />
       <TopRestaurants />
+      <Testimonial />
     </div>
   );
 }
