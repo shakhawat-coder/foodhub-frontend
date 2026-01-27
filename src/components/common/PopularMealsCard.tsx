@@ -18,7 +18,7 @@ interface MealCardProps {
 
 export function PopularMealsCard({ meal }: MealCardProps) {
     return (
-        <Link href={`/menu/${meal.id}`} className="overflow-hidden  transitionp-0 flex items-center">
+        <Link href={`/meals/${meal.id}`} className="overflow-hidden  transitionp-0 flex items-center">
             <div>
                 <div className="h-20 w-20 rounded-full overflow-hidden">
                     <img
