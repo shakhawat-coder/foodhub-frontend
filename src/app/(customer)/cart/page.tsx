@@ -1,13 +1,9 @@
+import Cart from "@/components/modules/orderComponent/Cart";
 
-// import Cart from '@/components/modules/orderComponent/Cart'
-
-
-import React from 'react'
-
-export default function page() {
+export default function CartPage() {
     return (
-        <div>
-            {/* <Cart /> */}
+        <div className="min-h-screen bg-background">
+            <Cart />
         </div>
-    )
+    );
 }

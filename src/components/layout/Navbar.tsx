@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { Book, CarTaxiFront, Menu, ShoppingCart, Sunset, Trees, Zap } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -103,7 +103,7 @@ const Navbar = ({
 }: Navbar1Props) => {
   const session = authClient.useSession()
   const sessionUser = session.data?.user
-    console.log("session is", sessionUser);
+  console.log("session is", sessionUser);
   const router = useRouter()
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -129,6 +129,7 @@ const Navbar = ({
       toast.error("Failed to log out")
     }
   }
+
   return (
     <section className={cn("py-4 fixed w-full top-0 z-50 bg-white/20 backdrop-blur-sm", className)}>
       <div className="container">
@@ -160,16 +161,21 @@ const Navbar = ({
                 </Button>
               </>
             ) : (
-              <div className="relative">
+              <div className="relative flex items-center gap-4">
+                <Link href={"/cart"} className="relative">
+                  <ShoppingCart />
+                  <span className="absolute -top-3 -right-1 bg-red-500 text-white h-5 w-5 flex items-center justify-center text-xs rounded-full">9+</span>
+                </Link>
+
                 <button
                   aria-expanded={dropdownOpen}
                   onClick={() => setDropdownOpen((v) => !v)}
-                  className="inline-flex items-center justify-center rounded-full w-9 h-9 bg-transparent"
+                  className="inline-flex items-center bg-white text-black justify-center rounded-full w-9 h-9 "
                 >
                   {((sessionUser.name ?? sessionUser.email ?? "?") as string).charAt(0).toUpperCase()}
                 </button>
                 {dropdownOpen && (
-                  <div ref={dropdownRef} className="absolute right-0 mt-2 w-40 bg-popover text-popover-foreground rounded-md border shadow-md z-50">
+                  <div ref={dropdownRef} className="absolute right-5 top-7 mt-2 w-40 bg-popover text-popover-foreground rounded-md border shadow-md z-50">
                     <Link href="/dashboard" className="block px-3 py-2 text-sm">Dashboard</Link>
                     <button onClick={() => { setDropdownOpen(false); handleLogout() }} className="w-full text-left px-3 py-2 text-sm">Logout</button>
                   </div>
@@ -215,7 +221,7 @@ const Navbar = ({
                     className="flex w-full flex-col gap-4"
                   >
                     {menu.map((item) => renderMobileMenuItem(item))}
-                  </Accordion> 
+                  </Accordion>
                   {sessionUser ? (
                     <div className="flex flex-col gap-3">
                       <div className="font-medium">Hello {sessionUser.name}</div>

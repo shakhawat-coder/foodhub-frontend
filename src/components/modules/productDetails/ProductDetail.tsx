@@ -2,9 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleCheck, Star, StarHalf } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
+import { authClient } from "@/lib/auth-client";
 import { popularMeals } from "@/components/modules/homepage/PopularMeals";
 import { PopularMealsCard } from "@/components/common/PopularMealsCard";
 
@@ -147,6 +150,7 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
               </div>
 
               <ProductForm
+                mealId={meal.id}
                 selected={{
                   quantity: 1,
                 }}
@@ -256,7 +260,7 @@ const ProductImages = ({ images }: ProductImagesProps) => {
             </AspectRatio>
           </CarouselItem>
 
-          
+
         </div>
       </Carousel>
 
@@ -339,16 +343,60 @@ const formSchema = z.object({
 
 type FormType = z.infer<typeof formSchema>;
 
-const ProductForm = ({ selected }: ProductFormProps) => {
+interface ProductFormProps {
+  mealId: string;
+  selected: FormType;
+}
+
+const ProductForm = ({ mealId, selected }: ProductFormProps) => {
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      quantity: selected?.quantity,
+      quantity: selected?.quantity || 1,
     },
   });
 
-  function onSubmit(values: FormType) {
-    console.log(values);
+  async function onSubmit(values: FormType) {
+    if (!session) {
+      toast.error("Please login to add items to cart");
+      router.push("/login");
+      return;
+    }
+
+    if (session.user.role !== "USER") {
+      toast.error("Only customers can add items to cart");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session.user.id,
+          mealId: mealId,
+          quantity: values.quantity,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add to cart");
+      }
+
+      toast.success("Added to cart successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while adding to cart");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -394,8 +442,8 @@ const ProductForm = ({ selected }: ProductFormProps) => {
             </FormItem>
           )}
         />
-        <Button size="lg" className="w-full" type="submit">
-          Add to Cart
+        <Button size="lg" className="w-full" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Adding..." : "Add to Cart"}
         </Button>
       </form>
     </Form>
