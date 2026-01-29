@@ -16,7 +16,7 @@ export default function Footer() {
 
             {/* Content */}
             <div className="relative z-10 text-white">
-                <div className="container grid gap-10 py-16 md:grid-cols-4">
+                <div className="container mx-auto grid gap-10 py-16 md:grid-cols-4">
                     {/* Brand */}
                     <div>
                         <h2 className="text-2xl font-bold">FoodHub</h2>
@@ -84,7 +84,7 @@ export default function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="border-t border-white/20">
-                    <div className="container flex flex-col items-center justify-between gap-4 py-6 text-sm md:flex-row">
+                    <div className="container mx-auto flex flex-col items-center justify-between gap-4 py-6 text-sm md:flex-row">
                         <p className="text-white/70">
                             © {new Date().getFullYear()} FoodHub. All rights reserved.
                         </p>

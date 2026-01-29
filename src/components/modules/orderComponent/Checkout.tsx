@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Minus, Plus, Trash } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Controller,
   FormProvider,
@@ -11,7 +12,10 @@ import {
   useFormContext,
   UseFormReturn,
 } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
+import { authClient } from "@/lib/auth-client";
+import { useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -75,57 +79,18 @@ interface CartProps {
 }
 
 const PAYMENT_METHODS = {
-  creditCard: "creditCard",
-  paypal: "paypal",
-  onlineBankTransfer: "onlineBankTransfer",
+  cashOnDelivery: "cashOnDelivery",
 };
 
 type PaymentMethod = keyof typeof PAYMENT_METHODS;
 
-const CreditCardPayment = z.object({
-  method: z.literal(PAYMENT_METHODS.creditCard),
-  cardholderName: z.string(),
-  cardNumber: z.string(),
-  expiryDate: z
-    .string()
-    .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, "Invalid format (MM/YY)")
-    .refine((value) => {
-      const [mm, yy] = value.split("/").map(Number);
-
-      const now = new Date();
-      const currentMonth = now.getMonth() + 1;
-      const currentYear = now.getFullYear() % 100;
-
-      if (yy < currentYear) return false;
-
-      if (yy === currentYear && mm < currentMonth) return false;
-
-      return true;
-    }, "Card has expired"),
-  cvc: z.string(),
+const PaymentSchema = z.object({
+  method: z.literal(PAYMENT_METHODS.cashOnDelivery),
 });
-
-const PayPalPayment = z.object({
-  method: z.literal(PAYMENT_METHODS.paypal),
-  payPalEmail: z.string(),
-});
-
-const BankTransferPayment = z.object({
-  method: z.literal(PAYMENT_METHODS.onlineBankTransfer),
-  bankName: z.string(),
-  accountNumber: z.string(),
-});
-
-const PaymentSchema = z.discriminatedUnion("method", [
-  CreditCardPayment,
-  PayPalPayment,
-  BankTransferPayment,
-]);
 
 const checkoutFormSchema = z.object({
   contactInfo: z.object({
     email: z.string(),
-    subscribe: z.boolean().optional(),
   }),
   address: z.object({
     country: z.string(),
@@ -136,7 +101,6 @@ const checkoutFormSchema = z.object({
     city: z.string(),
     phone: z.string(),
   }),
-  shippingMethod: z.string(),
   payment: PaymentSchema,
   products: z
     .object({
@@ -217,8 +181,47 @@ interface Checkout1Props {
   className?: string;
 }
 
-const Checkout = ({ cartItems = CART_ITEMS, className }: Checkout1Props) => {
+const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) => {
+  const { data: session, isPending: authPending } = authClient.useSession();
+  const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems || []);
+  const [loading, setLoading] = useState(!initialCartItems);
   const [activeAccordion, setActiveAccordion] = useState("item-1");
+
+  const fetchCart = async () => {
+    if (!session?.user?.id) return;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/${session.user.id}`);
+      if (!response.ok) throw new Error("Failed to fetch cart");
+      const data = await response.json();
+
+      const mappedItems: CartItem[] = data.items.map((item: any) => ({
+        product_id: item.meal.id,
+        link: `/meals/${item.meal.id}`,
+        name: item.meal.name,
+        image: item.meal.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+        price: {
+          regular: item.meal.price,
+          currency: "USD",
+        },
+        quantity: item.quantity,
+        details: [
+          { label: "Category", value: item.meal.category?.name || "Food" }
+        ],
+      }));
+      setCartItems(mappedItems);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!initialCartItems && !authPending) {
+      fetchCart();
+    }
+  }, [session, authPending, initialCartItems]);
+
   const defaultProducts = cartItems.map((item) => ({
     product_id: item.product_id,
     quantity: item.quantity,
@@ -229,14 +232,41 @@ const Checkout = ({ cartItems = CART_ITEMS, className }: Checkout1Props) => {
     resolver: zodResolver(checkoutFormSchema),
     defaultValues: {
       payment: {
-        method: PAYMENT_METHODS.creditCard,
+        method: PAYMENT_METHODS.cashOnDelivery,
       },
       products: defaultProducts,
     },
   });
 
-  const onSubmit = (data: CheckoutFormType) => {
-    console.log(data);
+  // Re-sync form products if cartItems change
+  useEffect(() => {
+    form.reset({
+      ...form.getValues(),
+      products: cartItems.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price.sale ?? item.price.regular,
+      }))
+    });
+  }, [cartItems]);
+
+  const router = useRouter();
+  const onSubmit = async (data: CheckoutFormType) => {
+    if (!session?.user?.id) return;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/clear`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session.user.id }),
+      });
+
+      if (!response.ok) throw new Error("Failed to clear cart");
+
+      toast.success("Order placed successfully!");
+      router.push("/");
+    } catch (error) {
+      toast.error("An error occurred during checkout");
+    }
   };
 
   const onContinue = (value: string) => {
@@ -247,9 +277,23 @@ const Checkout = ({ cartItems = CART_ITEMS, className }: Checkout1Props) => {
     setActiveAccordion(value);
   };
 
+  if (loading) {
+    return <div className="py-32 text-center text-xl">Loading checkout...</div>;
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="py-32 text-center space-y-4">
+        <h1 className="text-3xl font-bold">Your cart is empty</h1>
+        <p>Add some delicious meals before checking out!</p>
+        <Button onClick={() => router.push("/meals")}>Browse Meals</Button>
+      </div>
+    );
+  }
+
   return (
     <section className={cn("py-32", className)}>
-      <div className="container">
+      <div className="container mx-auto">
         <div className="flex flex-col gap-6 pb-8 md:flex-row md:items-center md:justify-between md:gap-8">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
@@ -306,26 +350,6 @@ const Checkout = ({ cartItems = CART_ITEMS, className }: Checkout1Props) => {
                           type="button"
                           className="w-full"
                           variant="secondary"
-                          onClick={() => onContinue("item-3")}
-                        >
-                          Continue
-                        </Button>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="item-3">
-                    <AccordionTrigger className="px-1 py-7 text-lg font-semibold hover:no-underline [&>svg:last-child]:hidden [&[data-state=closed]>svg:nth-of-type(2)]:hidden [&[data-state=open]>svg:nth-of-type(1)]:hidden [&[data-state=open]>svg:nth-of-type(2)]:block">
-                      Shipping Method
-                      <Plus className="pointer-events-none size-4 shrink-0 self-center text-muted-foreground" />
-                      <Minus className="pointer-events-none hidden size-4 shrink-0 self-center text-muted-foreground" />
-                    </AccordionTrigger>
-                    <AccordionContent className="px-1 pb-7">
-                      <div className="space-y-7">
-                        <ShippingMethodFields />
-                        <Button
-                          type="button"
-                          className="w-full"
-                          variant="secondary"
                           onClick={() => onContinue("item-4")}
                         >
                           Continue
@@ -357,7 +381,7 @@ const Checkout = ({ cartItems = CART_ITEMS, className }: Checkout1Props) => {
           </form>
         </FormProvider>
       </div>
-    </section>
+    </section >
   );
 };
 
@@ -383,23 +407,6 @@ const ContactFields = () => {
               aria-invalid={fieldState.invalid}
             />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-      <Controller
-        name="contactInfo.subscribe"
-        control={form.control}
-        render={({ field }) => (
-          <Field orientation="horizontal">
-            <Checkbox
-              id="checkout-subscribe"
-              name={field.name}
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-            <FieldLabel htmlFor="checkout-subscribe" className="font-normal">
-              Email me with news and offers
-            </FieldLabel>
           </Field>
         )}
       />
@@ -560,64 +567,9 @@ const AddressFields = () => {
   );
 };
 
-const ShippingMethodFields = () => {
-  const form = useFormContext();
-
-  return (
-    <Controller
-      name="shippingMethod"
-      control={form.control}
-      render={({ field, fieldState }) => (
-        <Field>
-          <RadioGroup
-            name={field.name}
-            value={field.value}
-            onValueChange={field.onChange}
-            className="flex max-sm:flex-col"
-          >
-            <FieldLabel htmlFor="checkout-shippingMethod-1">
-              <Field orientation="horizontal" data-invalid={fieldState.invalid}>
-                <FieldContent>
-                  <FieldTitle>UPS</FieldTitle>
-                  <FieldDescription>Delivery: Tomorrow</FieldDescription>
-                </FieldContent>
-                <div className="flex gap-3.5">
-                  <p className="text-sm">$10.00</p>
-                  <RadioGroupItem
-                    value="UPS"
-                    id="checkout-shippingMethod-1"
-                    aria-invalid={fieldState.invalid}
-                  />
-                </div>
-              </Field>
-            </FieldLabel>
-            <FieldLabel htmlFor="checkout-shippingMethod-2">
-              <Field orientation="horizontal" data-invalid={fieldState.invalid}>
-                <FieldContent>
-                  <FieldTitle>FedEx</FieldTitle>
-                  <FieldDescription>Delivery: Next Week</FieldDescription>
-                </FieldContent>
-                <div className="flex gap-3.5">
-                  <p className="text-sm">$2.99</p>
-                  <RadioGroupItem
-                    value="FedEx"
-                    id="checkout-shippingMethod-2"
-                    aria-invalid={fieldState.invalid}
-                  />
-                </div>
-              </Field>
-            </FieldLabel>
-          </RadioGroup>
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-        </Field>
-      )}
-    />
-  );
-};
 
 const PaymentFields = () => {
   const form = useFormContext();
-  const paymentMethod = form.watch("payment.method") as PaymentMethod;
 
   return (
     <div className="space-y-7">
@@ -631,57 +583,17 @@ const PaymentFields = () => {
               value={field.value}
               onValueChange={field.onChange}
             >
-              <FieldLabel htmlFor="checkout-payment-method-1">
+              <FieldLabel htmlFor="checkout-payment-method-cod">
                 <Field
                   orientation="horizontal"
                   data-invalid={fieldState.invalid}
                 >
                   <FieldContent className="flex-1">
-                    <FieldTitle>Credit Card</FieldTitle>
-                  </FieldContent>
-                  <img
-                    src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/visa-icon.svg"
-                    alt="Credit Card"
-                    className="size-5"
-                  />
-                  <RadioGroupItem
-                    value="creditCard"
-                    id="checkout-payment-method-1"
-                    aria-invalid={fieldState.invalid}
-                  />
-                </Field>
-              </FieldLabel>
-              <FieldLabel htmlFor="checkout-payment-method-2">
-                <Field
-                  orientation="horizontal"
-                  data-invalid={fieldState.invalid}
-                >
-                  <FieldContent className="flex-1">
-                    <FieldTitle>PayPal</FieldTitle>
-                  </FieldContent>
-                  <img
-                    src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/paypal-icon.svg"
-                    alt="PayPal"
-                    className="size-5"
-                  />
-                  <RadioGroupItem
-                    value="paypal"
-                    id="checkout-payment-method-2"
-                    aria-invalid={fieldState.invalid}
-                  />
-                </Field>
-              </FieldLabel>
-              <FieldLabel htmlFor="checkout-payment-method-3">
-                <Field
-                  orientation="horizontal"
-                  data-invalid={fieldState.invalid}
-                >
-                  <FieldContent>
-                    <FieldTitle>Online Bank Transfer</FieldTitle>
+                    <FieldTitle>Cash on Delivery</FieldTitle>
                   </FieldContent>
                   <RadioGroupItem
-                    value="onlineBankTransfer"
-                    id="checkout-payment-method-3"
+                    value="cashOnDelivery"
+                    id="checkout-payment-method-cod"
                     aria-invalid={fieldState.invalid}
                   />
                 </Field>
@@ -691,218 +603,10 @@ const PaymentFields = () => {
           </Field>
         )}
       />
-      <PaymentFieldsByMethod method={paymentMethod} />
     </div>
   );
 };
 
-const PaymentFieldsByMethod = ({ method }: { method: PaymentMethod }) => {
-  const form = useFormContext();
-
-  if (!method) return;
-
-  switch (method) {
-    case PAYMENT_METHODS.creditCard:
-      return (
-        <div className="space-y-3.5">
-          <Controller
-            name="payment.cardholderName"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel
-                  className="text-sm font-normal"
-                  htmlFor="checkout-payment-cardholderName"
-                >
-                  Cardholder Name
-                </FieldLabel>
-                <Input
-                  {...field}
-                  id="checkout-payment-cardholderName"
-                  aria-invalid={fieldState.invalid}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <Controller
-            name="payment.cardNumber"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel
-                  className="text-sm font-normal"
-                  htmlFor="checkout-payment-cardNumber"
-                >
-                  Card Number
-                </FieldLabel>
-                <Input
-                  {...field}
-                  id="checkout-payment-cardNumber"
-                  aria-invalid={fieldState.invalid}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <div className="flex gap-3.5 max-sm:flex-col">
-            <DateInput />
-            <Controller
-              name="payment.cvc"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel
-                    className="text-sm font-normal"
-                    htmlFor="checkout-payment-cvc"
-                  >
-                    Card Number
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="checkout-payment-cvc"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </div>
-        </div>
-      );
-    case PAYMENT_METHODS.paypal:
-      return (
-        <Controller
-          name="payment.payPalEmail"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel
-                className="text-sm font-normal"
-                htmlFor="checkout-payment-payPalEmail"
-              >
-                PayPal Email
-              </FieldLabel>
-              <Input
-                {...field}
-                type="email"
-                placeholder="you-email-here@email.com"
-                id="checkout-payment-payPalEmail"
-                aria-invalid={fieldState.invalid}
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-      );
-    case PAYMENT_METHODS.onlineBankTransfer:
-      return (
-        <div className="space-y-3.5">
-          <Controller
-            name="payment.bankName"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel
-                  className="text-sm font-normal"
-                  htmlFor="checkout-payment-bankName"
-                >
-                  Bank Name
-                </FieldLabel>
-                <Input
-                  {...field}
-                  placeholder="Bank Name"
-                  id="checkout-payment-bankName"
-                  aria-invalid={fieldState.invalid}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <Controller
-            name="payment.accountNumber"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel
-                  className="text-sm font-normal"
-                  htmlFor="checkout-payment-accountNumber"
-                >
-                  Account Number
-                </FieldLabel>
-                <Input
-                  {...field}
-                  id="checkout-payment-accountNumber"
-                  aria-invalid={fieldState.invalid}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-        </div>
-      );
-    default:
-      return null;
-  }
-};
-
-const DateInput = () => {
-  const form = useFormContext();
-
-  return (
-    <Controller
-      name="payment.expiryDate"
-      control={form.control}
-      render={({ field, fieldState }) => (
-        <Field data-invalid={fieldState.invalid}>
-          <FieldLabel
-            className="text-sm font-normal"
-            htmlFor="checkout-payment-expiryDate"
-          >
-            Card Number
-          </FieldLabel>
-          <Input
-            {...field}
-            onChange={(e) => {
-              let val = e.target.value;
-              val = val.replace(/[^0-9/]/g, "");
-
-              const prev = field.value ?? "";
-              const isDeleting = val.length < prev.length;
-
-              if (!isDeleting) {
-                if (val.length === 2 && !val.includes("/")) {
-                  val = val + "/";
-                }
-              }
-
-              if (val.length > 5) {
-                val = val.slice(0, 5);
-              }
-
-              field.onChange(val);
-            }}
-            pattern="^(0[1-9]|1[0-2])/[0-9]{2}$"
-            placeholder="MM/YY"
-            id="checkout-payment-expiryDate"
-            aria-invalid={fieldState.invalid}
-          />
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-        </Field>
-      )}
-    />
-  );
-};
 
 const Cart = ({ cartItems, form }: CartProps) => {
   const { fields, remove, update } = useFieldArray({
