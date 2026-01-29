@@ -27,6 +27,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Link from "next/link";
+import React, { useState, useRef, useEffect } from "react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface MenuItem {
   title: string;
@@ -58,6 +62,7 @@ interface Navbar1Props {
 }
 
 const Navbar = ({
+
   logo = {
     url: "https://www.shadcnblocks.com",
     src: "/logo.png",
@@ -96,6 +101,34 @@ const Navbar = ({
   },
   className,
 }: Navbar1Props) => {
+  const session = authClient.useSession()
+  const sessionUser = session.data?.user
+    console.log("session is", sessionUser);
+  const router = useRouter()
+
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", onDocClick)
+    return () => document.removeEventListener("mousedown", onDocClick)
+  }, [])
+
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut()
+      toast.success("Logged out")
+      router.push("/")
+    } catch (e) {
+      console.error("Logout failed", e)
+      toast.error("Failed to log out")
+    }
+  }
   return (
     <section className={cn("py-4 fixed w-full top-0 z-50 bg-white/20 backdrop-blur-sm", className)}>
       <div className="container">
@@ -117,12 +150,32 @@ const Navbar = ({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href={auth.login.url}>{auth.login.title}</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href={auth.signup.url}>{auth.signup.title}</Link>
-            </Button>
+            {!sessionUser ? (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link href={auth.login.url}>{auth.login.title}</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                </Button>
+              </>
+            ) : (
+              <div className="relative">
+                <button
+                  aria-expanded={dropdownOpen}
+                  onClick={() => setDropdownOpen((v) => !v)}
+                  className="inline-flex items-center justify-center rounded-full w-9 h-9 bg-transparent"
+                >
+                  {((sessionUser.name ?? sessionUser.email ?? "?") as string).charAt(0).toUpperCase()}
+                </button>
+                {dropdownOpen && (
+                  <div ref={dropdownRef} className="absolute right-0 mt-2 w-40 bg-popover text-popover-foreground rounded-md border shadow-md z-50">
+                    <Link href="/dashboard" className="block px-3 py-2 text-sm">Dashboard</Link>
+                    <button onClick={() => { setDropdownOpen(false); handleLogout() }} className="w-full text-left px-3 py-2 text-sm">Logout</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </nav>
 
@@ -162,16 +215,25 @@ const Navbar = ({
                     className="flex w-full flex-col gap-4"
                   >
                     {menu.map((item) => renderMobileMenuItem(item))}
-                  </Accordion>
-
-                  <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <Link href={auth.login.url}>{auth.login.title}</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                    </Button>
-                  </div>
+                  </Accordion> 
+                  {sessionUser ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="font-medium">Hello {sessionUser.name}</div>
+                      <Link href="/dashboard" className="w-full">
+                        <Button className="w-full">Dashboard</Button>
+                      </Link>
+                      <Button onClick={handleLogout} className="w-full">Logout</Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <Button asChild variant="outline">
+                        <Link href={auth.login.url}>{auth.login.title}</Link>
+                      </Button>
+                      <Button asChild>
+                        <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>

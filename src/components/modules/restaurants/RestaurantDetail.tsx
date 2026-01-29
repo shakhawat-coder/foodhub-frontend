@@ -7,12 +7,13 @@ import { Star, MapPin, Clock } from "lucide-react";
 
 interface RestaurantDetailProps {
     id: string;
+    provider?: any;
 }
 
-export default function RestaurantDetail({ id }: RestaurantDetailProps) {
+export default function RestaurantDetail({ id, provider }: RestaurantDetailProps) {
     const restaurant = restaurants.find((r) => r.id === Number(id));
-
-    if (!restaurant) {
+    console.log(provider);
+    if (!provider) {
         return (
             <div className="flex h-[50vh] items-center justify-center">
                 <p className="text-xl font-semibold text-muted-foreground">Restaurant not found</p>
@@ -23,10 +24,10 @@ export default function RestaurantDetail({ id }: RestaurantDetailProps) {
     return (
         <div className="min-h-screen bg-background pb-20">
             {/* Hero Section */}
-            <div className="relative h-[300px] w-full md:h-[400px]">
+            <div className="relative h-75 w-full md:h-100">
                 <img
-                    src={restaurant.coverImage}
-                    alt={restaurant.name}
+                    src={provider.logo}
+                    alt={provider.name}
                     // fill
                     className="object-cover w-full h-full"
                 // priority
@@ -35,11 +36,11 @@ export default function RestaurantDetail({ id }: RestaurantDetailProps) {
                 <div className="absolute bottom-0 left-0 w-full p-6 text-white md:p-10">
                     <div className="container mx-auto">
                         <Badge className="mb-4 bg-primary text-primary-foreground hover:bg-primary/90">
-                            {restaurant.cuisine}
+                            {provider.cuisine}
                         </Badge>
-                        <h1 className="mb-2 text-4xl font-bold md:text-5xl">{restaurant.name}</h1>
+                        <h1 className="mb-2 text-4xl font-bold md:text-5xl">{provider.name}</h1>
                         <p className="max-w-2xl text-lg text-gray-200 line-clamp-2">
-                            {restaurant.description}
+                            {provider.description}
                         </p>
                     </div>
                 </div>
@@ -51,8 +52,8 @@ export default function RestaurantDetail({ id }: RestaurantDetailProps) {
                     <div>
                         <div className="mb-8">
                             <h2 className="mb-6 text-2xl font-bold">Menu</h2>
-                            <div className="grid gap-6 sm:grid-cols-2">
-                                {restaurant.menu.map((meal) => (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {provider.meals.map((meal: any) => (
                                     <PopularMealsCard key={meal.id} meal={meal} />
                                 ))}
                             </div>
@@ -68,25 +69,31 @@ export default function RestaurantDetail({ id }: RestaurantDetailProps) {
                                     <MapPin className="mt-1 h-5 w-5 text-muted-foreground" />
                                     <div>
                                         <p className="font-medium">Address</p>
-                                        <p className="text-sm text-muted-foreground">{restaurant.address}</p>
+                                        <p className="text-sm text-muted-foreground">{provider.address}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <Clock className="mt-1 h-5 w-5 text-muted-foreground" />
                                     <div>
                                         <p className="font-medium">Opening Hours</p>
-                                        <p className="text-sm text-muted-foreground">{restaurant.openingHours}</p>
+                                        <p className="text-sm text-muted-foreground">{provider.openingHours}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                                     <div>
-                                        <p className="font-medium">{restaurant.rating} ({restaurant.review} reviews)</p>
+                                        <p className="font-medium">{provider.rating} ({provider.review} reviews)</p>
                                     </div>
                                 </div>
+                                {provider && (
+                                    <div className="pt-4">
+                                        <p className="font-medium">Provider</p>
+                                        <p className="text-sm text-muted-foreground">{provider.name ?? JSON.stringify(provider)}</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    </div>
+                    </div> 
                 </div>
             </div>
         </div>

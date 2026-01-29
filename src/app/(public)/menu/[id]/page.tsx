@@ -1,3 +1,4 @@
+import { PopularMealsCard } from '@/components/common/PopularMealsCard';
 import Link from 'next/link';
 import React from 'react'
 
@@ -34,7 +35,8 @@ export default async function CategoryPage({ params }: { params: { id: string } 
 
         // Filter meals by category ID
         const categoryMeals = allMeals.filter((meal: any) => meal.categoryId === id);
-
+        console.log(categoryMeals);
+        
         return (
             <div className="">
                 <div className="relative h-75 w-full md:h-100">
@@ -61,39 +63,7 @@ export default async function CategoryPage({ params }: { params: { id: string } 
                     {categoryMeals.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {categoryMeals.map((meal: any) => (
-                                <div
-                                    key={meal.id}
-                                    className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-                                >
-                                    {/* Meal Image - if available */}
-                                    {meal.image && (
-                                        <img
-                                            src={meal.image}
-                                            alt={meal.name}
-                                            className="w-full h-48 object-cover"
-                                        />
-                                    )}
-
-                                    {/* Meal Details */}
-                                    <div className="p-4">
-                                        <Link href={`/meals/${meal.id}`} className="text-xl font-semibold mb-2">{meal.name}</Link>
-
-                                        {meal.description && (
-                                            <p className="text-gray-600 text-sm mb-3">
-                                                {meal.description}
-                                            </p>
-                                        )}
-
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-2xl font-bold text-green-600">
-                                                ${meal.price}
-                                            </span>
-                                            <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                                                Add to Cart
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <PopularMealsCard meal={meal} key={meal.id} />
                             ))}
                         </div>
                     ) : (
@@ -119,3 +89,4 @@ export default async function CategoryPage({ params }: { params: { id: string } 
     }
 
 }
+

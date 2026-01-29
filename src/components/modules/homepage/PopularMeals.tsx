@@ -3,8 +3,8 @@ import SectionHeader from '@/components/common/SectionHeader'
 import React from 'react'
 export const popularMeals = [
     {
-        id: 1,
-        title: "Truffle Ribeye Steak",
+        id: "1",
+        name: "Truffle Ribeye Steak",
         tag: "Chef’s Choice",
         description:
             "28-day aged beef, shaved black truffle, garlic herb butter, and roasted asparagus.",
@@ -16,8 +16,8 @@ export const popularMeals = [
         ],
     },
     {
-        id: 2,
-        title: "Wild Salmon Risotto",
+        id: "2",
+        name: "Wild Salmon Risotto",
         tag: "Popular",
         description:
             "Pan-seared Atlantic salmon over creamy lemon-asparagus risotto with micro-greens.",
@@ -28,8 +28,8 @@ export const popularMeals = [
         ],
     },
     {
-        id: 3,
-        title: "Lobster Ravioli",
+        id: "3",
+        name: "Lobster Ravioli",
         tag: "Seasonal",
         description:
             "Handmade pasta with Maine lobster, saffron cream, and fresh chives.",
@@ -42,8 +42,8 @@ export const popularMeals = [
         ],
     },
     {
-        id: 4,
-        title: "Noodels",
+        id: "4",
+        name: "Noodels",
         tag: "Light Choice",
         description:
             "Rice noodles with stir-fried vegetables, tofu, and a tangy sesame-ginger sauce.",
@@ -56,8 +56,8 @@ export const popularMeals = [
         ],
     },
     {
-        id: 5,
-        title: "Truffle Ribeye Steak",
+        id: "5",
+        name: "Truffle Ribeye Steak",
         tag: "Chef’s Choice",
         description:
             "28-day aged beef, shaved black truffle, garlic herb butter, and roasted asparagus.",
@@ -69,8 +69,8 @@ export const popularMeals = [
         ],
     },
     {
-        id: 6,
-        title: "Wild Salmon Risotto",
+        id: "6",
+        name: "Wild Salmon Risotto",
         tag: "Popular",
         description:
             "Pan-seared Atlantic salmon over creamy lemon-asparagus risotto with micro-greens.",
@@ -81,8 +81,8 @@ export const popularMeals = [
         ],
     },
     {
-        id: 7,
-        title: "Lobster Ravioli",
+        id: "7",
+        name: "Lobster Ravioli",
         tag: "Seasonal",
         description:
             "Handmade pasta with Maine lobster, saffron cream, and fresh chives.",
@@ -96,8 +96,8 @@ export const popularMeals = [
         ],
     },
     {
-        id: 8,
-        title: "Noodels",
+        id: "8",
+        name: "Noodels",
         tag: "Light Choice",
         description:
             "Rice noodles with stir-fried vegetables, tofu, and a tangy sesame-ginger sauce.",
@@ -111,12 +111,15 @@ export const popularMeals = [
         ],
     },
 ];
-export default function PopularMeals() {
+export default async function PopularMeals() {
+      let popularMeals = await fetch(process.env.NEXT_PUBLIC_API_URL + '/meal', { cache: 'no-store' })
+    let meals = await popularMeals.json()
+    console.log("meals:", meals);
     return (
         <div className='py-20'>
             <SectionHeader subtitle='Popular Meals' title='Delicious Meals Loved by Our Customers' description='Discover our most popular meals, crafted with fresh ingredients and bursting with flavor. These customer favorites are sure to satisfy your cravings.' />
             <div className="max-w-5xl mx-auto grid gap-6  sm:grid-cols-2 lg:grid-cols-2 mt-5">
-                {popularMeals.map((meal) => (
+                {meals.map((meal : any) => (
                     <PopularMealsCard key={meal.id} meal={meal} />
                 ))}
             </div>

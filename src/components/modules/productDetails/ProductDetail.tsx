@@ -72,52 +72,48 @@ const MAX_STARS = 5;
 
 interface ProductDetail1Props {
   className?: string;
-  id?: string;
+  meal: any; // Using any for now to match the database meal object
+  relatedMeals: any[];
 }
 
-const ProductDetails = ({ className, id }: ProductDetail1Props) => {
-  const mealId = Number(id);
-  const meal = popularMeals.find((m) => m.id === mealId);
-
-  // Get related meals (exclude current meal)
-  const relatedMeals = popularMeals
-    .filter((m) => m.id !== mealId)
-    .slice(0, 4);
-
+const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) => {
   if (!meal) return null;
 
   const productDetails = {
-    name: meal.title,
+    name: meal.name,
     description: meal.description,
     price: {
       regular: meal.price,
       currency: "USD",
     },
     reviews: {
-      rate: 4.5, // Default rating as it's not in popularMeals
-      totalReviewers: "120", // Default reviews
+      rate: 4.5,
+      totalReviewers: "120",
     },
-    images: meal.images
-      ? meal.images.map((img) => ({
+    images: meal.images && meal.images.length > 0
+      ? meal.images.map((img: string) => ({
         src: img,
         srcset: `${img} 1920w, ${img} 1280w, ${img} 640w`,
-        alt: meal.title,
+        alt: meal.name,
         width: 1920,
         height: 1080,
         sizes: "(min-width: 1920px) 1920px, (min-width: 1280px) 1280px, 100vw",
       }))
-      : Array(4).fill({
-        src: meal.image,
-        srcset: `${meal.image} 1920w, ${meal.image} 1280w, ${meal.image} 640w`,
-        alt: meal.title,
-        width: 1920,
-        height: 1080,
-        sizes: "(min-width: 1920px) 1920px, (min-width: 1280px) 1280px, 100vw",
-      }),
+      : [
+        {
+          src: meal.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+          srcset: `${meal.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"} 1920w, ${meal.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"} 1280w, ${meal.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"} 640w`,
+          alt: meal.name,
+          width: 1920,
+          height: 1080,
+          sizes: "(min-width: 1920px) 1920px, (min-width: 1280px) 1280px, 100vw",
+        }
+      ],
   };
 
+
   return (
-    <div className="space-y-20">
+    <div className="space-y-20 px-5">
       <section className={cn("pt-20", className)}>
         <div className="container">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
@@ -165,15 +161,15 @@ const ProductDetails = ({ className, id }: ProductDetail1Props) => {
                         info={[
                           {
                             label: "Category",
-                            value: meal?.tag || "Food",
+                            value: meal?.category?.name || "Food",
                           },
                           {
-                            label: "Origin",
-                            value: "Kitchen",
+                            label: "Dietary",
+                            value: meal?.dietaryTypes || "Standard",
                           },
                           {
-                            label: "Preparation",
-                            value: "Freshly Made",
+                            label: "Popular",
+                            value: meal?.isPopular ? "Yes" : "No",
                           },
                         ]}
                       />
@@ -188,29 +184,6 @@ const ProductDetails = ({ className, id }: ProductDetail1Props) => {
                       </p>
                     </AccordionContent>
                   </AccordionItem>
-                  <AccordionItem value="nutrition">
-                    <AccordionTrigger>Nutritional Info</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2 text-muted-foreground">
-                        <div className="flex justify-between">
-                          <span>Calories</span>
-                          <span className="font-medium">450 kcal</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Protein</span>
-                          <span className="font-medium">25g</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Carbs</span>
-                          <span className="font-medium">35g</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Fats</span>
-                          <span className="font-medium">18g</span>
-                        </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
                 </Accordion>
               </div>
             </div>
@@ -219,11 +192,11 @@ const ProductDetails = ({ className, id }: ProductDetail1Props) => {
       </section>
 
       {/* Related Products Section */}
-      <section className="py-12 bg-muted/30">
+      <section className="py-12 px-5 bg-muted/30">
         <div className="container">
           <h2 className="text-3xl font-bold tracking-tight mb-8">You might also like</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedMeals.map((meal) => (
+            {relatedMeals.map((meal: any) => (
               <PopularMealsCard key={meal.id} meal={meal} />
             ))}
           </div>
@@ -283,31 +256,7 @@ const ProductImages = ({ images }: ProductImagesProps) => {
             </AspectRatio>
           </CarouselItem>
 
-          <div className="grid grid-cols-4 gap-4">
-            {images.map((img, index) => (
-              <div
-                key={`product-detail-thumbnail-${index}`}
-                className={cn(
-                  "cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:opacity-100",
-                  selectedIndex === index
-                    ? "border-primary opacity-100 ring-2 ring-primary ring-offset-2"
-                    : "border-transparent opacity-70"
-                )}
-                onClick={() => setSelectedIndex(index)}
-              >
-                <AspectRatio ratio={1} className="bg-muted">
-                  <img
-                    srcSet={img.srcset}
-                    alt={img.alt}
-                    width={img.width}
-                    height={img.height}
-                    sizes={img.sizes}
-                    className="block size-full object-cover object-center"
-                  />
-                </AspectRatio>
-              </div>
-            ))}
-          </div>
+          
         </div>
       </Carousel>
 
@@ -329,8 +278,6 @@ const ProductImages = ({ images }: ProductImagesProps) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="left-4" />
-        <CarouselNext className="right-4" />
       </Carousel>
     </div>
   );
