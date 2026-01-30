@@ -51,8 +51,26 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         toast.error(error.message, { id: toastId })
         return
       }
+
+      // Determine user role from response and redirect accordingly
+      const user = (data as any)?.user ?? (data as any)?.session?.user
+      const role = (user?.role as string | undefined)?.toLowerCase()
+      console.debug("login response user:", user, "role:", role)
+
       toast.success("Login successful!", { id: toastId })
       reset()
+
+      if (role === "admin") {
+        router.push("/admin-dashboard")
+        return
+      }
+
+      if (role === "provider") {
+        router.push("/provider-dashboard")
+        return
+      }
+
+      // Default: regular user goes to homepage
       router.push("/")
     } catch (error) {
       toast.error("Something went wrong. Please try again.", { id: toastId })

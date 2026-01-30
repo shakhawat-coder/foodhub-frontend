@@ -34,7 +34,9 @@ export default function Cart() {
     const fetchCart = async () => {
         if (!session?.user?.id) return;
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/${session.user.id}`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
+                credentials: "include"
+            });
             if (!response.ok) throw new Error("Failed to fetch cart");
             const data = await response.json();
             setCart(data);
@@ -64,7 +66,8 @@ export default function Cart() {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/update`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: session.user.id, mealId, quantity }),
+                credentials: "include",
+                body: JSON.stringify({ mealId, quantity }),
             });
 
             if (!response.ok) throw new Error("Failed to update cart");
@@ -81,7 +84,8 @@ export default function Cart() {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/remove`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: session.user.id, mealId }),
+                credentials: "include",
+                body: JSON.stringify({ mealId }),
             });
 
             if (!response.ok) throw new Error("Failed to remove item");

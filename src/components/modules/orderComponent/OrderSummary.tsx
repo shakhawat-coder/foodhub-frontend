@@ -1,3 +1,6 @@
+"use client";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   CheckCircle,
   CreditCard,
@@ -32,6 +35,7 @@ interface ShippingAddress {
   state: string;
   zipCode: string;
   country: string;
+  phone?: string;
 }
 
 interface PaymentMethod {
@@ -44,7 +48,7 @@ interface PaymentMethod {
 interface OrderSummaryData {
   orderNumber: string;
   orderDate: string;
-  status: "confirmed" | "processing" | "shipped" | "delivered";
+  status: string;
   email: string;
   items: OrderItem[];
   subtotal: number;
@@ -58,75 +62,98 @@ interface OrderSummaryData {
   paymentMethod: PaymentMethod;
 }
 
-const DEFAULT_ORDER: OrderSummaryData = {
-  orderNumber: "ORD-2024-78432",
-  orderDate: "December 14, 2024",
-  status: "confirmed",
-  email: "customer@example.com",
-  items: [
-    {
-      id: "1",
-      name: "Minimalist Beige Sneakers",
-      image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/clothes/Minimalist-Beige-Sneakers-2.png",
-      price: 120.0,
-      quantity: 1,
-      details: [
-        { label: "Size", value: "42" },
-        { label: "Color", value: "Beige" },
-      ],
-    },
-    {
-      id: "2",
-      name: "Embroidered Blue Top",
-      image:
-        "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/clothes/Woman-in-Embroidered-Blue-Top-2.png",
-      price: 140.0,
-      quantity: 2,
-      details: [
-        { label: "Size", value: "M" },
-        { label: "Color", value: "Blue" },
-      ],
-    },
-    {
-      id: "3",
-      name: "Classic Fedora Hat",
-      image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/accessories/Classic-Fedora-Hat-2.png",
-      price: 84.0,
-      quantity: 1,
-      details: [{ label: "Size", value: "One Size" }],
-    },
-  ],
-  subtotal: 484.0,
-  shipping: 12.0,
-  tax: 38.72,
-  discount: 50.0,
-  total: 484.72,
-  shippingAddress: {
-    name: "Alex Johnson",
-    street: "1234 Maple Street, Apt 5B",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94102",
-    country: "United States",
-  },
-  shippingMethod: "Express Shipping",
-  estimatedDelivery: "December 18-20, 2024",
-  paymentMethod: {
-    type: "card",
-    lastFour: "4242",
-    cardBrand: "Visa",
-  },
-};
 
 interface OrderSummaryProps {
   order?: OrderSummaryData;
+  orderId?: string;
   className?: string;
 }
 
 const OrderSummary = ({
-  order = DEFAULT_ORDER,
+  order: initialOrder,
+  orderId,
   className,
 }: OrderSummaryProps) => {
+  const [order, setOrder] = useState<OrderSummaryData | null>(initialOrder || null);
+  const [loading, setLoading] = useState(!initialOrder && !!orderId);
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      if (!orderId) return;
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/${orderId}`, {
+          credentials: "include"
+        });
+        if (!res.ok) throw new Error("Failed to fetch order");
+        const data = await res.json();
+
+        const subtotal = data.items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+        const tax = data.totalAmount - subtotal;
+
+        // Map backend order to frontend OrderSummaryData
+        const mappedOrder: OrderSummaryData = {
+          orderNumber: data.id.toUpperCase(),
+          orderDate: new Date(data.createdAt).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+          status: data.status,
+          email: data.user.email,
+          items: data.items.map((item: any) => ({
+            id: item.id,
+            name: item.meal.name,
+            image: item.meal.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          subtotal: subtotal,
+          shipping: 0,
+          tax: tax,
+          total: data.totalAmount,
+          shippingAddress: {
+            name: data.address.split(',')[0].trim(),
+            street: data.address.split(',')[1]?.trim() || "",
+            city: data.address.split(',')[2]?.trim() || "",
+            state: "",
+            zipCode: data.address.split(',')[3]?.trim() || "",
+            country: data.address.split(',')[4]?.trim() || "Bangladesh",
+            phone: data.address.split('PH:')[1]?.trim() || "",
+          },
+          shippingMethod: "Standard Delivery",
+          estimatedDelivery: "30-45 minutes",
+          paymentMethod: {
+            type: "bank",
+            lastFour: "",
+            cardBrand: "Cash on Delivery",
+          }
+        };
+        setOrder(mappedOrder);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load order summary");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!initialOrder && orderId) {
+      fetchOrder();
+    }
+  }, [orderId, initialOrder]);
+
+  if (loading) {
+    return <div className="py-32 text-center text-xl">Loading order summary...</div>;
+  }
+
+  if (!order) {
+    return (
+      <div className="py-32 text-center">
+        <h1 className="text-2xl font-bold">Order not found</h1>
+        <p className="mt-2 text-muted-foreground">We couldn't find the requested order details.</p>
+      </div>
+    );
+  }
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -134,29 +161,37 @@ const OrderSummary = ({
     }).format(price);
   };
 
-  const getStatusBadge = (status: OrderSummaryData["status"]) => {
+  const getStatusBadge = (status: string) => {
     const variants: Record<
-      OrderSummaryData["status"],
+      string,
       { label: string; className: string }
     > = {
+      PENDING: {
+        label: "Pending",
+        className: "bg-amber-500/10 text-amber-600 hover:bg-amber-500/10",
+      },
+      PREPARING: {
+        label: "Preparing",
+        className: "bg-blue-500/10 text-blue-600 hover:bg-blue-500/10",
+      },
+      OUT_FOR_DELIVERY: {
+        label: "Out for Delivery",
+        className: "bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/10",
+      },
+      DELIVERED: {
+        label: "Delivered",
+        className: "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/10",
+      },
+      CANCELLED: {
+        label: "Cancelled",
+        className: "bg-red-500/10 text-red-600 hover:bg-red-500/10",
+      },
       confirmed: {
         label: "Order Confirmed",
         className: "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/10",
       },
-      processing: {
-        label: "Processing",
-        className: "bg-amber-500/10 text-amber-600 hover:bg-amber-500/10",
-      },
-      shipped: {
-        label: "Shipped",
-        className: "bg-blue-500/10 text-blue-600 hover:bg-blue-500/10",
-      },
-      delivered: {
-        label: "Delivered",
-        className: "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/10",
-      },
     };
-    return variants[status];
+    return variants[status] || variants.confirmed;
   };
 
   const statusBadge = getStatusBadge(order.status);
@@ -320,6 +355,9 @@ const OrderSummary = ({
                   <p className="text-sm text-muted-foreground">
                     {order.shippingAddress.country}
                   </p>
+                  <p className="text-sm font-medium mt-2">
+                    {order.shippingAddress.phone ? `Phone: ${order.shippingAddress.phone}` : ''}
+                  </p>
                 </div>
                 <Separator />
                 <div className="flex items-start gap-3">
@@ -345,6 +383,21 @@ const OrderSummary = ({
                 </CardTitle>
               </CardHeader>
               <CardContent>
+                {order.paymentMethod.type === "bank" && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-10 items-center justify-center rounded-md bg-muted text-primary">
+                      <CreditCard className="size-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {order.paymentMethod.cardBrand}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Payment on reaching destination
+                      </p>
+                    </div>
+                  </div>
+                )}
                 {order.paymentMethod.type === "card" && (
                   <div className="flex items-center gap-3">
                     <img
@@ -390,14 +443,6 @@ const OrderSummary = ({
                   <Package className="mr-2 size-4" />
                   Track Order
                 </Button>
-                <Button className="w-full" variant="outline">
-                  <Download className="mr-2 size-4" />
-                  Download Receipt
-                </Button>
-                <Button className="w-full" variant="ghost">
-                  <Printer className="mr-2 size-4" />
-                  Print Order
-                </Button>
               </CardContent>
             </Card>
           </div>
@@ -405,15 +450,9 @@ const OrderSummary = ({
 
         {/* Continue Shopping */}
         <div className="mt-10 text-center">
-          <p className="mb-4 text-muted-foreground">
-            Have a question about your order?
-          </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button variant="outline" asChild>
-              <a href="#">Contact Support</a>
-            </Button>
             <Button asChild>
-              <a href="#">Continue Shopping</a>
+              <a href="/meals">Continue Shopping</a>
             </Button>
           </div>
         </div>

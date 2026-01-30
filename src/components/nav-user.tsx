@@ -14,6 +14,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+import { authClient } from "@/lib/auth-client"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -102,7 +103,15 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={async () => {
+              await authClient.signOut({
+                fetchOptions: {
+                  onSuccess: () => {
+                    window.location.href = "/";
+                  },
+                },
+              });
+            }}>
               <LogOut />
               Log out
             </DropdownMenuItem>

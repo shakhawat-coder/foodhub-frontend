@@ -367,7 +367,7 @@ const ProductForm = ({ mealId, selected }: ProductFormProps) => {
       return;
     }
 
-    if (session.user.role !== "USER") {
+    if ((session.user as any).role !== "USER") {
       toast.error("Only customers can add items to cart");
       return;
     }
@@ -379,8 +379,8 @@ const ProductForm = ({ mealId, selected }: ProductFormProps) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
-          userId: session.user.id,
           mealId: mealId,
           quantity: values.quantity,
         }),

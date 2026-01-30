@@ -29,6 +29,7 @@ async function apiRequest<T>(
       "Content-Type": "application/json",
       ...fetchOptions.headers,
     },
+    credentials: "include",
     ...fetchOptions,
   });
 
@@ -114,6 +115,32 @@ export const cartAPI = {
 
   // Clear cart
   clearCart: () => apiRequest("/cart/clear", { method: "DELETE" }),
+};
+
+// ============== ORDERS API ==============
+export const ordersAPI = {
+  // Create order
+  create: (data: any) =>
+    apiRequest("/order", { method: "POST", body: JSON.stringify(data) }),
+
+  // Get user orders
+  getUserOrders: () => apiRequest("/order/user", { method: "GET" }),
+
+  // Get provider orders
+  getProviderOrders: () => apiRequest("/order/provider", { method: "GET" }),
+
+  // Get all orders (admin)
+  getAll: () => apiRequest("/order", { method: "GET" }),
+
+  // Get single order
+  getById: (id: string) => apiRequest(`/order/${id}`, { method: "GET" }),
+
+  // Update order status
+  updateStatus: (id: string, status: string) =>
+    apiRequest(`/order/status/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ status }),
+    }),
 };
 
 export default apiRequest;

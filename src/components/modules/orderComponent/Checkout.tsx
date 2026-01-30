@@ -190,7 +190,9 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
   const fetchCart = async () => {
     if (!session?.user?.id) return;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/${session.user.id}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
+        credentials: "include"
+      });
       if (!response.ok) throw new Error("Failed to fetch cart");
       const data = await response.json();
 
@@ -254,17 +256,35 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
   const onSubmit = async (data: CheckoutFormType) => {
     if (!session?.user?.id) return;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/clear`, {
+      const subtotal = cartItems.reduce((sum, item) => sum + (item.price.sale ?? item.price.regular) * item.quantity, 0);
+      const tax = 35.80; // Estimated tax from UI
+      const totalAmount = subtotal + tax;
+      const addressString = `${data.address.firstName} ${data.address.lastName}, ${data.address.address}, ${data.address.city}, ${data.address.postalCode}, ${data.address.country}, PH: ${data.address.phone}`;
+
+      const orderData = {
+        totalAmount,
+        address: addressString,
+        items: cartItems.map(item => ({
+          mealId: item.product_id,
+          quantity: item.quantity,
+          price: item.price.sale ?? item.price.regular
+        }))
+      };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session.user.id }),
+        credentials: "include",
+        body: JSON.stringify(orderData)
       });
 
-      if (!response.ok) throw new Error("Failed to clear cart");
+      if (!response.ok) throw new Error("Failed to place order");
 
+      const order = await response.json();
       toast.success("Order placed successfully!");
-      router.push("/");
+      router.push(`/ordersummary/${order.id}`);
     } catch (error) {
+      console.error(error);
       toast.error("An error occurred during checkout");
     }
   };

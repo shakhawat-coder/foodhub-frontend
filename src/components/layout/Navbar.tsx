@@ -164,7 +164,6 @@ const Navbar = ({
               <div className="relative flex items-center gap-4">
                 <Link href={"/cart"} className="relative">
                   <ShoppingCart />
-                  <span className="absolute -top-3 -right-1 bg-red-500 text-white h-5 w-5 flex items-center justify-center text-xs rounded-full">9+</span>
                 </Link>
 
                 <button
@@ -176,7 +175,7 @@ const Navbar = ({
                 </button>
                 {dropdownOpen && (
                   <div ref={dropdownRef} className="absolute right-5 top-7 mt-2 w-40 bg-popover text-popover-foreground rounded-md border shadow-md z-50">
-                    <Link href="/dashboard" className="block px-3 py-2 text-sm">Dashboard</Link>
+                    <Link href={`${((sessionUser as any).role).toLowerCase()}-dashboard`} className="block px-3 py-2 text-sm">Dashboard</Link>
                     <button onClick={() => { setDropdownOpen(false); handleLogout() }} className="w-full text-left px-3 py-2 text-sm">Logout</button>
                   </div>
                 )}
