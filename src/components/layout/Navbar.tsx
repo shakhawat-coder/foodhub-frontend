@@ -77,8 +77,8 @@ const Navbar = ({
     },
 
     {
-      title: "Restaurants",
-      url: "/restaurants",
+      title: "Menu",
+      url: "/menu",
     },
 
     {
@@ -175,7 +175,7 @@ const Navbar = ({
                 </button>
                 {dropdownOpen && (
                   <div ref={dropdownRef} className="absolute right-5 top-7 mt-2 w-40 bg-popover text-popover-foreground rounded-md border shadow-md z-50">
-                    <Link href={`${((sessionUser as any).role).toLowerCase()}-dashboard`} className="block px-3 py-2 text-sm">Dashboard</Link>
+                    <Link href={`/${((sessionUser as any).role).toLowerCase()}-dashboard`} className="block px-3 py-2 text-sm">Dashboard</Link>
                     <button onClick={() => { setDropdownOpen(false); handleLogout() }} className="w-full text-left px-3 py-2 text-sm">Logout</button>
                   </div>
                 )}

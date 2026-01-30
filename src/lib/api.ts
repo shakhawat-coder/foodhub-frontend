@@ -127,7 +127,7 @@ export const ordersAPI = {
   getUserOrders: () => apiRequest("/order/user", { method: "GET" }),
 
   // Get provider orders
-  getProviderOrders: () => apiRequest("/order/provider", { method: "GET" }),
+  getProviderOrders: (params?: { type?: 'incoming' | 'history' }) => apiRequest("/order/provider", { method: "GET", params }),
 
   // Get all orders (admin)
   getAll: () => apiRequest("/order", { method: "GET" }),

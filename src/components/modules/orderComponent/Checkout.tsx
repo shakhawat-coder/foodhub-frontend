@@ -257,7 +257,7 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
     if (!session?.user?.id) return;
     try {
       const subtotal = cartItems.reduce((sum, item) => sum + (item.price.sale ?? item.price.regular) * item.quantity, 0);
-      const tax = 35.80; // Estimated tax from UI
+      const tax = 0; // Estimated tax from UI
       const totalAmount = subtotal + tax;
       const addressString = `${data.address.firstName} ${data.address.lastName}, ${data.address.address}, ${data.address.city}, ${data.address.postalCode}, ${data.address.country}, PH: ${data.address.phone}`;
 
