@@ -1,21 +1,20 @@
 // API utility functions for communicating with the backend
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+// Use relative path for client-side requests to enable the Next.js proxy/rewrite
+// This is critical for session cookies on Vercel
+const API_BASE_URL = typeof window !== 'undefined' ? "/api" : (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number>;
 }
 
-/**
- * Generic API request function
- */
 async function apiRequest<T>(
   endpoint: string,
   options: RequestOptions = {},
 ): Promise<T> {
   const { params, ...fetchOptions } = options;
 
-  // Build URL with query parameters
+ 
   let url = `${API_BASE_URL}${endpoint}`;
   if (params) {
     const queryString = new URLSearchParams(
@@ -127,7 +126,8 @@ export const ordersAPI = {
   getUserOrders: () => apiRequest("/order/user", { method: "GET" }),
 
   // Get provider orders
-  getProviderOrders: (params?: { type?: 'incoming' | 'history' }) => apiRequest("/order/provider", { method: "GET", params }),
+  getProviderOrders: (params?: { type?: "incoming" | "history" }) =>
+    apiRequest("/order/provider", { method: "GET", params }),
 
   // Get all orders (admin)
   getAll: () => apiRequest("/order", { method: "GET" }),

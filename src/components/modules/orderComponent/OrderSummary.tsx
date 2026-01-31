@@ -81,7 +81,7 @@ const OrderSummary = ({
     const fetchOrder = async () => {
       if (!orderId) return;
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/${orderId}`, {
+        const res = await fetch(`/api/order/${orderId}`, {
           credentials: "include"
         });
         if (!res.ok) throw new Error("Failed to fetch order");

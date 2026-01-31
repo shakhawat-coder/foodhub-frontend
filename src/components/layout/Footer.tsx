@@ -16,7 +16,7 @@ export default function Footer() {
 
             {/* Content */}
             <div className="relative z-10 text-white">
-                <div className="container mx-auto grid gap-10 py-16 md:grid-cols-4">
+                <div className="container mx-auto grid gap-10 py-16 md:grid-cols-3">
                     {/* Brand */}
                     <div>
                         <h2 className="text-2xl font-bold">FoodHub</h2>
@@ -37,36 +37,12 @@ export default function Footer() {
                                 <Link href="/meals" className="hover:text-yellow-500">Meals</Link>
                             </li>
                             <li>
-                                <Link href="/providers" className="hover:text-yellow-500">Restaurants</Link>
-                            </li>
-                            <li>
-                                <Link href="/orders" className="hover:text-yellow-500">My Orders</Link>
+                                <Link href="/restaurants" className="hover:text-yellow-500">Restaurants</Link>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Support */}
-                    <div>
-                        <h3 className="mb-4 text-lg font-semibold">Support</h3>
-                        <ul className="space-y-2 text-sm text-white/80">
-                            <li>
-                                <Link href="/about" className="hover:text-yellow-500">About Us</Link>
-                            </li>
-                            <li>
-                                <Link href="/contact" className="hover:text-yellow-500">Contact</Link>
-                            </li>
-                            <li>
-                                <Link href="/faq" className="hover:text-yellow-500">FAQ</Link>
-                            </li>
-                            <li>
-                                <Link href="/privacy" className="hover:text-yellow-500">
-                                    Privacy Policy
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
 
-                    {/* Contact */}
                     <div>
                         <h3 className="mb-4 text-lg font-semibold">Contact</h3>
                         <ul className="space-y-2 text-sm text-white/80">

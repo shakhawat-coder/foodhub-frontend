@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface MealCardProps {
-    
-        id: string;
-        name: string;
-        description: string;
-        price: number;
-        image: string;
-    
+
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    image: string | null;
+
 }
 
 export function PopularMealsCard({ meal }: { meal: MealCardProps }) {
@@ -21,7 +21,7 @@ export function PopularMealsCard({ meal }: { meal: MealCardProps }) {
             <div className="grid grid-cols-3">
                 <div className="h-25 w-25 rounded-full overflow-hidden">
                     <img
-                        src={meal.image}
+                        src={meal.image || '/placeholder-meal.jpg'}
                         alt={meal.name}
                         className="object-cover h-full w-full"
                     />

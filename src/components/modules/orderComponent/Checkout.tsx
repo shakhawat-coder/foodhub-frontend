@@ -190,7 +190,7 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
   const fetchCart = async () => {
     if (!session?.user?.id) return;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
+      const response = await fetch(`/api/cart`, {
         credentials: "include"
       });
       if (!response.ok) throw new Error("Failed to fetch cart");
@@ -271,7 +271,7 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
         }))
       };
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order`, {
+      const response = await fetch(`/api/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

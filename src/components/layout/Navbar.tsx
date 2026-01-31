@@ -82,18 +82,9 @@ const Navbar = ({
     },
 
     {
-      title: "Orders",
-      url: "/orders",
+      title: "Restaurants",
+      url: "/restaurants",
     },
-
-    {
-      title: "About",
-      url: "/about",
-    },
-    {
-      title: "Contact",
-      url: "/contact",
-    }
   ],
   auth = {
     login: { title: "Login", url: "/login" },

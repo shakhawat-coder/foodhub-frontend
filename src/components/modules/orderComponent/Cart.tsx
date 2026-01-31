@@ -34,7 +34,7 @@ export default function Cart() {
     const fetchCart = async () => {
         if (!session?.user?.id) return;
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
+            const response = await fetch(`/api/cart`, {
                 credentials: "include"
             });
             if (!response.ok) throw new Error("Failed to fetch cart");
@@ -63,7 +63,7 @@ export default function Cart() {
                 items: prev.items.map(item => item.meal.id === mealId ? { ...item, quantity } : item)
             } : null);
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/update`, {
+            const response = await fetch(`/api/cart/update`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -81,7 +81,7 @@ export default function Cart() {
     const removeItem = async (mealId: string) => {
         if (!session?.user?.id) return;
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/remove`, {
+            const response = await fetch(`/api/cart/remove`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

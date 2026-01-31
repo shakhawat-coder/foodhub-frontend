@@ -374,7 +374,7 @@ const ProductForm = ({ mealId, selected }: ProductFormProps) => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
+      const response = await fetch(`/api/cart`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

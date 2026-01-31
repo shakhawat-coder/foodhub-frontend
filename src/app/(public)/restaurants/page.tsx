@@ -10,64 +10,6 @@ interface Restaurant {
     review: number;
     logo: string;
 }
-// const topRestaurants: Restaurant[] = [
-//     {
-//         id: 1,
-//         name: "Burger King",
-//         cuisine: "Fast Food",
-//         rating: 4.5,
-//         review: 1200,
-//         image: "https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHN0ZWFrfGVufDB8fDB8fHww",
-//     },
-//     {
-//         id: 2,
-//         name: "McDonald's",
-//         cuisine: "Fast Food",
-//         rating: 4.5,
-//         review: 1200,
-//         image: "https://images.unsplash.com/photo-1578935149228-66b184c83e69?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c2VhJTIwZm9vZHxlbnwwfHwwfHx8MA%3D%3D",
-//     },
-//     {
-//         id: 3,
-//         name: "Burger King",
-//         cuisine: "Fast Food",
-//         rating: 4.5,
-//         review: 1200,
-//         image: "https://images.unsplash.com/photo-1623428187969-5da2dcea5ebf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dmVnYW4lMjBmb29kfGVufDB8fDB8fHww",
-//     },
-//     {
-//         id: 4,
-//         name: "KFC",
-//         cuisine: "Fast Food",
-//         rating: 4.5,
-//         review: 1200,
-//         image: "https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHN0ZWFrfGVufDB8fDB8fHww",
-//     },
-//     {
-//         id: 5,
-//         name: "McDonald's",
-//         cuisine: "Fast Food",
-//         rating: 4.5,
-//         review: 1200,
-//         image: "https://images.unsplash.com/photo-1578935149228-66b184c83e69?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c2VhJTIwZm9vZHxlbnwwfHwwfHx8MA%3D%3D",
-//     },
-//     {
-//         id: 6,
-//         name: "Kacchi Bhai",
-//         cuisine: "Fast Food",
-//         rating: 4.5,
-//         review: 1200,
-//         image: "https://images.unsplash.com/photo-1623428187969-5da2dcea5ebf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dmVnYW4lMjBmb29kfGVufDB8fDB8fHww",
-//     },
-//     {
-//         id: 7,
-//         name: "Burger King",
-//         cuisine: "Fast Food",
-//         rating: 4.5,
-//         review: 1200,
-//         image: "https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHN0ZWFrfGVufDB8fDB8fHww",
-//     }
-// ]
 export default async function Restaurants() {
     let providerData = await fetch(process.env.NEXT_PUBLIC_API_URL + '/provider', { cache: 'no-store' })
     let provider = await providerData.json()
