@@ -110,7 +110,7 @@ export default function Cart() {
 
     if (authPending || loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex items-center justify-center min-h-100">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
@@ -159,7 +159,7 @@ export default function Cart() {
                     {cart.items.map((item) => (
                         <Card key={item.id} className="overflow-hidden border-none shadow-sm bg-muted/30 hover:bg-muted/50 transition-colors">
                             <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-6">
-                                <div className="h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 rounded-xl overflow-hidden bg-white">
+                                <div className="h-24 w-24 sm:h-32 sm:w-32 shrink-0 rounded-xl overflow-hidden bg-white">
                                     <img
                                         src={item.meal.image || "/placeholder-meal.jpg"}
                                         alt={item.meal.name}

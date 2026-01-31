@@ -26,7 +26,7 @@ export default function RestaurantDetail({ id, provider }: RestaurantDetailProps
             {/* Hero Section */}
             <div className="relative h-75 w-full md:h-100">
                 <img
-                    src={provider.logo}
+                    src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Zm9vZHxlbnwwfDB8MHx8fDA%3D"
                     alt={provider.name}
                     // fill
                     className="object-cover w-full h-full"
@@ -63,7 +63,16 @@ export default function RestaurantDetail({ id, provider }: RestaurantDetailProps
                     {/* Sidebar - Info */}
                     <div className="space-y-6">
                         <div className="rounded-xl border bg-card p-6 shadow-sm">
-                            <h3 className="mb-4 text-lg font-semibold">Restaurant Info</h3>
+                            <div className="mx-auto w-40 h-40 overflow-hidden rounded-lg">
+                                <img src={provider.logo ? provider.logo : "/restaurantlogo.png"} alt="provider logo" className="w-full h-full object-cover rounded-lg" />
+                            </div>
+                            {provider && (
+                                <div className="pt-4">
+                                    <p className="font-medium">Provider</p>
+                                    <p className="text-sm text-muted-foreground">{provider.name ?? JSON.stringify(provider)}</p>
+                                </div>
+                            )}
+                            <h3 className="my-4 text-lg font-semibold">Restaurant Info</h3>
                             <div className="space-y-4">
                                 <div className="flex items-start gap-3">
                                     <MapPin className="mt-1 h-5 w-5 text-muted-foreground" />
@@ -72,28 +81,22 @@ export default function RestaurantDetail({ id, provider }: RestaurantDetailProps
                                         <p className="text-sm text-muted-foreground">{provider.address}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-start gap-3">
+                                {/* <div className="flex items-start gap-3">
                                     <Clock className="mt-1 h-5 w-5 text-muted-foreground" />
                                     <div>
                                         <p className="font-medium">Opening Hours</p>
                                         <p className="text-sm text-muted-foreground">{provider.openingHours}</p>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="flex items-center gap-3">
                                     <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                                     <div>
                                         <p className="font-medium">{provider.rating} ({provider.review} reviews)</p>
                                     </div>
                                 </div>
-                                {provider && (
-                                    <div className="pt-4">
-                                        <p className="font-medium">Provider</p>
-                                        <p className="text-sm text-muted-foreground">{provider.name ?? JSON.stringify(provider)}</p>
-                                    </div>
-                                )}
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
         </div>
