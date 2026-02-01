@@ -35,10 +35,10 @@ const testimonials = [
 
 export default function Testimonial() {
     return (
-        <div className="py-20">
+        <div className="py-12 lg:py-20">
 
             <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
-                <div className="bg-yellow-100/50 backdrop:blur-3xl rounded-e-full overflow-hidden p-10 h-full flex flex-col items-center justify-center -me-32 z-10">
+                <div className="bg-yellow-100/50 backdrop:blur-3xl md:rounded-e-full overflow-hidden p-3 lg:p-10 h-full flex flex-col items-center justify-center md:-me-32 z-10">
                     <SectionHeader
                         subtitle="Reviews"
                         title="What Our Customers Say"
@@ -48,11 +48,11 @@ export default function Testimonial() {
                         modules={[Autoplay]}
                         autoplay={{ delay: 4500, disableOnInteraction: false }}
                         loop
-                        className="max-w-lg"
+                        className="max-w-full"
                     >
                         {testimonials.map((item) => (
                             <SwiperSlide key={item.id}>
-                                <div className="rounded-2xl border p-8 shadow-sm">
+                                <div className="rounded-2xl border p-8 shadow-sm max-w-full">
                                     <p className="mb-6 text-base leading-relaxed text-gray-600">
                                         “{item.message}”
                                     </p>
@@ -70,7 +70,7 @@ export default function Testimonial() {
                 </div>
 
                 {/* RIGHT: Image */}
-                <div className=" rounded-s-full overflow-hidden">
+                <div className="hidden md:block rounded-s-full overflow-hidden max-w-full">
                     <img
                         src="/testimonial.png"
                         alt="testimonial"

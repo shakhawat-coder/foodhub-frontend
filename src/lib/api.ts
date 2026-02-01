@@ -11,7 +11,6 @@ async function apiRequest<T>(
 ): Promise<T> {
   const { params, ...fetchOptions } = options;
 
-
   let url = `${API_BASE_URL}${endpoint}`;
   if (params) {
     const queryString = new URLSearchParams(
@@ -22,22 +21,41 @@ async function apiRequest<T>(
 
   const response = await fetch(url, {
     headers: {
-      "Content-Type": "application/json",
+      ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
       ...fetchOptions.headers,
     },
     credentials: "include",
     ...fetchOptions,
   });
 
+  const text = await response.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {} as any;
+  } catch (err) {
+    data = {};
+  }
+
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
     throw new Error(
-      error.error || `API request failed: ${response.statusText}`,
+      data.error || `API request failed: ${response.statusText}`,
     );
   }
 
-  return response.json();
+  return data as T;
 }
+
+// ============== UPLOAD API ==============
+export const uploadAPI = {
+  uploadImage: (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    return apiRequest<{ url: string }>("/upload", {
+      method: "POST",
+      body: formData,
+    });
+  },
+};
 
 // ============== MEALS API ==============
 export const mealsAPI = {

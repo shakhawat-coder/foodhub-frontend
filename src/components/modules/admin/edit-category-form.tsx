@@ -20,14 +20,15 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { categoriesAPI } from "@/lib/api"
+import ImageUpload from "@/components/common/ImageUpload"
 
 
 const formSchema = z.object({
     name: z.string().min(2, {
         message: "Category name must be at least 2 characters.",
     }),
-    image: z.string().url({
-        message: "Please enter a valid image URL.",
+    image: z.string().min(1, {
+        message: "Category image is required.",
     }),
 })
 
@@ -71,7 +72,7 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
             <CardHeader>
                 <CardTitle>Edit Category</CardTitle>
                 <CardDescription>
-                    Update the category details below.
+                    Update the category details and image below.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -95,10 +96,16 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
                             name="image"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Image URL</FormLabel>
+                                    <FormLabel>Category Image</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="https://example.com/image.jpg" {...field} />
+                                        <ImageUpload
+                                            onUploadComplete={(url) => field.onChange(url)}
+                                            defaultValue={field.value}
+                                        />
                                     </FormControl>
+                                    <FormDescription>
+                                        Upload a new image to update this category.
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}

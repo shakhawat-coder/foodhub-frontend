@@ -145,7 +145,7 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
 
 
   return (
-    <div className="space-y-20 px-5">
+    <div className="space-y-10 px-5">
       <section className={cn("pt-20", className)}>
         <div className="container">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
@@ -224,7 +224,7 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
         </div>
       </section>
 
-      <section className="container py-12">
+      <section className="container py-12 mb-0">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-8">
             <h2 className="text-3xl font-bold tracking-tight">Customer Reviews</h2>

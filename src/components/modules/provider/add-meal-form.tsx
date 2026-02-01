@@ -30,12 +30,13 @@ import { Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import { Textarea } from "@/components/ui/textarea"
 import { categoriesAPI, mealsAPI } from "@/lib/api"
+import ImageUpload from "@/components/common/ImageUpload"
 
 const formSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters."),
     description: z.string().min(10, "Description must be at least 10 characters."),
     price: z.coerce.number().positive("Price must be a positive number."),
-    image: z.string().url("Please enter a valid image URL.").optional().or(z.literal("")),
+    image: z.string().min(1, "Meal image is required."),
     categoryId: z.string().min(1, "Please select a category."),
     dietaryTypes: z.enum(["FLEXITERISN", "HALAL", "VEGAN", "VEGETARIAN"]),
     isPopular: z.boolean().default(false),
@@ -207,12 +208,15 @@ export function AddMealForm() {
                             name="image"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Image URL</FormLabel>
+                                    <FormLabel>Meal Image</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="https://images.unsplash.com/..." {...field} />
+                                        <ImageUpload
+                                            onUploadComplete={(url) => field.onChange(url)}
+                                            defaultValue={field.value}
+                                        />
                                     </FormControl>
                                     <FormDescription>
-                                        Provide a direct link to a high-quality food image.
+                                        Upload a delicious photo of this meal.
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>

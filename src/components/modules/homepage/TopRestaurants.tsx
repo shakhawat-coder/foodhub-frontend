@@ -35,7 +35,7 @@ export default function TopRestaurants() {
     }, []);
 
     return (
-        <section className="py-20">
+        <section className="py-12 lg:py-20 px-3">
             <div>
                 <SectionHeader
                     title="Discover the best dining experiences"
@@ -43,7 +43,7 @@ export default function TopRestaurants() {
                     description="Discover the best dining experiences around you with our curated list of top restaurants. From classic favorites to trendy new places, we've got you covered."
                 />
             </div>
-            <div className="w-full mt-10 min-h-75 flex items-center justify-center">
+            <div className="w-full min-h-75 flex items-center justify-center">
                 {isLoading ? (
                     <div className="flex flex-col items-center gap-2">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -53,25 +53,21 @@ export default function TopRestaurants() {
                     <Swiper
                         modules={[Autoplay]}
                         autoplay={{ delay: 4000, disableOnInteraction: false }}
-                        loop={providers.length >= 5}
+                        loop={true}
                         breakpoints={{
                             320: {
-                                slidesPerView: 1,
+                                slidesPerView: 2,
                                 spaceBetween: 10,
                             },
-                            640: {
-                                slidesPerView: 2,
-                                spaceBetween: 15,
-                            },
-                            768: {
+                            440: {
                                 slidesPerView: 3,
                                 spaceBetween: 15,
                             },
-                            1024: {
+                            668: {
                                 slidesPerView: 4,
-                                spaceBetween: 10,
+                                spaceBetween: 15,
                             },
-                            1280: {
+                            1024: {
                                 slidesPerView: 5,
                                 spaceBetween: 10,
                             },

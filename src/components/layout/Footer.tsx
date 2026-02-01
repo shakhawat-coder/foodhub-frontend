@@ -3,31 +3,31 @@ import React from "react";
 
 export default function Footer() {
     return (
-        <footer className="relative">
+        <footer className="relative px-3">
             <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
                     backgroundImage: "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Zm9vZHN8ZW58MHx8MHx8fDA%3D')",
                 }}
             />
-
-            {/* Overlay */}
             <div className="absolute inset-0 bg-black/70" />
-
-            {/* Content */}
             <div className="relative z-10 text-white">
-                <div className="container mx-auto grid gap-10 py-16 md:grid-cols-3">
-                    {/* Brand */}
-                    <div>
-                        <h2 className="text-2xl font-bold">FoodHub</h2>
+                <div className="container mx-auto grid gap-10 py-16 grid-cols-2 md:grid-cols-3">
+                    <div className="col-span-2 md:col-span-1">
+                        <Link href="/" className="flex items-center gap-2 mb-4">
+                            <img
+                                src="/logo.png"
+                                className="h-15"
+                                alt="FoodHub Logo"
+                            />
+                        </Link>
                         <p className="mt-4 text-sm text-white/80">
                             Discover delicious meals from your favorite restaurants and get
                             them delivered fast to your doorstep.
                         </p>
                     </div>
 
-                    {/* Quick Links */}
-                    <div>
+                    <div className="col-span-1">
                         <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
                         <ul className="space-y-2 text-sm text-white/80">
                             <li>
@@ -45,8 +45,7 @@ export default function Footer() {
                         </ul>
                     </div>
 
-
-                    <div>
+                    <div className="col-span-1">
                         <h3 className="mb-4 text-lg font-semibold">Contact</h3>
                         <ul className="space-y-2 text-sm text-white/80">
                             <li>

@@ -208,7 +208,7 @@ export default function Page() {
                                         );
                                     })}
 
-                                    <div className="absolute left-8 right-8 top-7 h-1 bg-muted -z-0">
+                                    <div className="absolute left-8 right-8 top-7 h-1 bg-muted z-0">
                                         <div
                                             className="h-1 bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)] transition-all duration-700 ease-in-out"
                                             style={{

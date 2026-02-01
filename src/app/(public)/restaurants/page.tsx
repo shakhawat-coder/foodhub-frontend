@@ -24,7 +24,7 @@ export default async function Restaurants() {
             <div>
                 <SectionHeader title="Discover the best dining experiences" subtitle="Top Restaurants" description=" Discover the best dining experiences around you with our curated list of top restaurants. From classic favorites to trendy new places, we've got you covered." />
             </div>
-            <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-5">
+            <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
                 {provider.map((providerItem: Restaurant) => (
                     <div key={providerItem.id} className="flex flex-col items-center justify-center">
                         <div className="w-40 h-40 relative rounded-lg overflow-hidden mx-auto">

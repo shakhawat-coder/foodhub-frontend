@@ -242,7 +242,7 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
   }
 
   return (
-    <section className={cn("py-32", className)}>
+    <section className={cn("py-20 lg:py-32 px-3", className)}>
       <div className="container mx-auto">
         <div className="flex flex-col gap-6 pb-8 md:flex-row md:items-center md:justify-between md:gap-8">
           <div className="flex flex-col gap-4">
@@ -656,7 +656,7 @@ const CartItem = ({
 
   return (
     <Card className="rounded-none border-none bg-background p-0 shadow-none">
-      <div className="flex w-full gap-3.5 max-sm:flex-col">
+      <div className="flex w-full gap-3.5">
         <div className="shrink-0 basis-25">
           <AspectRatio ratio={1} className="overflow-hidden rounded-lg">
             <img
