@@ -1,7 +1,4 @@
-// API utility functions for communicating with the backend
 
-// Use relative path for client-side requests to enable the Next.js proxy/rewrite
-// This is critical for session cookies on Vercel
 const API_BASE_URL = typeof window !== 'undefined' ? "/api" : (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
 
 interface RequestOptions extends RequestInit {
@@ -14,7 +11,7 @@ async function apiRequest<T>(
 ): Promise<T> {
   const { params, ...fetchOptions } = options;
 
- 
+
   let url = `${API_BASE_URL}${endpoint}`;
   if (params) {
     const queryString = new URLSearchParams(
@@ -45,35 +42,32 @@ async function apiRequest<T>(
 // ============== MEALS API ==============
 export const mealsAPI = {
   // Get all meals
-  getAll: () => apiRequest("/meal", { method: "GET" }),
+  getAll: (options?: RequestOptions) => apiRequest("/meal", { method: "GET", ...options }),
+
 
   // Get single meal by ID
   getById: (id: string) => apiRequest(`/meal/${id}`, { method: "GET" }),
 
   // Create meal (admin only)
-  create: (data: {
-    name: string;
-    price: number;
-    description: string;
-    providerId: string;
-    categoryId: string;
-  }) => apiRequest("/meal", { method: "POST", body: JSON.stringify(data) }),
+  create: (data: any) =>
+    apiRequest("/meal", { method: "POST", body: JSON.stringify(data) }),
 
   // Update meal
   update: (id: string, data: any) =>
-    apiRequest(`/meal/${id}`, {
+    apiRequest(`/meal/update/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
 
   // Delete meal
-  delete: (id: string) => apiRequest(`/meal/${id}`, { method: "DELETE" }),
+  delete: (id: string) => apiRequest(`/meal/delete/${id}`, { method: "DELETE" }),
 };
 
 // ============== CATEGORIES API ==============
 export const categoriesAPI = {
   // Get all categories
-  getAll: () => apiRequest("/categories", { method: "GET" }),
+  getAll: (options?: RequestOptions) => apiRequest("/categories", { method: "GET", ...options }),
+
 
   // Get single category
   getById: (id: string) => apiRequest(`/categories/${id}`, { method: "GET" }),
@@ -99,22 +93,27 @@ export const cartAPI = {
   getCart: () => apiRequest("/cart", { method: "GET" }),
 
   // Add item to cart
-  addItem: (data: { mealId: string; quantity: number; price: number }) =>
+  addItem: (data: { mealId: string; quantity: number }) =>
     apiRequest("/cart", { method: "POST", body: JSON.stringify(data) }),
 
   // Update cart item
-  updateItem: (id: string, data: any) =>
-    apiRequest(`/cart/${id}`, {
+  updateItem: (data: { mealId: string; quantity: number }) =>
+    apiRequest(`/cart/update`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
 
   // Remove item from cart
-  removeItem: (id: string) => apiRequest(`/cart/${id}`, { method: "DELETE" }),
+  removeItem: (mealId: string) =>
+    apiRequest(`/cart/remove`, {
+      method: "POST",
+      body: JSON.stringify({ mealId }),
+    }),
 
   // Clear cart
-  clearCart: () => apiRequest("/cart/clear", { method: "DELETE" }),
+  clearCart: () => apiRequest("/cart/clear", { method: "POST" }),
 };
+
 
 // ============== ORDERS API ==============
 export const ordersAPI = {
@@ -130,7 +129,7 @@ export const ordersAPI = {
     apiRequest("/order/provider", { method: "GET", params }),
 
   // Get all orders (admin)
-  getAll: () => apiRequest("/order", { method: "GET" }),
+  getAll: (options?: RequestOptions) => apiRequest("/order", { method: "GET", ...options }),
 
   // Get single order
   getById: (id: string) => apiRequest(`/order/${id}`, { method: "GET" }),
@@ -141,6 +140,44 @@ export const ordersAPI = {
       method: "PUT",
       body: JSON.stringify({ status }),
     }),
+};
+
+// ============== REVIEWS API ==============
+export const reviewsAPI = {
+  // Create review
+  create: (data: { rating: number; comment: string; mealId: string }) =>
+    apiRequest("/review", { method: "POST", body: JSON.stringify(data) }),
+
+  // Get meal reviews
+  getByMeal: (mealId: string) =>
+    apiRequest(`/review/${mealId}`, { method: "GET" }),
+};
+
+// ============== PROVIDER API ==============
+export const providersAPI = {
+  getAll: () => apiRequest("/provider", { method: "GET" }),
+
+  getById: (id: string) => apiRequest(`/provider/${id}`, { method: "GET" }),
+
+  getByEmail: (email: string) => apiRequest(`/provider/email/${email}`, { method: "GET" }),
+  syncFromUsers: () => apiRequest("/provider/sync/from-users", { method: "POST" }),
+  update: (id: string, data: any) => apiRequest(`/provider/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+};
+
+
+
+// ============== USERS API ==============
+export const usersAPI = {
+  // Get all users (admin only)
+  getAll: (options?: RequestOptions) => apiRequest<{ data: any[] }>("/users", { method: "GET", ...options }),
+
+  // Toggle user status (admin only)
+  toggleStatus: (id: string) =>
+    apiRequest(`/users/${id}/status`, { method: "PATCH" }),
+
+  // Update user profile
+  updateProfile: (id: string, data: any) =>
+    apiRequest(`/users/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
 };
 
 export default apiRequest;

@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
+import { categoriesAPI } from "@/lib/api"
+
 
 const formSchema = z.object({
     name: z.string().min(2, {
@@ -44,26 +46,13 @@ export function AddCategoryForm() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true)
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(values),
-            })
-
-            if (res.ok) {
-                const data = await res.json()
-                toast.success(`Category "${data.name}" created successfully`)
-                router.push("/admin-dashboard/categories")
-                router.refresh()
-            } else {
-                const errorData = await res.json()
-                toast.error(errorData.error || "Failed to create category")
-            }
-        } catch (error) {
+            const data: any = await categoriesAPI.create(values);
+            toast.success(`Category "${data.name}" created successfully`)
+            router.push("/admin-dashboard/categories")
+            router.refresh()
+        } catch (error: any) {
             console.error("Error creating category:", error)
-            toast.error("An error occurred while creating the category")
+            toast.error(error.message || "An error occurred while creating the category")
         } finally {
             setIsLoading(false)
         }

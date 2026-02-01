@@ -1,6 +1,3 @@
-
-import { popularMeals } from "@/components/modules/homepage/PopularMeals";
-
 export interface Restaurant {
     id: number | string;
     name: string;
@@ -12,7 +9,6 @@ export interface Restaurant {
     coverImage: string;
     address: string;
     openingHours: string;
-    menu: typeof popularMeals;
 }
 
 export const restaurants: Restaurant[] = [
@@ -27,7 +23,6 @@ export const restaurants: Restaurant[] = [
         coverImage: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200&auto=format&fit=crop&q=80",
         address: "123 Burger Lane, Food City, FC 12345",
         openingHours: "10:00 AM - 11:00 PM",
-        menu: popularMeals.slice(0, 4),
     },
     {
         id: 2,
@@ -40,7 +35,6 @@ export const restaurants: Restaurant[] = [
         coverImage: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1200&auto=format&fit=crop&q=80",
         address: "456 McDrive, Food City, FC 12345",
         openingHours: "06:00 AM - 12:00 AM",
-        menu: popularMeals.slice(2, 6),
     },
     {
         id: 3,
@@ -53,7 +47,6 @@ export const restaurants: Restaurant[] = [
         coverImage: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&auto=format&fit=crop&q=80",
         address: "789 Pizza Place, Food City, FC 12345",
         openingHours: "11:00 AM - 10:00 PM",
-        menu: popularMeals.slice(0, 3),
     },
     {
         id: 4,
@@ -66,7 +59,6 @@ export const restaurants: Restaurant[] = [
         coverImage: "https://images.unsplash.com/photo-1513639776629-9269d0d905dd?w=1200&auto=format&fit=crop&q=80",
         address: "101 Chicken Rd, Food City, FC 12345",
         openingHours: "10:00 AM - 11:00 PM",
-        menu: popularMeals.slice(4, 8),
     },
     {
         id: 5,
@@ -79,7 +71,6 @@ export const restaurants: Restaurant[] = [
         coverImage: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=1200&auto=format&fit=crop&q=80",
         address: "202 Sub Way, Food City, FC 12345",
         openingHours: "09:00 AM - 10:00 PM",
-        menu: popularMeals.slice(1, 5),
     },
     {
         id: 6,
@@ -92,7 +83,6 @@ export const restaurants: Restaurant[] = [
         coverImage: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=1200&auto=format&fit=crop&q=80",
         address: "303 Biryani St, Food City, FC 12345",
         openingHours: "12:00 PM - 11:00 PM",
-        menu: popularMeals.slice(3, 7),
     },
     {
         id: 7,
@@ -105,6 +95,5 @@ export const restaurants: Restaurant[] = [
         coverImage: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&auto=format&fit=crop&q=80",
         address: "404 Domino Dr, Food City, FC 12345",
         openingHours: "11:00 AM - 12:00 AM",
-        menu: popularMeals,
     }
 ];

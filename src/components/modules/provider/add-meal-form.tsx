@@ -29,6 +29,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import { Textarea } from "@/components/ui/textarea"
+import { categoriesAPI, mealsAPI } from "@/lib/api"
 
 const formSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters."),
@@ -64,11 +65,8 @@ export function AddMealForm() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
-                if (res.ok) {
-                    const data = await res.json()
-                    setCategories(data)
-                }
+                const data = await categoriesAPI.getAll() as { id: string; name: string }[]
+                setCategories(data)
             } catch (error) {
                 console.error("Error fetching categories:", error)
             }
@@ -84,27 +82,13 @@ export function AddMealForm() {
 
         setIsLoading(true)
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/meal`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(values),
-                credentials: "include",
-            })
-
-            const data = await res.json()
-
-            if (res.ok) {
-                toast.success("Meal added successfully!")
-                router.push("/provider-dashboard/all-meals")
-                router.refresh()
-            } else {
-                toast.error(data.error || "Failed to add meal")
-            }
-        } catch (error) {
+            await mealsAPI.create(values)
+            toast.success("Meal added successfully!")
+            router.push("/provider-dashboard/all-meals")
+            router.refresh()
+        } catch (error: any) {
             console.error("Error adding meal:", error)
-            toast.error("An error occurred. Please check the console.")
+            toast.error(error.message || "An error occurred.")
         } finally {
             setIsLoading(false)
         }

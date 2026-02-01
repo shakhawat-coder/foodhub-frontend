@@ -4,6 +4,8 @@ import { useState } from "react"
 import { Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { categoriesAPI } from "@/lib/api"
+
 
 interface DeleteCategoryButtonProps {
     categoryId: string;
@@ -21,20 +23,12 @@ export function DeleteCategoryButton({ categoryId, categoryName }: DeleteCategor
 
         setIsLoading(true)
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${categoryId}`, {
-                method: 'DELETE',
-            })
-
-            if (res.ok) {
-                toast.success(`Category "${categoryName}" deleted successfully`)
-                router.refresh()
-            } else {
-                const data = await res.json()
-                toast.error(data.error || "Failed to delete category")
-            }
-        } catch (error) {
+            await categoriesAPI.delete(categoryId);
+            toast.success(`Category "${categoryName}" deleted successfully`)
+            router.refresh()
+        } catch (error: any) {
             console.error("Error deleting category:", error)
-            toast.error("An error occurred while deleting the category")
+            toast.error(error.message || "An error occurred while deleting the category")
         } finally {
             setIsLoading(false)
         }

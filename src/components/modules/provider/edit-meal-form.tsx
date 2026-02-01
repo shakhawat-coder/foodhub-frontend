@@ -28,6 +28,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
+import { categoriesAPI, mealsAPI } from "@/lib/api"
 
 const formSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters."),
@@ -75,11 +76,8 @@ export function EditMealForm({ meal }: EditMealFormProps) {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
-                if (res.ok) {
-                    const data = await res.json()
-                    setCategories(data)
-                }
+                const data = await categoriesAPI.getAll() as { id: string; name: string }[]
+                setCategories(data)
             } catch (error) {
                 console.error("Error fetching categories:", error)
             }
@@ -90,26 +88,13 @@ export function EditMealForm({ meal }: EditMealFormProps) {
     const onSubmit = async (values: any) => {
         setIsLoading(true)
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/meal/update/${meal.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(values),
-                credentials: "include",
-            })
-
-            if (res.ok) {
-                toast.success("Meal updated successfully!")
-                router.push("/provider-dashboard/all-meals")
-                router.refresh()
-            } else {
-                const errorData = await res.json()
-                toast.error(errorData.error || "Failed to update meal")
-            }
-        } catch (error) {
+            await mealsAPI.update(meal.id, values)
+            toast.success("Meal updated successfully!")
+            router.push("/provider-dashboard/all-meals")
+            router.refresh()
+        } catch (error: any) {
             console.error("Error updating meal:", error)
-            toast.error("An error occurred.")
+            toast.error(error.message || "An error occurred.")
         } finally {
             setIsLoading(false)
         }

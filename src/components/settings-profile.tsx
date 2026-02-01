@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Camera, X } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,149 +11,182 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  FileUpload,
-  FileUploadItem,
-  FileUploadItemDelete,
-  FileUploadList,
-  FileUploadTrigger,
-} from "@/components/ui/file-upload";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { ordersAPI, usersAPI } from "@/lib/api";
 
 interface ProfileFormData {
   name: string;
   email: string;
-  username: string;
-  avatar?: string;
-  bio?: string;
+  phone: string;
+  address: string;
 }
 
-interface SettingsProfileProps {
+interface UserProfileProps {
   defaultValues?: Partial<ProfileFormData>;
   onSave?: (data: ProfileFormData) => void;
   className?: string;
 }
 
-const SettingsProfile = ({
-  defaultValues = {
-    name: "Alex Morgan",
-    email: "alex.morgan@email.com",
-    username: "alexmorgan",
-    avatar:
-      "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/avatar/avatar8.jpg",
-    bio: "Product designer with 8+ years of experience crafting intuitive digital experiences. Currently focused on design systems and accessibility.",
-  },
-  className,
-}: SettingsProfileProps) => {
-  const [avatarFiles, setAvatarFiles] = useState<File[]>([]);
+const UserProfile = ({ defaultValues, className }: UserProfileProps) => {
+  const { data: session } = authClient.useSession();
+  const router = useRouter();
 
-  const initials = defaultValues.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Get preview URL from uploaded file or use default avatar
-  const avatarPreview =
-    avatarFiles.length > 0
-      ? URL.createObjectURL(avatarFiles[0])
-      : defaultValues.avatar;
+  const [form, setForm] = useState({
+    name: defaultValues?.name || "",
+    email: defaultValues?.email || "",
+    phone: defaultValues?.phone || "",
+    address: defaultValues?.address || "",
+  });
+
+  // Track original values to detect changes
+  const [originalValues, setOriginalValues] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!session?.user?.id) return;
+
+      try {
+        // Fetch user's most recent delivered order to pre-fill address
+        const orders = await ordersAPI.getUserOrders() as any[];
+
+        if (Array.isArray(orders)) {
+          // Find the most recent delivered order
+          const deliveredOrders = orders.filter(
+            (order: any) => order.status === "DELIVERED"
+          );
+
+          if (deliveredOrders.length > 0) {
+            // Sort by createdAt descending and get the first one
+            const latestOrder = deliveredOrders.sort(
+              (a: any, b: any) =>
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            )[0];
+
+            if (latestOrder.address) {
+              const orderAddress = latestOrder.address;
+              const currentUserPhone = (session.user as any)?.phone;
+              const currentUserAddress = (session.user as any)?.address;
+
+              // Parse phone from order address (format: "name, address, city, postal, country, PH: phone")
+              let phoneFromOrder = "";
+              if (orderAddress.includes("PH:")) {
+                phoneFromOrder = orderAddress.split("PH:")[1]?.trim() || "";
+              }
+
+              // Check if profile needs to be auto-updated
+              const needsUpdate = !currentUserPhone || !currentUserAddress;
+
+              if (needsUpdate) {
+                // Automatically update the user's profile with order information
+                const updatePayload: any = {};
+
+                if (!currentUserPhone && phoneFromOrder) {
+                  updatePayload.phone = phoneFromOrder;
+                }
+
+                if (!currentUserAddress) {
+                  updatePayload.address = orderAddress;
+                }
+
+                // Only make the API call if there's something to update
+                if (Object.keys(updatePayload).length > 0) {
+                  try {
+                    await usersAPI.updateProfile(session.user.id, updatePayload);
+                    console.log("Profile auto-updated with order information");
+                    // Update the form state
+                    setForm((f) => ({
+                      ...f,
+                      phone: updatePayload.phone || f.phone,
+                      address: updatePayload.address || f.address,
+                    }));
+                  } catch (updateError) {
+                    console.error("Error auto-updating profile:", updateError);
+                  }
+                }
+              } else {
+                // Just update the form state if profile already has data
+                setForm((f) => ({
+                  ...f,
+                  address: currentUserAddress || orderAddress,
+                  phone: currentUserPhone || phoneFromOrder,
+                }));
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    // Populate from session when available
+    if (session?.user) {
+      const userPhone = (session.user as any).phone || "";
+      const userAddress = (session.user as any).address || "";
+      const userName = (session.user.name as string) || "";
+      const userEmail = session.user.email || "";
+
+      setForm((f) => ({
+        ...f,
+        email: userEmail || f.email,
+        name: userName || f.name,
+        phone: userPhone || f.phone,
+        address: userAddress || f.address,
+      }));
+
+      // Set original values for comparison
+      setOriginalValues({
+        name: userName,
+        email: userEmail,
+        phone: userPhone,
+        address: userAddress,
+      });
+
+      fetchUserData();
+    }
+  }, [session]);
+
+  // Check if form has changes
+  const hasChanges = useMemo(() => {
+    // Check if any field has changed
+    return (
+      form.name !== originalValues.name ||
+      form.email !== originalValues.email ||
+      form.phone !== originalValues.phone ||
+      form.address !== originalValues.address
+    );
+  }, [form, originalValues]);
 
   return (
     <Card className={cn("w-full max-w-xl mx-auto", className)}>
       <CardHeader>
         <CardTitle>Profile</CardTitle>
         <CardDescription>
-          Update your personal information and profile picture
+          Update your personal information
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Avatar Upload */}
-        <FileUpload
-          value={avatarFiles}
-          onValueChange={setAvatarFiles}
-          accept="image/*"
-          maxFiles={1}
-          maxSize={2 * 1024 * 1024}
-        >
-          <div className="flex items-center gap-4">
-            <FileUploadTrigger asChild>
-              <button
-                type="button"
-                className="group relative size-20 shrink-0 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <Avatar className="size-20">
-                  <AvatarImage
-                    src={avatarPreview}
-                    alt={defaultValues.name}
-                    className="object-cover"
-                  />
-                  <AvatarFallback className="text-xl font-semibold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                  <Camera className="size-6 text-white" />
-                </div>
-              </button>
-            </FileUploadTrigger>
-
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Profile Photo</p>
-              <p className="text-xs text-muted-foreground">
-                Click the avatar to upload a new photo
-              </p>
-              <p className="text-xs text-muted-foreground">
-                JPG, PNG or GIF. Max 2MB.
-              </p>
-            </div>
-          </div>
-
-          {avatarFiles.length > 0 && (
-            <FileUploadList className="mt-3">
-              {avatarFiles.map((file, index) => (
-                <FileUploadItem
-                  key={index}
-                  value={file}
-                  className="rounded-lg border bg-muted/30 p-2"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {(file.size / 1024).toFixed(1)} KB
-                    </p>
-                  </div>
-                  <FileUploadItemDelete asChild>
-                    <Button variant="ghost" size="icon" className="size-8">
-                      <X className="size-4" />
-                    </Button>
-                  </FileUploadItemDelete>
-                </FileUploadItem>
-              ))}
-            </FileUploadList>
-          )}
-        </FileUpload>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              placeholder="Enter your name"
-              defaultValue={defaultValues.name}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              placeholder="Enter username"
-              defaultValue={defaultValues.username}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="name">Full Name</Label>
+          <Input
+            id="name"
+            placeholder="Enter your name"
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+          />
         </div>
 
         <div className="space-y-2">
@@ -164,29 +195,95 @@ const SettingsProfile = ({
             id="email"
             type="email"
             placeholder="Enter your email"
-            defaultValue={defaultValues.email}
+            value={form.email}
+            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
+          <Label htmlFor="phone">Phone Number</Label>
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="Enter your phone number"
+            value={form.phone}
+            onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="address">Delivery Address</Label>
           <Textarea
-            id="bio"
-            placeholder="Tell us about yourself"
-            rows={4}
-            defaultValue={defaultValues.bio}
+            id="address"
+            placeholder="Enter your complete delivery address"
+            rows={3}
+            value={form.address}
+            onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
           />
           <p className="text-xs text-muted-foreground">
-            Brief description for your profile. Max 160 characters.
+            This address will be used for your future orders
           </p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
-        <Button variant="outline">Cancel</Button>
-        <Button>Save Changes</Button>
+        <Button
+          variant="outline"
+          disabled={isLoading}
+          onClick={() => {
+            // reset form to defaults or session values
+            setForm({
+              name: defaultValues?.name || (session?.user?.name as string) || "",
+              email: defaultValues?.email || session?.user?.email || "",
+              phone: defaultValues?.phone || (session?.user as any)?.phone || "",
+              address: defaultValues?.address || (session?.user as any)?.address || "",
+            });
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          disabled={isLoading || !hasChanges}
+          onClick={async () => {
+            if (!session?.user?.id) {
+              toast.error("You must be signed in to update your profile.");
+              return;
+            }
+
+            setIsLoading(true);
+            try {
+              const payload = {
+                name: form.name,
+                email: form.email,
+                phone: form.phone,
+                address: form.address,
+              };
+
+              const data: any = await usersAPI.updateProfile(session.user.id, payload);
+
+              toast.success(data.message || "Profile updated successfully");
+
+              // Update original values after successful save
+              setOriginalValues({
+                name: form.name,
+                email: form.email,
+                phone: form.phone,
+                address: form.address,
+              });
+
+              router.refresh();
+            } catch (error) {
+              console.error(error);
+              toast.error(error instanceof Error ? error.message : "Failed to update profile");
+            } finally {
+              setIsLoading(false);
+            }
+          }}
+        >
+          {isLoading ? "Updating..." : "Update Profile"}
+        </Button>
       </CardFooter>
     </Card>
   );
 };
 
-export { SettingsProfile };
+export { UserProfile };

@@ -1,11 +1,12 @@
 import CategoryCard from '@/components/common/CategoryCard';
 import SectionHeader from '@/components/common/SectionHeader';
 import React from 'react'
+import { categoriesAPI } from '@/lib/api';
 
 export default async function CategoryWiseMeal() {
-    let categoyData = await fetch(process.env.NEXT_PUBLIC_API_URL + '/categories', { cache: 'no-store' })
-    let categories = await categoyData.json()
-    console.log(categories);
+    const categoriesRaw = await categoriesAPI.getAll() as any[];
+    const categories = categoriesRaw;
+    // const categories = categoriesRaw.filter((category: any) => category.meals.length > 0);
 
     return (
         <div className='py-20'>

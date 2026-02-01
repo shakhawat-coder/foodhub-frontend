@@ -111,7 +111,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       type="text"
-                      placeholder="Your Name"
+                      placeholder="Your Name/Business Name"
                     />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />

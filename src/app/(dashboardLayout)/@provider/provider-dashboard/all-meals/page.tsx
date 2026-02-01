@@ -14,6 +14,8 @@ import { SquarePen, Star, Loader2 } from 'lucide-react';
 import Link from 'next/link'
 import { DeleteMealButton } from '@/components/modules/provider/delete-meal-button';
 import { authClient } from "@/lib/auth-client";
+import { mealsAPI } from '@/lib/api';
+
 
 interface Meal {
     id: string;
@@ -32,7 +34,7 @@ export default function AllMeals() {
     const [meals, setMeals] = useState<Meal[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const { data: session } = authClient.useSession();
-    console.log(session);
+    // console.log(session);
 
 
     useEffect(() => {
@@ -47,16 +49,10 @@ export default function AllMeals() {
                     return;
                 }
 
-                const url = `${process.env.NEXT_PUBLIC_API_URL}/meal?providerEmail=${email}`;
-
-                const res = await fetch(url, {
-                    cache: 'no-store'
+                const data: any = await mealsAPI.getAll({
+                    params: { providerEmail: email }
                 });
-
-                if (res.ok) {
-                    const data: Meal[] = await res.json();
-                    setMeals(data);
-                }
+                setMeals(data);
             } catch (error) {
                 console.error("Failed to fetch meals:", error);
             } finally {

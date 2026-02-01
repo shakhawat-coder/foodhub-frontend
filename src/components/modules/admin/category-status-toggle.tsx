@@ -5,6 +5,8 @@ import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Label } from "@/components/ui/label"
+import { categoriesAPI } from "@/lib/api"
+
 
 interface CategoryStatusToggleProps {
     categoryId: string;
@@ -19,24 +21,13 @@ export function CategoryStatusToggle({ categoryId, initialStatus }: CategoryStat
     const toggleStatus = async (checked: boolean) => {
         setIsLoading(true)
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${categoryId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ isActive: checked }),
-            })
-
-            if (res.ok) {
-                setIsActive(checked)
-                toast.success(`Category ${checked ? 'activated' : 'deactivated'} successfully`)
-                router.refresh()
-            } else {
-                toast.error("Failed to update status")
-            }
-        } catch (error) {
+            await categoriesAPI.update(categoryId, { isActive: checked });
+            setIsActive(checked)
+            toast.success(`Category ${checked ? 'activated' : 'deactivated'} successfully`)
+            router.refresh()
+        } catch (error: any) {
             console.error("Error toggling status:", error)
-            toast.error("An error occurred while updating status")
+            toast.error(error.message || "An error occurred while updating status")
         } finally {
             setIsLoading(false)
         }

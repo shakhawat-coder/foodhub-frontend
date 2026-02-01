@@ -1,10 +1,10 @@
-import { SettingsProfile } from '@/components/settings-profile'
+import {  UserProfile } from '@/components/settings-profile'
 import React from 'react'
 
 export default function page() {
     return (
         <div>
-            <SettingsProfile />
+            <UserProfile />
         </div>
     )
 }

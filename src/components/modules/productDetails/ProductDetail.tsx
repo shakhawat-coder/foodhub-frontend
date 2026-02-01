@@ -3,14 +3,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleCheck, Star, StarHalf } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { authClient } from "@/lib/auth-client";
-import { popularMeals } from "@/components/modules/homepage/PopularMeals";
+import { reviewsAPI, ordersAPI, cartAPI } from "@/lib/api";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
 import { PopularMealsCard } from "@/components/common/PopularMealsCard";
+import { Loader2, ShoppingBag } from "lucide-react";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -80,7 +85,31 @@ interface ProductDetail1Props {
 }
 
 const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) => {
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(true);
+
+  const fetchReviews = async () => {
+    try {
+      const data = await reviewsAPI.getByMeal(meal.id) as any[];
+      setReviews(data);
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+    } finally {
+      setIsLoadingReviews(false);
+    }
+  };
+
+  useEffect(() => {
+    if (meal?.id) {
+      fetchReviews();
+    }
+  }, [meal?.id]);
+
   if (!meal) return null;
+
+  const averageRating = reviews.length > 0
+    ? reviews.reduce((acc, rev) => acc + Number(rev.rating), 0) / reviews.length
+    : 0;
 
   const productDetails = {
     name: meal.name,
@@ -90,8 +119,8 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
       currency: "USD",
     },
     reviews: {
-      rate: 4.5,
-      totalReviewers: "120",
+      rate: averageRating,
+      totalReviewers: reviews.length.toString(),
     },
     images: meal.images && meal.images.length > 0
       ? meal.images.map((img: string) => ({
@@ -141,7 +170,7 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
                       </Badge>
                     </div>
                   </div>
-                  <Price {...productDetails.price} />
+                  {/* <Price {...productDetails.price} /> */}
                 </div>
 
                 <p className="text-muted-foreground leading-relaxed">
@@ -195,7 +224,18 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
         </div>
       </section>
 
-      {/* Related Products Section */}
+      <section className="container py-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-8">
+            <h2 className="text-3xl font-bold tracking-tight">Customer Reviews</h2>
+            <RecentReviews reviews={reviews} isLoading={isLoadingReviews} />
+          </div>
+          <div className="space-y-8">
+            <h2 className="text-3xl font-bold tracking-tight">Leave a Review</h2>
+            <ReviewForm mealId={meal.id} onReviewSubmit={fetchReviews} />
+          </div>
+        </div>
+      </section>
       <section className="py-12 px-5 bg-muted/30">
         <div className="container">
           <h2 className="text-3xl font-bold tracking-tight mb-8">You might also like</h2>
@@ -374,21 +414,10 @@ const ProductForm = ({ mealId, selected }: ProductFormProps) => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/cart`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          mealId: mealId,
-          quantity: values.quantity,
-        }),
+      await cartAPI.addItem({
+        mealId: mealId,
+        quantity: values.quantity,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to add to cart");
-      }
 
       toast.success("Added to cart successfully");
     } catch (error) {
@@ -451,32 +480,238 @@ const ProductForm = ({ mealId, selected }: ProductFormProps) => {
 };
 
 const Price = ({ regular, sale, currency }: PriceProps) => {
-  if (!regular || !currency) return;
+  // ... existing Price component logic
+};
 
-  const formatCurrency = (
-    value: number,
-    currency: string = "USD",
-    locale: string = "en-US",
-  ) => {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency,
-    }).format(value);
-  };
+// ============== REVIEW FORM COMPONENT ==============
+const reviewSchema = z.object({
+  rating: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 1 && Number(val) <= 5, {
+    message: "Rating must be between 1 and 5",
+  }),
+  comment: z.string().min(3, "Comment must be at least 3 characters").max(500, "Comment is too long"),
+});
+
+type ReviewFormValues = z.infer<typeof reviewSchema>;
+
+const ReviewForm = ({ mealId, onReviewSubmit }: { mealId: string; onReviewSubmit: () => void }) => {
+  const { data: session } = authClient.useSession();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [canReview, setCanReview] = useState<boolean | null>(null);
+  const [isLoadingEligibility, setIsLoadingEligibility] = useState(false);
+
+  useEffect(() => {
+    const checkEligibility = async () => {
+      if (!session) {
+        setCanReview(null);
+        return;
+      }
+
+      if ((session.user as any).role !== "USER") {
+        setCanReview(false);
+        return;
+      }
+
+      setIsLoadingEligibility(true);
+      try {
+        const orders = await ordersAPI.getUserOrders() as any[];
+        const hasPurchased = orders.some(order =>
+          order.status.toUpperCase() === 'DELIVERED' &&
+          order.items.some((item: any) => item.mealId === mealId || (item.meal && item.meal.id === mealId))
+        );
+        setCanReview(hasPurchased);
+      } catch (error) {
+        console.error("Error checking review eligibility:", error);
+        setCanReview(false);
+      } finally {
+        setIsLoadingEligibility(false);
+      }
+    };
+
+    checkEligibility();
+  }, [session, mealId]);
+
+  const form = useForm<ReviewFormValues>({
+    resolver: zodResolver(reviewSchema),
+    defaultValues: {
+      rating: "5",
+      comment: "",
+    },
+  });
+
+  async function onSubmit(values: ReviewFormValues) {
+    if (!session) {
+      toast.error("Please login to leave a review");
+      return;
+    }
+
+    if ((session.user as any).role !== "USER") {
+      toast.error("Only customers can leave reviews");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await reviewsAPI.create({
+        mealId,
+        rating: Number(values.rating),
+        comment: values.comment,
+      });
+      toast.success("Review submitted successfully");
+      form.reset();
+      onReviewSubmit();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to submit review");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  if (!session) {
+    return (
+      <div className="rounded-lg border bg-muted/50 p-6 text-center">
+        <p className="text-muted-foreground mb-4">You must be logged in to post a review.</p>
+        <Link href="/login">
+          <Button variant="outline">Login to Review</Button>
+        </Link>
+      </div>
+    );
+  }
+
+
+  if (canReview === false) {
+    return (
+      <div className="rounded-lg border bg-orange-50/50 p-6 text-center border-orange-100">
+        <div className="mx-auto w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mb-3">
+          <ShoppingBag className="h-5 w-5 text-orange-600" />
+        </div>
+        <h3 className="font-semibold text-orange-900">Purchase Required</h3>
+        <p className="text-sm text-orange-700/80 mt-1 leading-relaxed">
+          Only customers who have purchased and received this meal can leave a review.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-2">
-      {sale && (
-        <span className="text-right text-2xl font-bold text-primary">
-          {formatCurrency(sale, currency)}
-        </span>
-      )}
-      <span
-        className={`text-right text-2xl font-bold ${sale ? "text-muted-foreground line-through" : "text-foreground"
-          }`}
-      >
-        {formatCurrency(regular, currency)}
-      </span>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 rounded-lg border p-6 bg-background shadow-sm">
+        <FormField
+          control={form.control}
+          name="rating"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Rating (1-5)</FormLabel>
+              <FormControl>
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="range"
+                    min="1"
+                    max="5"
+                    step="0.1"
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+                    style={{
+                      background: `linear-gradient(to right, #eab308 0%, #eab308 ${((Number(field.value) - 1) / 4) * 100}%, oklch(0.97 0 0) ${((Number(field.value) - 1) / 4) * 100}%, oklch(0.97 0 0) 100%)`
+                    }}
+                    {...field}
+                  />
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-bold text-yellow-600">{field.value} Stars</span>
+                    <div className="flex gap-0.5">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          className={cn(
+                            "h-4 w-4",
+                            Number(field.value) >= s ? "fill-yellow-500 stroke-yellow-500" : "fill-muted stroke-muted-foreground"
+                          )}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="comment"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Your Comment</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Tell us what you think about this meal..."
+                  className="min-h-25 resize-none"
+                  {...field}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Post Review"}
+        </Button>
+      </form>
+    </Form>
+  );
+};
+
+// ============== RECENT REVIEWS COMPONENT ==============
+const RecentReviews = ({ reviews, isLoading }: { reviews: any[]; isLoading: boolean }) => {
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 w-full animate-pulse rounded-lg bg-muted" />
+        ))}
+      </div>
+    );
+  }
+
+  if (reviews.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed p-10 text-center">
+        <p className="text-muted-foreground">No reviews yet. Be the first to review!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {reviews.map((review) => (
+        <div key={review.id} className="flex gap-4 p-4 rounded-xl border bg-background hover:shadow-md transition-shadow">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={review.user.image} alt={review.user.name} />
+            <AvatarFallback>{review.user.name[0]}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 space-y-1">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm">{review.user.name}</h4>
+              <span className="text-xs text-muted-foreground">
+                {format(new Date(review.createdAt), "MMM dd, yyyy")}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star
+                    key={s}
+                    className={cn(
+                      "h-3 w-3",
+                      Number(review.rating) >= s ? "fill-yellow-500 stroke-yellow-500" : "fill-muted stroke-muted-foreground"
+                    )}
+                  />
+                ))}
+              </div>
+              <span className="text-xs font-bold">{Number(review.rating).toFixed(1)}</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2 line-clamp-3">
+              {review.comment}
+            </p>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

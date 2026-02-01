@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
+import { categoriesAPI } from "@/lib/api"
+
 
 const formSchema = z.object({
     name: z.string().min(2, {
@@ -52,25 +54,13 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true)
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${category.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(values),
-            })
-
-            if (res.ok) {
-                toast.success(`Category updated successfully`)
-                router.push("/admin-dashboard/categories")
-                router.refresh()
-            } else {
-                const errorData = await res.json()
-                toast.error(errorData.error || "Failed to update category")
-            }
-        } catch (error) {
+            await categoriesAPI.update(category.id, values);
+            toast.success(`Category updated successfully`)
+            router.push("/admin-dashboard/categories")
+            router.refresh()
+        } catch (error: any) {
             console.error("Error updating category:", error)
-            toast.error("An error occurred while updating the category")
+            toast.error(error.message || "An error occurred while updating the category")
         } finally {
             setIsLoading(false)
         }

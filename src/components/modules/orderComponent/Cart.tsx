@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { cartAPI } from "@/lib/api";
+
 
 interface CartItem {
     id: string;
@@ -34,11 +36,7 @@ export default function Cart() {
     const fetchCart = async () => {
         if (!session?.user?.id) return;
         try {
-            const response = await fetch(`/api/cart`, {
-                credentials: "include"
-            });
-            if (!response.ok) throw new Error("Failed to fetch cart");
-            const data = await response.json();
+            const data: any = await cartAPI.getCart();
             setCart(data);
         } catch (error) {
             console.error(error);
@@ -57,21 +55,14 @@ export default function Cart() {
     const updateQuantity = async (mealId: string, quantity: number) => {
         if (!session?.user?.id || quantity < 1) return;
         try {
-            // Optimistic update
             setCart(prev => prev ? {
                 ...prev,
                 items: prev.items.map(item => item.meal.id === mealId ? { ...item, quantity } : item)
             } : null);
 
-            const response = await fetch(`/api/cart/update`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ mealId, quantity }),
-            });
+            await cartAPI.updateItem({ mealId, quantity });
+            fetchCart(); 
 
-            if (!response.ok) throw new Error("Failed to update cart");
-            fetchCart(); // Refresh to ensure sync
         } catch (error) {
             toast.error("Error updating quantity");
             fetchCart();
@@ -81,14 +72,7 @@ export default function Cart() {
     const removeItem = async (mealId: string) => {
         if (!session?.user?.id) return;
         try {
-            const response = await fetch(`/api/cart/remove`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ mealId }),
-            });
-
-            if (!response.ok) throw new Error("Failed to remove item");
+            await cartAPI.removeItem(mealId);
             toast.success("Item removed");
             fetchCart();
         } catch (error) {

@@ -1,11 +1,16 @@
 import { MealsClient } from '@/components/modules/meals/MealsClient';
 import React from 'react';
+import { mealsAPI } from '@/lib/api';
 
 
 export default async function MealsPage() {
-    let mealsAPi = await fetch(process.env.NEXT_PUBLIC_API_URL + '/meal', { cache: 'no-store' })
-    let meals = await mealsAPi.json()
-    console.log("meals:", meals.length);
+    let meals: any[] = [];
+    try {
+        meals = await mealsAPI.getAll() as any[];
+    } catch (error) {
+        console.error("Failed to fetch meals:", error);
+    }
+
 
     return (
         <div>
@@ -29,7 +34,7 @@ export default async function MealsPage() {
                 </div>
 
                 {/* Client Component with Filters */}
-                {meals.length <1 ? (
+                {meals.length < 1 ? (
                     <div className="container mx-auto mt-8 px-4 md:px-6">
                         <div className="flex items-center justify-center py-20">
                             <div className="text-center">

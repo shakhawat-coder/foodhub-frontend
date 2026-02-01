@@ -6,14 +6,14 @@ import { notFound } from 'next/navigation'
 import { mealsAPI } from '@/lib/api'
 
 
-export default async function EditMealPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminEditMealPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
     let meal: any = null;
     try {
         meal = await mealsAPI.getById(id);
     } catch (error) {
-        console.error("Failed to fetch meal:", error);
+        console.error("Failed to fetch meal for admin edit:", error);
     }
 
     if (!meal) {
@@ -21,21 +21,21 @@ export default async function EditMealPage({ params }: { params: Promise<{ id: s
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4 md:p-6">
             <div className="flex items-center justify-between">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <Link
-                            href="/provider-dashboard/all-meals"
-                            className="text-muted-foreground hover:text-primary transition-colors"
+                            href="/admin-dashboard/meals"
+                            className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 text-sm"
                         >
                             <MoveLeft className="h-4 w-4" />
+                            Back to Meals
                         </Link>
-                        <span className="text-sm text-muted-foreground">Back to Menu</span>
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight">Edit Meal</h1>
+                    <h1 className="text-2xl font-bold tracking-tight">Edit Meal (Admin)</h1>
                     <p className="text-muted-foreground">
-                        Update your meal information and visibility.
+                        Modify meal details as an administrator.
                     </p>
                 </div>
             </div>

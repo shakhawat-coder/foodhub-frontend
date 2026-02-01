@@ -19,7 +19,7 @@ export const sidebarData = {
   USER: [
     {
       title: "Dashboard",
-      url: "/dashboard/user",
+      url: "/user-dashboard",
       icon: LayoutDashboard,
     },
     {
@@ -31,11 +31,6 @@ export const sidebarData = {
       title: "Track Order",
       url: "/user-dashboard/order-tracking",
       icon: Truck,
-    },
-    {
-      title: "Reviews",
-      url: "/user-dashboard/reviews",
-      icon: Star,
     },
     {
       title: "Profile",
@@ -102,9 +97,14 @@ export const sidebarData = {
       ],
     },
     {
-      title: "Profile",
-      url: "/admin-dashboard/profile",
-      icon: UserCog,
+      title: "Meals Management",
+      url: "/admin-dashboard/meals",
+      icon: UtensilsCrossed,
     },
+    // {
+    //   title: "Profile",
+    //   url: "/admin-dashboard/profile",
+    //   icon: UserCog,
+    // },
   ],
 };

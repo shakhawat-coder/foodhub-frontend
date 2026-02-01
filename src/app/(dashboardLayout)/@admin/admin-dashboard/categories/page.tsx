@@ -14,6 +14,7 @@ import { CategoryStatusToggle } from '@/components/modules/admin/category-status
 import { SquarePen } from 'lucide-react';
 import { DeleteCategoryButton } from '@/components/modules/admin/delete-category-button'
 import Link from 'next/link'
+import { categoriesAPI } from '@/lib/api'
 
 interface Category {
     id: string;
@@ -27,16 +28,12 @@ export default async function AllCategories() {
     let categories: Category[] = [];
 
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
-            cache: 'no-store'
-        });
-
-        if (res.ok) {
-            categories = await res.json();
-        }
+        const data = await categoriesAPI.getAll();
+        categories = data as Category[];
     } catch (error) {
         console.error("Failed to fetch categories:", error);
     }
+
 
     return (
         <div className="space-y-6">

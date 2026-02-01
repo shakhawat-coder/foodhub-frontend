@@ -1,35 +1,17 @@
 import CategoryCard from '@/components/common/CategoryCard'
 import SectionHeader from '@/components/common/SectionHeader'
 import React from 'react'
+import { categoriesAPI } from '@/lib/api';
 
-
-const data = [
-    {
-        id: 1,
-        name: "Signature Steaks",
-        image: "https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHN0ZWFrfGVufDB8fDB8fHww"
-    },
-    {
-        id: 2,
-        name: "Seafood Platters",
-        image: "https://images.unsplash.com/photo-1578935149228-66b184c83e69?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c2VhJTIwZm9vZHxlbnwwfHwwfHx8MA%3D%3D"
-    },
-    {
-        id: 3,
-        name: "Vegan Delights",
-        image: "https://images.unsplash.com/photo-1623428187969-5da2dcea5ebf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dmVnYW4lMjBmb29kfGVufDB8fDB8fHww"
-    },
-    {
-        id: 4,
-        name: "Desserts",
-        image: "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZGVzc2VydHxlbnwwfHwwfHx8MA%3D%3D"
-    }
-]
 
 export default async function MenuCategory() {
-    let categoyData = await fetch(process.env.NEXT_PUBLIC_API_URL + '/categories', { cache: 'no-store' })
-    let categories = await categoyData.json()
-    console.log(categories);
+    let categories: any[] = [];
+    try {
+        categories = await categoriesAPI.getAll() as any[];
+    } catch (error) {
+        console.error("Failed to fetch categories:", error);
+    }
+
 
     return (
         <div className='py-20'>

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { providersAPI } from '@/lib/api';
+
 
 export default function ProviderDashboardPage() {
     const { data: session } = authClient.useSession();
@@ -14,9 +16,8 @@ export default function ProviderDashboardPage() {
         const fetchProvider = async () => {
             if (session?.user?.email) {
                 try {
-                    const res = await fetch(`http://localhost:5000/provider/email/${session.user.email}`);
-                    const data = await res.json();
-                    if (res.ok && data) {
+                    const data: any = await providersAPI.getByEmail(session.user.email);
+                    if (data) {
                         setProvider(data);
                         if (data.logo) {
                             setLogo(data.logo);
@@ -38,18 +39,8 @@ export default function ProviderDashboardPage() {
         if (!provider?.id) return;
         setIsUpdating(true);
         try {
-            const res = await fetch(`http://localhost:5000/provider/${provider.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ logo: logo })
-            });
-
-            if (!res.ok) {
-                console.error("Failed to update logo");
-                alert("Failed to update logo");
-            } else {
-                alert("Logo updated successfully");
-            }
+            await providersAPI.update(provider.id, { logo: logo });
+            alert("Logo updated successfully");
         } catch (error) {
             console.error("Error updating logo:", error);
             alert("Error updating logo");

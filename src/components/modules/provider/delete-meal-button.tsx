@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { mealsAPI } from "@/lib/api"
 
 interface DeleteMealButtonProps {
     mealId: string;
@@ -21,21 +22,12 @@ export function DeleteMealButton({ mealId, mealName }: DeleteMealButtonProps) {
 
         setIsLoading(true)
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/meal/delete/${mealId}`, {
-                method: 'DELETE',
-                credentials: 'include',
-            })
-
-            if (res.ok) {
-                toast.success(`Meal "${mealName}" deleted successfully`)
-                router.refresh()
-            } else {
-                const data = await res.json()
-                toast.error(data.error || "Failed to delete meal")
-            }
-        } catch (error) {
+            await mealsAPI.delete(mealId)
+            toast.success(`Meal "${mealName}" deleted successfully`)
+            router.refresh()
+        } catch (error: any) {
             console.error("Error deleting meal:", error)
-            toast.error("An error occurred while deleting the meal")
+            toast.error(error.message || "An error occurred while deleting the meal")
         } finally {
             setIsLoading(false)
         }

@@ -1,19 +1,24 @@
 import SectionHeader from '@/components/common/SectionHeader';
 import Link from 'next/link';
 import React from 'react'
-import { Swiper } from 'swiper/react';
+import { providersAPI } from '@/lib/api';
+
 interface Restaurant {
     id: number | string;
     name: string;
-    cuisine: string;
     rating: number;
     review: number;
     logo: string;
 }
+
 export default async function Restaurants() {
-    let providerData = await fetch(process.env.NEXT_PUBLIC_API_URL + '/provider', { cache: 'no-store' })
-    let provider = await providerData.json()
-    console.log(provider);
+    let provider: Restaurant[] = [];
+    try {
+        provider = await providersAPI.getAll() as Restaurant[];
+    } catch (error) {
+        console.error("Failed to fetch providers:", error);
+    }
+
     return (
         <div className='py-20'>
             <div>
@@ -30,9 +35,8 @@ export default async function Restaurants() {
                             />
                         </div>
                         <Link href={`/restaurants/${providerItem.id}`} className="mt-4 text-lg font-semibold text-center">{providerItem.name}</Link>
-                        <p className="text-sm text-gray-600 text-center">{providerItem.cuisine}</p>
-                        <p className="text-sm font-medium text-center">Rating: {providerItem.rating} ⭐</p>
-                        <p className="text-xs text-gray-500 text-center">Reviews: {providerItem.review}</p>
+                        <p className="text-sm font-medium text-center"> {providerItem.rating} ⭐</p>
+                        <p className="text-xs text-gray-500 text-center">({providerItem.review})Reviews </p>
                     </div>
                 ))}
             </div>

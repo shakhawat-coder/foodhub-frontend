@@ -17,6 +17,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { Switch } from "@/components/ui/switch"
+import { usersAPI, providersAPI } from '@/lib/api'
+
 
 interface Users {
     id: string;
@@ -55,19 +57,7 @@ export function UsersTable({ users }: UsersTableProps) {
     const handleSyncProvider = async () => {
         try {
             setIsSyncing(true);
-            const res = await fetch(`/api/provider/sync/from-users`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include', // Ensure cookies are sent
-            });
-
-            if (!res.ok) {
-                throw new Error("Failed to sync providers");
-            }
-
-            const data = await res.json();
+            const data: any = await providersAPI.syncFromUsers();
             toast.success(data.message || "Providers synced successfully");
             router.refresh();
         } catch (error) {
@@ -80,19 +70,7 @@ export function UsersTable({ users }: UsersTableProps) {
 
     const handleToggleStatus = async (userId: string) => {
         try {
-            const res = await fetch(`/api/users/${userId}/status`, {
-                method: "PATCH",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-            });
-
-            if (!res.ok) {
-                throw new Error("Failed to update user status");
-            }
-
-            const data = await res.json();
+            const data: any = await usersAPI.toggleStatus(userId);
             toast.success(data.message || "User status updated");
             router.refresh();
         } catch (error) {

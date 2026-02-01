@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Minus, Plus, Trash } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+
 import { useRouter } from "next/navigation";
 import {
   Controller,
@@ -15,9 +16,9 @@ import {
 import { toast } from "sonner";
 import z from "zod";
 import { authClient } from "@/lib/auth-client";
-import { useEffect } from "react";
-
 import { cn } from "@/lib/utils";
+import { cartAPI, ordersAPI } from "@/lib/api";
+
 
 import {
   Logo,
@@ -113,69 +114,6 @@ const checkoutFormSchema = z.object({
 
 type CheckoutFormType = z.infer<typeof checkoutFormSchema>;
 
-const CART_ITEMS: CartItem[] = [
-  {
-    product_id: "product-1",
-    link: "#",
-    name: "Stylish Maroon Sneaker",
-    image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/clothes/stylish-maroon-sneaker.png",
-    price: {
-      regular: 354.0,
-      currency: "USD",
-    },
-    quantity: 1,
-    details: [
-      {
-        label: "Color",
-        value: "Red",
-      },
-      {
-        label: "Size",
-        value: "36",
-      },
-    ],
-  },
-  {
-    product_id: "product-2",
-    link: "#",
-    name: "Bicolor Sweatshirt with Embroidered Logo",
-    image:
-      "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/clothes/bicolor-crewneck-sweatshirt-with-embroidered-logo.png",
-    price: {
-      regular: 499.0,
-      currency: "USD",
-    },
-    quantity: 1,
-    details: [
-      {
-        label: "Color",
-        value: "Blue & White",
-      },
-      {
-        label: "Size",
-        value: "L",
-      },
-    ],
-  },
-  {
-    product_id: "product-4",
-    link: "#",
-    name: "Maroon Leather Handbag",
-    image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/clothes/maroon-leather-handbag.png",
-    price: {
-      regular: 245.0,
-      currency: "USD",
-    },
-    quantity: 1,
-    details: [
-      {
-        label: "Color",
-        value: "Maroon",
-      },
-    ],
-  },
-];
-
 interface Checkout1Props {
   cartItems?: CartItem[];
   className?: string;
@@ -190,11 +128,8 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
   const fetchCart = async () => {
     if (!session?.user?.id) return;
     try {
-      const response = await fetch(`/api/cart`, {
-        credentials: "include"
-      });
-      if (!response.ok) throw new Error("Failed to fetch cart");
-      const data = await response.json();
+      const data: any = await cartAPI.getCart();
+
 
       const mappedItems: CartItem[] = data.items.map((item: any) => ({
         product_id: item.meal.id,
@@ -240,17 +175,20 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
     },
   });
 
-  // Re-sync form products if cartItems change
+  // Re-sync form products and email if cartItems or session change
   useEffect(() => {
     form.reset({
       ...form.getValues(),
+      contactInfo: {
+        email: form.getValues().contactInfo?.email || session?.user?.email || "",
+      },
       products: cartItems.map((item) => ({
         product_id: item.product_id,
         quantity: item.quantity,
         price: item.price.sale ?? item.price.regular,
       }))
     });
-  }, [cartItems]);
+  }, [cartItems, session]);
 
   const router = useRouter();
   const onSubmit = async (data: CheckoutFormType) => {
@@ -271,19 +209,11 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
         }))
       };
 
-      const response = await fetch(`/api/order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(orderData)
-      });
-
-      if (!response.ok) throw new Error("Failed to place order");
-
-      const order = await response.json();
+      const order: any = await ordersAPI.create(orderData);
       toast.success("Order placed successfully!");
       router.push(`/ordersummary/${order.id}`);
     } catch (error) {
+
       console.error(error);
       toast.error("An error occurred during checkout");
     }
@@ -406,6 +336,7 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
 };
 
 const ContactFields = () => {
+  const { data: session } = authClient.useSession();
   const form = useFormContext();
 
   return (
@@ -692,10 +623,6 @@ const Cart = ({ cartItems, form }: CartProps) => {
           <div className="flex justify-between gap-3">
             <p className="text-sm">Shipping</p>
             <p className="text-sm">Free</p>
-          </div>
-          <div className="flex justify-between gap-3">
-            <p className="text-sm">Estimated Tax</p>
-            <p className="text-sm">$35.80</p>
           </div>
         </div>
         <div className="py-7">

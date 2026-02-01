@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { ordersAPI } from "@/lib/api";
+
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
@@ -81,11 +83,8 @@ const OrderSummary = ({
     const fetchOrder = async () => {
       if (!orderId) return;
       try {
-        const res = await fetch(`/api/order/${orderId}`, {
-          credentials: "include"
-        });
-        if (!res.ok) throw new Error("Failed to fetch order");
-        const data = await res.json();
+        const data: any = await ordersAPI.getById(orderId);
+
 
         const subtotal = data.items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
         const tax = data.totalAmount - subtotal;
@@ -433,16 +432,6 @@ const OrderSummary = ({
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-
-            {/* Actions */}
-            <Card className="shadow-none">
-              <CardContent className="space-y-3 p-4">
-                <Button className="w-full" variant="default">
-                  <Package className="mr-2 size-4" />
-                  Track Order
-                </Button>
               </CardContent>
             </Card>
           </div>

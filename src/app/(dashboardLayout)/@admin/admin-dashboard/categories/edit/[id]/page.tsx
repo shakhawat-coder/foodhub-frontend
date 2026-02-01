@@ -3,27 +3,26 @@ import { EditCategoryForm } from '@/components/modules/admin/edit-category-form'
 import { MoveLeft } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { categoriesAPI } from '@/lib/api'
+
+interface Category {
+    id: string;
+    name: string;
+    image: string;
+}
 
 export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
-    let category = null;
+    let category: Category | null = null;
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${id}`, {
-            cache: 'no-store'
-        });
-
-        if (res.ok) {
-            category = await res.json();
-        }
+        category = await categoriesAPI.getById(id) as Category;
     } catch (error) {
         console.error("Failed to fetch category:", error);
     }
-
     if (!category) {
         notFound();
     }
-
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">

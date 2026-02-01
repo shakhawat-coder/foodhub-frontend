@@ -1,42 +1,18 @@
 import { PopularMealsCard } from '@/components/common/PopularMealsCard';
-import Link from 'next/link';
 import React from 'react'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { categoriesAPI, mealsAPI } from '@/lib/api';
 
 export default async function CategoryPage({ params }: { params: { id: string } }) {
     const { id } = await params;
 
     try {
-        const categoryResponse = await fetch(`${API_BASE_URL}/categories/${id}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            next: { revalidate: 60 }
-        });
-
-        if (!categoryResponse.ok) {
-            throw new Error("Failed to fetch category");
-        }
-
-        const category = await categoryResponse.json();
-
-        // Fetch all meals and filter by categoryId
-        const mealsResponse = await fetch(`${API_BASE_URL}/meal`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            next: { revalidate: 60 }
-        });
-
-        if (!mealsResponse.ok) {
-            throw new Error("Failed to fetch meals");
-        }
-
-        const allMeals = await mealsResponse.json();
+        const category = await categoriesAPI.getById(id) as any;
+        const allMeals = await mealsAPI.getAll() as any[];
 
         // Filter meals by category ID
         const categoryMeals = allMeals.filter((meal: any) => meal.categoryId === id);
-        console.log(categoryMeals);
-        
+
+
         return (
             <div className="">
                 <div className="relative h-75 w-full md:h-100">

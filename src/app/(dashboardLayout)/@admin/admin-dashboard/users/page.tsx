@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { headers } from "next/headers";
+import { usersAPI } from '@/lib/api';
 import { UsersTable } from '@/components/modules/admin/users-table';
 
 interface Users {
@@ -23,24 +24,17 @@ export default async function UserManagement() {
 
     try {
         const headersList = await headers();
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        const apiResponse = await usersAPI.getAll({
             headers: {
                 Cookie: headersList.get('cookie') || ''
-            },
-            cache: 'no-store'
+            }
         });
-
-        if (res.ok) {
-            const apiResponse = await res.json();
-            users = apiResponse.data;
-            console.log("Fetched users:", users);
-
-        } else {
-            console.error("Failed to fetch users:", res.status, res.statusText);
-        }
+        users = apiResponse.data as Users[];
+        console.log("Fetched users:", users);
     } catch (error) {
         console.error("Failed to fetch users:", error);
     }
+
     return (
         <div>
             <UsersTable users={users} />
