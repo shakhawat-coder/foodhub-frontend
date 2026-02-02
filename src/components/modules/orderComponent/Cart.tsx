@@ -214,7 +214,7 @@ export default function Cart() {
                                     </div>
                                 </div>
                             </div>
-                            <Button className="w-full mt-8 bg-white text-primary hover:bg-white/90 font-bold text-lg h-14 rounded-xl shadow-lg group" onClick={handleCheckout}>
+                            <Button className="w-full mt-8 bg-white text-primary hover:bg-white/90 font-bold text-lg h-14 rounded-xl shadow-lg group cursor-pointer" onClick={handleCheckout}>
                                 Checkout Now
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Button>

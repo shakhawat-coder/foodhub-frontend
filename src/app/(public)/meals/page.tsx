@@ -18,7 +18,7 @@ export default async function MealsPage() {
                 {/* Hero Section */}
                 <div className="relative h-75 w-full md:h-100">
                     <img
-                        src={"https://images.unsplash.com/photo-1718045706630-03cc28b653dc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGl6emElMjBidXJnfGVufDB8MHwwfHx8MA%3D%3D"}
+                        src={"/mealbanner.jpg"}
                         alt={"All Meals"}
                         className="object-cover w-full h-full"
                     />

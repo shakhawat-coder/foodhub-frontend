@@ -26,7 +26,7 @@ export default async function Restaurants() {
             </div>
             <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
                 {provider.map((providerItem: Restaurant) => (
-                    <div key={providerItem.id} className="flex flex-col items-center justify-center">
+                    <Link href={`/restaurants/${providerItem.id}`} key={providerItem.id} className="flex flex-col items-center justify-center">
                         <div className="w-40 h-40 relative rounded-lg overflow-hidden mx-auto">
                             <img
                                 src={providerItem.logo ? providerItem.logo : "/restaurantlogo.png"}
@@ -34,10 +34,10 @@ export default async function Restaurants() {
                                 className="w-full h-full object-cover"
                             />
                         </div>
-                        <Link href={`/restaurants/${providerItem.id}`} className="mt-4 text-lg font-semibold text-center">{providerItem.name}</Link>
+                        <h5 className="mt-4 text-lg font-semibold text-center">{providerItem.name}</h5>
                         <p className="text-sm font-medium text-center"> {providerItem.rating} ⭐</p>
                         <p className="text-xs text-gray-500 text-center">({providerItem.review})Reviews </p>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>

@@ -159,6 +159,11 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
                     <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
                       {productDetails.name}
                     </h1>
+                    {meal.provider && (
+                      <div className="text-lg text-muted-foreground mt-2">
+                        By <span className="font-medium text-foreground">{meal.provider.name}</span>
+                      </div>
+                    )}
                     <div className="mt-3 flex flex-wrap items-center gap-4">
                       <Reviews
                         rate={productDetails.reviews.rate}
@@ -195,6 +200,10 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
                           {
                             label: "Category",
                             value: meal?.category?.name || "Food",
+                          },
+                          {
+                            label: "Provider",
+                            value: meal?.provider?.name || "Unknown",
                           },
                           {
                             label: "Dietary",
@@ -246,7 +255,7 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
           </div>
         </div>
       </section>
-    </div>
+    </div >
   );
 };
 
@@ -479,9 +488,6 @@ const ProductForm = ({ mealId, selected }: ProductFormProps) => {
   );
 };
 
-const Price = ({ regular, sale, currency }: PriceProps) => {
-  // ... existing Price component logic
-};
 
 // ============== REVIEW FORM COMPONENT ==============
 const reviewSchema = z.object({

@@ -96,8 +96,8 @@ export function AddMealForm() {
     }
 
     return (
-        <Card className="max-w-3xl mx-auto shadow-lg border-primary/10">
-            <CardHeader className="bg-primary/5 pb-8">
+        <Card className="max-w-3xl pt-0 mx-auto shadow-lg border-primary/10">
+            <CardHeader className="bg-primary/5 pt-4 pb-8">
                 <CardTitle className="text-2xl">Meal Information</CardTitle>
                 <CardDescription>
                     Fill in the details to add a new dish to your menu.

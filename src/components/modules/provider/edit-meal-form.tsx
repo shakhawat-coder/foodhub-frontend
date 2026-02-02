@@ -102,8 +102,8 @@ export function EditMealForm({ meal }: EditMealFormProps) {
     }
 
     return (
-        <Card className="max-w-3xl mx-auto shadow-lg border-primary/10">
-            <CardHeader className="bg-primary/5 pb-8">
+        <Card className="max-w-3xl mx-auto shadow-lg border-primary/10 pt-0">
+            <CardHeader className="bg-primary/5 pt-4 pb-8">
                 <CardTitle className="text-2xl">Edit Meal</CardTitle>
                 <CardDescription>
                     Update the details for "{meal.name}".

@@ -9,7 +9,7 @@ export default async function CategoryWiseMeal() {
     // const categories = categoriesRaw.filter((category: any) => category.meals.length > 0);
 
     return (
-        <div className='py-20 px-3'>
+        <div className='pt-20 md:pt-32 pb-20 px-3'>
             <SectionHeader subtitle='Menu' title='Explore Our Meny' description='Indulge in a curated selection of dishes crafted with the finest ingredients and culinary expertise. Every plate tells a story of tradition and innovation.' />
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 '>
                 {categories.map((category: any) => (

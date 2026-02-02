@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Minus, Plus, Trash } from "lucide-react";
+import { Minus, Plus, Trash, Loader2 } from "lucide-react";
 import { useCallback, useState, useEffect } from "react";
 
 import { useRouter } from "next/navigation";
@@ -91,16 +91,13 @@ const PaymentSchema = z.object({
 
 const checkoutFormSchema = z.object({
   contactInfo: z.object({
-    email: z.string(),
+    email: z.string().email("Invalid email address"),
   }),
   address: z.object({
-    country: z.string(),
-    firstName: z.string(),
+    firstName: z.string().min(1, "First name is required"),
     lastName: z.string(),
-    address: z.string(),
-    postalCode: z.string(),
-    city: z.string(),
-    phone: z.string(),
+    address: z.string().min(1, "Address is required"),
+    phone: z.string().min(1, "Phone number is required"),
   }),
   payment: PaymentSchema,
   products: z
@@ -124,6 +121,7 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems || []);
   const [loading, setLoading] = useState(!initialCartItems);
   const [activeAccordion, setActiveAccordion] = useState("item-1");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchCart = async () => {
     if (!session?.user?.id) return;
@@ -172,32 +170,53 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
         method: PAYMENT_METHODS.cashOnDelivery,
       },
       products: defaultProducts,
+      address: {
+        firstName: "",
+        lastName: "",
+        address: "",
+        phone: "",
+      },
+      contactInfo: {
+        email: "",
+      }
     },
   });
 
-  // Re-sync form products and email if cartItems or session change
   useEffect(() => {
-    form.reset({
-      ...form.getValues(),
-      contactInfo: {
-        email: form.getValues().contactInfo?.email || session?.user?.email || "",
-      },
-      products: cartItems.map((item) => ({
-        product_id: item.product_id,
-        quantity: item.quantity,
-        price: item.price.sale ?? item.price.regular,
-      }))
-    });
+    if (session?.user) {
+      const nameParts = session.user.name?.split(" ") || ["", ""];
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      form.reset({
+        ...form.getValues(),
+        contactInfo: {
+          email: form.getValues().contactInfo?.email || session.user.email || "",
+        },
+        address: {
+          firstName: form.getValues().address?.firstName || firstName,
+          lastName: form.getValues().address?.lastName || lastName,
+          address: form.getValues().address?.address || (session.user as any).address || "",
+          phone: form.getValues().address?.phone || (session.user as any).phone || "",
+        },
+        products: cartItems.map((item) => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: item.price.sale ?? item.price.regular,
+        }))
+      });
+    }
   }, [cartItems, session]);
 
   const router = useRouter();
   const onSubmit = async (data: CheckoutFormType) => {
     if (!session?.user?.id) return;
+    setIsSubmitting(true);
     try {
       const subtotal = cartItems.reduce((sum, item) => sum + (item.price.sale ?? item.price.regular) * item.quantity, 0);
-      const tax = 0; // Estimated tax from UI
+      const tax = 0;
       const totalAmount = subtotal + tax;
-      const addressString = `${data.address.firstName} ${data.address.lastName}, ${data.address.address}, ${data.address.city}, ${data.address.postalCode}, ${data.address.country}, PH: ${data.address.phone}`;
+      const addressString = `${data.address.firstName} ${data.address.lastName}, Address: ${data.address.address}, PH: ${data.address.phone}`;
 
       const orderData = {
         totalAmount,
@@ -216,6 +235,8 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
 
       console.error(error);
       toast.error("An error occurred during checkout");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -228,7 +249,11 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
   };
 
   if (loading) {
-    return <div className="py-32 text-center text-xl">Loading checkout...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (cartItems.length === 0) {
@@ -316,8 +341,9 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
                     <AccordionContent className="px-1 pb-7">
                       <div className="space-y-7">
                         <PaymentFields />
-                        <Button type="submit" className="w-full">
-                          Checkout
+                        <Button type="submit" className="w-full h-12 cursor-pointer" disabled={isSubmitting}>
+                          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          {isSubmitting ? "Processing..." : "Checkout"}
                         </Button>
                       </div>
                     </AccordionContent>
@@ -370,26 +396,6 @@ const AddressFields = () => {
 
   return (
     <FieldGroup className="gap-3.5">
-      <Controller
-        name="address.country"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel
-              className="text-sm font-normal"
-              htmlFor="checkout-country"
-            >
-              Country
-            </FieldLabel>
-            <Input
-              {...field}
-              id="checkout-country"
-              aria-invalid={fieldState.invalid}
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
       <div className="flex gap-3.5 max-sm:flex-col">
         <Controller
           name="address.firstName"
@@ -452,48 +458,6 @@ const AddressFields = () => {
           </Field>
         )}
       />
-      <div className="flex gap-3.5 max-sm:flex-col">
-        <Controller
-          name="address.postalCode"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel
-                className="text-sm font-normal"
-                htmlFor="checkout-postalCode"
-              >
-                Postal Code
-              </FieldLabel>
-              <Input
-                {...field}
-                id="checkout-postalCode"
-                aria-invalid={fieldState.invalid}
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          name="address.city"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel
-                className="text-sm font-normal"
-                htmlFor="checkout-city"
-              >
-                City
-              </FieldLabel>
-              <Input
-                {...field}
-                id="checkout-city"
-                aria-invalid={fieldState.invalid}
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-      </div>
       <Controller
         name="address.phone"
         control={form.control}

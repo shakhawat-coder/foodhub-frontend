@@ -18,24 +18,24 @@ interface MealCardProps {
 export function PopularMealsCard({ meal }: { meal: MealCardProps }) {
     return (
         <Link href={`/meals/${meal.id}`} className="overflow-hidden relative transitionp-0 block w-full items-center">
-            <div className="grid grid-cols-3">
-                <div className="h-25 w-25 rounded-full overflow-hidden">
+            <div className="flex items-center gap-4 pb-5 mb-5 group">
+                <div className="h-24 w-24 md:h-28 md:w-28 shrink-0 rounded-lg overflow-hidden border">
                     <img
                         src={meal.image || '/placeholder-meal.jpg'}
                         alt={meal.name}
-                        className="object-cover h-full w-full"
+                        className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
                     />
                 </div>
-                <div className="col-span-2 space-y-2 p-5">
-                    <div className="flex justify-between">
-                        <h3 className="text-lg font-semibold whitespace-nowrap">{meal.name}</h3>
-                        <div className="border-b w-full"></div>
-                        <span className="text-lg font-bold text-primary">
+                <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex items-center gap-3">
+                        <h3 className="text-lg font-bold whitespace-nowrap group-hover:text-primary transition-colors">{meal.name}</h3>
+                        <div className="flex-1 border-b border-muted-foreground/20 h-0 mt-1"></div>
+                        <span className="text-lg font-black text-primary shrink-0">
                             ${meal.price}
                         </span>
                     </div>
 
-                    <p className="text-sm w-full text-muted-foreground line-clamp-3">
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed truncate">
                         {meal.description}
                     </p>
                 </div>

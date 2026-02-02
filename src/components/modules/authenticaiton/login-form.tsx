@@ -30,7 +30,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -100,8 +100,8 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         </form>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
-        <Button form="login-form" type="submit" className="w-full mt-4 cursor-pointer">
-          Log In
+        <Button form="login-form" type="submit" className="w-full mt-4 cursor-pointer" disabled={isSubmitting}>
+          {isSubmitting ? "Logging in..." : "Log In"}
         </Button>
         <FieldDescription className="text-center">
           Don&apos;t have an account? <Link href="/signup">Sign Up</Link>

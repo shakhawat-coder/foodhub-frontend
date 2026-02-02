@@ -52,7 +52,7 @@ export default function Banner() {
                 loop
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                className="h-[400px] md:h-[600px] lg:h-[750px] w-full"
+                className="h-100 md:h-150 lg:h-187 w-full"
             >
                 {slides.map((slide) => (
                     <SwiperSlide key={slide.id}>
@@ -67,7 +67,7 @@ export default function Banner() {
                             />
 
                             {/* Gradient Overlay for Text Readability */}
-                            <div className={`absolute inset-0 bg-gradient-to-r ${slide.color} via-black/40 to-transparent`} />
+                            <div className={`absolute inset-0 bg-linear-to-r ${slide.color} via-black/40 to-transparent`} />
 
                             {/* Content Layer */}
                             <div className="absolute inset-0 flex items-center px-6 md:px-20 lg:px-32">

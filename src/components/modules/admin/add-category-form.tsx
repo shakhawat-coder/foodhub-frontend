@@ -48,7 +48,7 @@ export function AddCategoryForm() {
         setIsLoading(true)
         try {
             const data: any = await categoriesAPI.create(values);
-            toast.success(`Category "${data.name}" created successfully`)
+            toast.success(`Category "created successfully`)
             router.push("/admin-dashboard/categories")
             router.refresh()
         } catch (error: any) {

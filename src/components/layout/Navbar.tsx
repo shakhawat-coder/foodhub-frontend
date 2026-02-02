@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, CarTaxiFront, Menu, ShoppingCart, Sunset, Trees, Zap } from "lucide-react";
+import { Menu, ShoppingCart } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -144,23 +144,25 @@ const Navbar = ({
           <div className="flex gap-2">
             {!sessionUser ? (
               <>
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="lg">
                   <Link href={auth.login.url}>{auth.login.title}</Link>
                 </Button>
-                <Button asChild size="sm">
+                <Button asChild size="lg">
                   <Link href={auth.signup.url}>{auth.signup.title}</Link>
                 </Button>
               </>
             ) : (
               <div className="relative flex items-center gap-4">
-                <Link href={"/cart"} className="relative">
-                  <ShoppingCart />
-                </Link>
+                {(sessionUser as any).role === "USER" && (
+                  <Link href={"/cart"} className="relative">
+                    <ShoppingCart />
+                  </Link>
+                )}
 
                 <button
                   aria-expanded={dropdownOpen}
                   onClick={() => setDropdownOpen((v) => !v)}
-                  className="inline-flex items-center bg-white text-black justify-center rounded-full w-9 h-9 "
+                  className="inline-flex items-center bg-white text-black shadow-md cursor-pointer justify-center rounded-full w-9 h-9 "
                 >
                   {((sessionUser.name ?? sessionUser.email ?? "?") as string).charAt(0).toUpperCase()}
                 </button>
@@ -186,53 +188,62 @@ const Navbar = ({
                 alt={logo.alt}
               />
             </Link>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="size-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>
-                    <Link href={logo.url} className="flex items-center gap-2">
-                      <img
-                        src={logo.src}
-                        className="max-h-8 dark:invert"
-                        alt={logo.alt}
-                      />
-                    </Link>
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-6 p-4">
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="flex w-full flex-col gap-4"
-                  >
-                    {menu.map((item) => renderMobileMenuItem(item))}
-                  </Accordion>
-                  {sessionUser ? (
-                    <div className="flex flex-col gap-3">
-                      <div className="font-medium">Hello {sessionUser.name}</div>
-                      <Link href="/dashboard" className="w-full">
-                        <Button className="w-full">Dashboard</Button>
+
+            <div className="flex items-center gap-4">
+              {sessionUser && (sessionUser as any).role === "USER" && (
+                <Link href={"/cart"} className="relative">
+                  <ShoppingCart className="size-5" />
+                </Link>
+              )}
+
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Menu className="size-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>
+                      <Link href={logo.url} className="flex items-center gap-2">
+                        <img
+                          src={logo.src}
+                          className="max-h-8 dark:invert"
+                          alt={logo.alt}
+                        />
                       </Link>
-                      <Button onClick={handleLogout} className="w-full">Logout</Button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-3">
-                      <Button asChild variant="outline">
-                        <Link href={auth.login.url}>{auth.login.title}</Link>
-                      </Button>
-                      <Button asChild>
-                        <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="flex flex-col gap-6 p-4">
+                    <Accordion
+                      type="single"
+                      collapsible
+                      className="flex w-full flex-col gap-4"
+                    >
+                      {menu.map((item) => renderMobileMenuItem(item))}
+                    </Accordion>
+                    {sessionUser ? (
+                      <div className="flex flex-col gap-3">
+                        <div className="font-medium">Hello {sessionUser.name}</div>
+                        <Link href={`/${((sessionUser as any).role).toLowerCase()}-dashboard`} className="w-full">
+                          <Button className="w-full">Dashboard</Button>
+                        </Link>
+                        <Button onClick={handleLogout} className="w-full">Logout</Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-3">
+                        <Button asChild variant="outline">
+                          <Link href={auth.login.url}>{auth.login.title}</Link>
+                        </Button>
+                        <Button asChild>
+                          <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </div>

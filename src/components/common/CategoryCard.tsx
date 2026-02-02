@@ -19,7 +19,7 @@ interface CategoryCardProps {
 export default function CategoryCard({ id, name, image }: CategoryCardProps) {
     return (
         <Link href={`/menu/${id}`} className="w-full">
-            <Card className="relative mx-auto w-full h-full max-w-sm p-0 rounded-2xl overflow-hidden">
+            <Card className="relative mx-auto w-full h-full aspect-square max-w-sm p-0 rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 z-30 bg-black/15" />
                 <img
                     src={image}

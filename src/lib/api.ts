@@ -49,8 +49,8 @@ async function apiRequest<T>(
 export const uploadAPI = {
   uploadImage: (file: File) => {
     const formData = new FormData();
-    formData.append("image", file);
-    return apiRequest<{ url: string }>("/upload", {
+    formData.append("file", file);
+    return apiRequest<{ data: { url: string } }>("/upload", {
       method: "POST",
       body: formData,
     });
@@ -59,49 +59,38 @@ export const uploadAPI = {
 
 // ============== MEALS API ==============
 export const mealsAPI = {
-  // Get all meals
-  getAll: (options?: RequestOptions) => apiRequest("/meal", { method: "GET", ...options }),
+  getAll: (options?: RequestOptions) => apiRequest("/meal", { method: "GET",cache: "no-store", ...options }),
 
 
-  // Get single meal by ID
   getById: (id: string) => apiRequest(`/meal/${id}`, { method: "GET" }),
 
-  // Create meal (admin only)
   create: (data: any) =>
     apiRequest("/meal", { method: "POST", body: JSON.stringify(data) }),
-
-  // Update meal
   update: (id: string, data: any) =>
     apiRequest(`/meal/update/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
 
-  // Delete meal
   delete: (id: string) => apiRequest(`/meal/delete/${id}`, { method: "DELETE" }),
 };
 
 // ============== CATEGORIES API ==============
 export const categoriesAPI = {
-  // Get all categories
-  getAll: (options?: RequestOptions) => apiRequest("/categories", { method: "GET", ...options }),
+  getAll: (options?: RequestOptions) => apiRequest("/categories", { method: "GET", cache: "no-store", ...options }),
 
 
-  // Get single category
   getById: (id: string) => apiRequest(`/categories/${id}`, { method: "GET" }),
 
-  // Create category
   create: (data: any) =>
     apiRequest("/categories", { method: "POST", body: JSON.stringify(data) }),
 
-  // Update category
   update: (id: string, data: any) =>
     apiRequest(`/categories/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
 
-  // Delete category
   delete: (id: string) => apiRequest(`/categories/${id}`, { method: "DELETE" }),
 };
 
@@ -173,7 +162,7 @@ export const reviewsAPI = {
 
 // ============== PROVIDER API ==============
 export const providersAPI = {
-  getAll: () => apiRequest("/provider", { method: "GET" }),
+  getAll: () => apiRequest("/provider", { method: "GET",cache: "no-store" }),
 
   getById: (id: string) => apiRequest(`/provider/${id}`, { method: "GET" }),
 
