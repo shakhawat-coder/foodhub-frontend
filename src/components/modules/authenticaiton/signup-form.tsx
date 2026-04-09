@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import * as z from "zod"
 import { authClient } from "@/lib/auth-client"
+import { riderAPI } from "@/lib/api"
 import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useRouter } from "next/navigation"
@@ -23,17 +24,30 @@ const signupSchema = z.object({
   email: z.string().email("Invalid email address."),
   password: z.string().min(6, "Password must be at least 6 characters."),
   isProvider: z.boolean(),
+  isRider: z.boolean(),
   phone: z.string().optional(),
   address: z.string().optional(),
+  vehicleType: z.string().optional(),
 }).superRefine((data, ctx) => {
-  if (data.isProvider) {
+  if (data.isProvider && data.isRider) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Select either Provider or Rider signup, not both",
+      path: ["isProvider"],
+    });
+  }
+
+  if (data.isProvider || data.isRider) {
     if (!data.phone || data.phone.trim() === "") {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Phone is required for providers",
+        message: "Phone is required",
         path: ["phone"],
       });
     }
+  }
+
+  if (data.isProvider) {
     if (!data.address || data.address.trim() === "") {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -41,6 +55,14 @@ const signupSchema = z.object({
         path: ["address"],
       });
     }
+  }
+
+  if (data.isRider && (!data.vehicleType || data.vehicleType.trim() === "")) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Vehicle type is required for riders",
+      path: ["vehicleType"],
+    });
   }
 });
 
@@ -62,39 +84,54 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       email: '',
       password: '',
       isProvider: false,
+      isRider: false,
       phone: '',
       address: '',
+      vehicleType: '',
     },
   });
 
   const isProvider = watch("isProvider");
+  const isRider = watch("isRider");
 
   const onSubmit = async (values: FormValues) => {
     const toastId = toast.loading("Creating your account...")
     try {
-      const signupData: any = {
-        name: values.name,
-        email: values.email,
-        password: values.password,
-      }
+      if (values.isRider) {
+        await riderAPI.signup({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+          phone: values.phone || "",
+          vehicleType: values.vehicleType || "",
+          address: values.address,
+        });
+      } else {
+        const signupData: any = {
+          name: values.name,
+          email: values.email,
+          password: values.password,
+        }
 
-      // Only add extra fields if signing up as a provider
-      if (values.isProvider) {
-        signupData.role = 'PROVIDER'
-        signupData.phone = values.phone
-        signupData.address = values.address
-      }
+        if (values.isProvider) {
+          signupData.role = 'PROVIDER'
+          signupData.phone = values.phone
+          signupData.address = values.address
+        }
 
-      const { data, error } = await authClient.signUp.email(signupData)
-      if (error) {
-        console.error("Signup Error:", error)
-        toast.error(error.message, { id: toastId })
-        return
+        const { error } = await authClient.signUp.email(signupData)
+        if (error) {
+          console.error("Signup Error:", error)
+          toast.error(error.message, { id: toastId })
+          return
+        }
       }
       toast.success("Account created successfully!", { id: toastId })
       reset()
 
-      if (!values.isProvider) {
+      if (values.isRider) {
+        router.push("/login")
+      } else if (!values.isProvider) {
         router.push("/")
       } else {
         router.push("/provider-dashboard")
@@ -141,21 +178,46 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 Sign up as Provider
               </FieldLabel>
             </Field>
+            <Field orientation="horizontal">
+              <Checkbox
+                id="rider-checkbox"
+                checked={isRider}
+                onCheckedChange={(checked) => setValue("isRider", checked as boolean)}
+              />
+              <FieldLabel htmlFor="rider-checkbox">
+                Sign up as Rider
+              </FieldLabel>
+            </Field>
           </FieldGroup>
 
           {/* Conditional fields for Provider */}
-          {isProvider && (
+          {(isProvider || isRider) && (
             <FieldGroup className="mt-4">
               <Field>
                 <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
                 <Input id="phone" type="tel" placeholder="Your Phone Number" {...register("phone")} />
                 <FieldError errors={errors.phone ? [{ message: errors.phone.message }] : undefined} />
               </Field>
-              <Field>
-                <FieldLabel htmlFor="address">Address</FieldLabel>
-                <Input id="address" placeholder="Your Address" {...register("address")} />
-                <FieldError errors={errors.address ? [{ message: errors.address.message }] : undefined} />
-              </Field>
+              {isProvider && (
+                <Field>
+                  <FieldLabel htmlFor="address">Address</FieldLabel>
+                  <Input id="address" placeholder="Your Address" {...register("address")} />
+                  <FieldError errors={errors.address ? [{ message: errors.address.message }] : undefined} />
+                </Field>
+              )}
+              {isRider && (
+                <>
+                  <Field>
+                    <FieldLabel htmlFor="vehicleType">Vehicle Type</FieldLabel>
+                    <Input id="vehicleType" placeholder="Bike / Car / Scooter" {...register("vehicleType")} />
+                    <FieldError errors={errors.vehicleType ? [{ message: errors.vehicleType.message }] : undefined} />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="address">Address (optional)</FieldLabel>
+                    <Input id="address" placeholder="Your Address" {...register("address")} />
+                  </Field>
+                </>
+              )}
             </FieldGroup>
           )}
         </form>

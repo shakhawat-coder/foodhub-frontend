@@ -100,6 +100,11 @@ const Navbar = ({
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const getDashboardPath = (role?: string) => {
+    const normalized = (role || "").toUpperCase();
+    if (normalized === "CUSTOMER") return "/user-dashboard";
+    return `/${normalized.toLowerCase()}-dashboard`;
+  };
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
@@ -155,7 +160,7 @@ const Navbar = ({
               </>
             ) : (
               <div className="relative flex items-center gap-4">
-                {(sessionUser as any).role === "USER" && (
+                {(sessionUser as any).role === "CUSTOMER" && (
                   <Link href={"/cart"} className="relative">
                     <ShoppingCart />
                   </Link>
@@ -170,7 +175,7 @@ const Navbar = ({
                 </button>
                 {dropdownOpen && (
                   <div ref={dropdownRef} className="absolute right-5 top-7 mt-2 w-40 bg-popover text-popover-foreground rounded-md border shadow-md z-50">
-                    <Link href={`/${((sessionUser as any).role).toLowerCase()}-dashboard`} className="block px-3 py-2 text-sm">Dashboard</Link>
+                    <Link href={getDashboardPath((sessionUser as any).role)} className="block px-3 py-2 text-sm">Dashboard</Link>
                     <button onClick={() => { setDropdownOpen(false); handleLogout() }} className="w-full text-left px-3 py-2 text-sm">Logout</button>
                   </div>
                 )}
@@ -193,7 +198,7 @@ const Navbar = ({
 
             <div className="flex items-center gap-4">
               <ModeToggle />
-              {sessionUser && (sessionUser as any).role === "USER" && (
+              {sessionUser && (sessionUser as any).role === "CUSTOMER" && (
                 <Link href={"/cart"} className="relative">
                   <ShoppingCart className="size-5" />
                 </Link>
@@ -228,7 +233,7 @@ const Navbar = ({
                     {sessionUser ? (
                       <div className="flex flex-col gap-3">
                         <div className="font-medium">Hello {sessionUser.name}</div>
-                        <Link href={`/${((sessionUser as any).role).toLowerCase()}-dashboard`} className="w-full">
+                        <Link href={getDashboardPath((sessionUser as any).role)} className="w-full">
                           <Button className="w-full">Dashboard</Button>
                         </Link>
                         <Button onClick={handleLogout} className="w-full">Logout</Button>

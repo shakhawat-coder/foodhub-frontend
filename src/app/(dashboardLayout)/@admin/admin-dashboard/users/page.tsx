@@ -10,7 +10,7 @@ interface Users {
     email: string;
     emailVerified: boolean;
     image?: string;
-    role: 'USER' | 'PROVIDER';
+    role: 'CUSTOMER' | 'PROVIDER' | 'RIDER' | 'MANAGER' | 'ADMIN';
     phone?: string;
     address?: string;
     createdAt: string;

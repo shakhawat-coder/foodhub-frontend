@@ -37,9 +37,9 @@ const teams = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session, isPending } = authClient.useSession()
-  const userRole = ((session?.user as any)?.role?.toUpperCase() as keyof typeof sidebarData) || "USER"
+  const userRole = ((session?.user as any)?.role?.toUpperCase() as keyof typeof sidebarData) || "CUSTOMER"
 
-  const navItems = sidebarData[userRole] || sidebarData.USER
+  const navItems = sidebarData[userRole] || sidebarData.CUSTOMER
 
   const user = {
     name: session?.user?.name || "Guest",

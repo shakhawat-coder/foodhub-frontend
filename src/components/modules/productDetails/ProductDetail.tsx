@@ -416,7 +416,7 @@ const ProductForm = ({ mealId, selected }: ProductFormProps) => {
       return;
     }
 
-    if ((session.user as any).role !== "USER") {
+    if ((session.user as any).role !== "CUSTOMER") {
       toast.error("Only customers can add items to cart");
       return;
     }
@@ -512,7 +512,7 @@ const ReviewForm = ({ mealId, onReviewSubmit }: { mealId: string; onReviewSubmit
         return;
       }
 
-      if ((session.user as any).role !== "USER") {
+      if ((session.user as any).role !== "CUSTOMER") {
         setCanReview(false);
         return;
       }
@@ -550,7 +550,7 @@ const ReviewForm = ({ mealId, onReviewSubmit }: { mealId: string; onReviewSubmit
       return;
     }
 
-    if ((session.user as any).role !== "USER") {
+    if ((session.user as any).role !== "CUSTOMER") {
       toast.error("Only customers can leave reviews");
       return;
     }

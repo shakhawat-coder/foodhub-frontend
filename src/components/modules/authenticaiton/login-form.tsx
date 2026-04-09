@@ -70,6 +70,16 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         return
       }
 
+      if (role === "manager") {
+        router.push("/manager-dashboard")
+        return
+      }
+
+      if (role === "rider") {
+        router.push("/rider-dashboard")
+        return
+      }
+
       // Default: regular user goes to homepage
       router.push("/")
     } catch (error) {

@@ -14,10 +14,14 @@ import {
   ShoppingCart,
   PlusCircle,
   ListOrdered,
+  Bike,
+  ShieldCheck,
+  UserPlus,
+  BarChart3,
 } from "lucide-react";
 
 export const sidebarData = {
-  USER: [
+  CUSTOMER: [
     {
       title: "Dashboard",
       url: "/user-dashboard",
@@ -106,6 +110,60 @@ export const sidebarData = {
       title: "Banners",
       url: "/admin-dashboard/banners",
       icon: Image,
+    },
+    {
+      title: "Create Manager",
+      url: "/admin-dashboard/create-manager",
+      icon: UserPlus,
+    },
+  ],
+  RIDER: [
+    {
+      title: "Dashboard",
+      url: "/rider-dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Available Orders",
+      url: "/rider-dashboard/available-orders",
+      icon: ListOrdered,
+    },
+    {
+      title: "Delivery History",
+      url: "/rider-dashboard/history",
+      icon: Truck,
+    },
+    {
+      title: "Profile",
+      url: "/rider-dashboard/profile",
+      icon: UserCog,
+    },
+  ],
+  MANAGER: [
+    {
+      title: "Dashboard",
+      url: "/manager-dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Orders",
+      url: "/manager-dashboard/orders",
+      icon: ShoppingBasket,
+    },
+    {
+      title: "Riders",
+      url: "/manager-dashboard/riders",
+      icon: Bike,
+    },
+    {
+      title: "Reports",
+      url: "/manager-dashboard/reports",
+      icon: BarChart3,
+    },
+    {
+      title: "Assignments",
+      url: "/manager-dashboard/assign-rider",
+      icon: ShieldCheck,
     },
   ],
 };

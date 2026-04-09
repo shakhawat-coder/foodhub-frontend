@@ -98,7 +98,7 @@ export default function UserDashboardPage() {
         <div className="space-y-8 p-4 md:p-6">
             {/* Header section */}
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-primary to-orange-600 bg-clip-text text-transparent">
                     User Dashboard
                 </h1>
                 <p className="text-muted-foreground">
@@ -207,7 +207,7 @@ export default function UserDashboardPage() {
                             </div>
                             <h3 className="font-bold text-lg">{user?.name}</h3>
                             <Badge variant="secondary" className="mt-1 font-medium bg-primary/10 text-primary hover:bg-primary/10">
-                                {(session?.user as any)?.role || "USER"}
+                                {(session?.user as any)?.role || "CUSTOMER"}
                             </Badge>
                         </div>
 

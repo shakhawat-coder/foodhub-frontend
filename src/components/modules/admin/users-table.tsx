@@ -26,7 +26,7 @@ interface Users {
     email: string;
     emailVerified: boolean;
     image?: string;
-    role: 'USER' | 'PROVIDER';
+    role: 'CUSTOMER' | 'PROVIDER' | 'RIDER' | 'MANAGER' | 'ADMIN';
     phone?: string;
     address?: string;
     createdAt: string;
@@ -45,8 +45,12 @@ const getRoleBadge = (role: string) => {
             return <Badge variant="default" className="bg-red-500 hover:bg-red-600 gap-1"><Shield className="w-3 h-3" /> Admin</Badge>
         case 'PROVIDER':
             return <Badge variant="secondary" className="gap-1"><Truck className="w-3 h-3" /> Provider</Badge>
+        case 'MANAGER':
+            return <Badge variant="secondary" className="gap-1">Manager</Badge>
+        case 'RIDER':
+            return <Badge variant="secondary" className="gap-1">Rider</Badge>
         default:
-            return <Badge variant="outline" className="gap-1"><User className="w-3 h-3" /> User</Badge>
+            return <Badge variant="outline" className="gap-1"><User className="w-3 h-3" /> Customer</Badge>
     }
 }
 

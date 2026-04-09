@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/sidebar"
 import React from "react";
 
-export default async function DashboardLayout({ admin, user, provider }: {
+export default async function DashboardLayout({ admin, user, provider, rider, manager }: {
     children: React.ReactNode;
     admin: React.ReactNode;
     user: React.ReactNode;
     provider: React.ReactNode;
+    rider: React.ReactNode;
+    manager: React.ReactNode;
 }) {
     return (
         <SidebarProvider>
@@ -29,6 +31,8 @@ export default async function DashboardLayout({ admin, user, provider }: {
                     {admin}
                     {user}
                     {provider}
+                    {rider}
+                    {manager}
                 </div>
             </SidebarInset>
         </SidebarProvider>
