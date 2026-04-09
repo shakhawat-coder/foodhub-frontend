@@ -187,4 +187,20 @@ export const usersAPI = {
     apiRequest(`/users/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
 };
 
+// ============== BANNER API ==============
+export const bannerAPI = {
+  getAll: (options?: RequestOptions) => apiRequest<any[]>("/banner", { method: "GET", cache: "no-store", ...options }),
+  getById: (id: string) => apiRequest(`/banner/${id}`, { method: "GET" }),
+  create: (data: any) =>
+    apiRequest("/banner", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: string, data: any) =>
+    apiRequest(`/banner/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+  updateStatus: (id: string, isActive: boolean) =>
+    apiRequest(`/banner/${id}/status`, { method: "PATCH", body: JSON.stringify({ isActive }) }),
+  delete: (id: string) => apiRequest(`/banner/${id}`, { method: "DELETE" }),
+};
+
 export default apiRequest;

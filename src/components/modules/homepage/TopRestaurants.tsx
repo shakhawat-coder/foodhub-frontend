@@ -10,6 +10,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import SectionHeader from '@/components/common/SectionHeader';
 import { providersAPI } from '@/lib/api';
+import { FadeInUp } from '@/components/common/MotionWrapper';
 
 export default function TopRestaurants() {
     const [providers, setProviders] = useState<any[]>([]);
@@ -43,7 +44,7 @@ export default function TopRestaurants() {
                     description="Discover the best dining experiences around you with our curated list of top restaurants. From classic favorites to trendy new places, we've got you covered."
                 />
             </div>
-            <div className="w-full min-h-75 flex items-center justify-center">
+            <FadeInUp className="w-full min-h-75 flex items-center justify-center">
                 {isLoading ? (
                     <div className="flex flex-col items-center gap-2">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -100,7 +101,7 @@ export default function TopRestaurants() {
                         <p className="text-muted-foreground">No restaurants found.</p>
                     </div>
                 )}
-            </div>
+            </FadeInUp>
         </section>
     );
 }

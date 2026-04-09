@@ -8,6 +8,7 @@ import {
   BellRing,
   ClipboardList,
   Users,
+  Image,
   ShoppingBasket,
   Grid2X2,
   ShoppingCart,
@@ -101,10 +102,10 @@ export const sidebarData = {
       url: "/admin-dashboard/meals",
       icon: UtensilsCrossed,
     },
-    // {
-    //   title: "Profile",
-    //   url: "/admin-dashboard/profile",
-    //   icon: UserCog,
-    // },
+    {
+      title: "Banners",
+      url: "/admin-dashboard/banners",
+      icon: Image,
+    },
   ],
 };

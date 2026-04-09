@@ -1,12 +1,17 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, EffectFade } from "swiper/modules";
+import { Autoplay, Pagination, EffectFade, Navigation } from "swiper/modules";
 import Image from "next/image";
 
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
+import "swiper/css/navigation";
+
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import Banner1 from "../../../../public/Banner1.png";
 import Banner3 from "../../../../public/Banner4.jpg";
@@ -20,7 +25,9 @@ const slides = [
         description: "Experience the finest cuts of aged meat, grilled to perfection by our master chefs for a truly unforgettable meal.",
         image: Banner1,
         color: "from-neutral-900/95",
-    },
+        buttonText: "Order Now",
+        url: "/menu",
+    },      
     {
         id: 2,
         title: "Freshcal Juices",
@@ -28,6 +35,8 @@ const slides = [
         description: "Rejuvenate your senses with our signature cold-pressed juices, made daily from hand-picked orchard-fresh fruits.",
         image: Banner3,
         color: "from-emerald-950/95",
+        buttonText: "Shop Fresh",
+        url: "/categories/juices",
     },
     {
         id: 3,
@@ -36,35 +45,61 @@ const slides = [
         description: "From artisanal double-stack burgers to crispy gold fries, discover why we are the city's favorite comfort food spot.",
         image: Banner2,
         color: "from-amber-950/95",
+        buttonText: "View Deals",
+        url: "/offers",
     },
 ];
 
-export default function Banner() {
+interface BannerProps {
+    banners?: any[];
+}
+
+export default function Banner({ banners = [] }: BannerProps) {
+    const displaySlides = banners.length > 0 ? banners.map(b => ({
+        id: b.id,
+        title: b.heading,
+        subtitle: b.subheading,
+        description: b.shortDescription,
+        image: b.images?.[0] || "/Banner1.png",
+        color: "from-neutral-900/95", 
+        buttonText: b.buttonText,
+        url: b.url,
+    })) : slides;
+
     return (
         <div className="w-full relative overflow-hidden">
             <Swiper
-                modules={[Autoplay, Pagination, EffectFade]}
+                modules={[Autoplay, Pagination, EffectFade, Navigation]}
                 autoplay={{ delay: 5000, disableOnInteraction: false }}
                 pagination={{
                     clickable: true,
                     dynamicBullets: true,
                 }}
+                navigation={true}
                 loop
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                className="h-100 md:h-150 lg:h-187 w-full"
+                className="h-[70vh] w-full group"
             >
-                {slides.map((slide) => (
+                {displaySlides.map((slide) => (
                     <SwiperSlide key={slide.id}>
                         <div className="relative h-full w-full">
                             {/* Background Image */}
-                            <Image
-                                src={slide.image}
-                                alt={slide.title}
-                                fill
-                                className="object-cover"
-                                priority
-                            />
+                            {typeof slide.image === 'string' ? (
+                                <img
+                                    src={slide.image}
+                                    alt={slide.title}
+                                    className="object-cover w-full h-full"
+                                />
+                            ) : (
+                                <Image
+                                    src={slide.image}
+                                    alt={slide.title}
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                />
+                            )}
 
                             {/* Gradient Overlay for Text Readability */}
                             <div className={`absolute inset-0 bg-linear-to-r ${slide.color} via-black/40 to-transparent`} />
@@ -75,13 +110,19 @@ export default function Banner() {
                                     <p className="text-orange-400 font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                                         {slide.subtitle}
                                     </p>
-                                    <h1 className="text-4xl md:text-6xl lg:text-6xl font-black mb-6 leading-none md:leading-tight animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-none md:leading-tight animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                                         {slide.title}
                                     </h1>
                                     <p className="text-gray-200 text-sm md:text-xl mb-10 max-w-lg leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
                                         {slide.description}
                                     </p>
                                     <div className="animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
+                                        <Link href={slide.url}>
+                                            <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full px-10 py-6 h-auto text-base group/btn">
+                                                {slide.buttonText}
+                                                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -104,6 +145,28 @@ export default function Banner() {
                     width: 35px !important;
                     border-radius: 20px !important;
                     opacity: 1 !important;
+                }
+                .swiper-button-next, .swiper-button-prev {
+                    color: white !important;
+                    background: rgba(0, 0, 0, 0.3);
+                    width: 50px !important;
+                    height: 50px !important;
+                    border-radius: 50%;
+                    backdrop-filter: blur(4px);
+                    transition: all 0.3s ease;
+                    opacity: 0;
+                }
+                .group:hover .swiper-button-next, 
+                .group:hover .swiper-button-prev {
+                    opacity: 1;
+                }
+                .swiper-button-next:hover, .swiper-button-prev:hover {
+                    background: #f97316 !important;
+                    transform: scale(1.1);
+                }
+                .swiper-button-next::after, .swiper-button-prev::after {
+                    font-size: 20px !important;
+                    font-weight: bold;
                 }
             `}</style>
         </div>

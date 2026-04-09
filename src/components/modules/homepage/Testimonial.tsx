@@ -2,6 +2,7 @@
 
 import SectionHeader from "@/components/common/SectionHeader";
 import React from "react";
+import { FadeInUp, FadeInRight } from "@/components/common/MotionWrapper";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
@@ -38,7 +39,7 @@ export default function Testimonial() {
         <div className="py-12 lg:py-20">
 
             <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
-                <div className="bg-yellow-100/50 backdrop:blur-3xl md:rounded-e-full overflow-hidden p-3 lg:p-10 h-full flex flex-col items-center justify-center md:-me-32 z-10">
+                <FadeInUp className="bg-yellow-100/50 backdrop:blur-3xl md:rounded-e-full overflow-hidden p-3 lg:p-10 h-full flex flex-col items-center justify-center md:-me-32 z-10">
                     <SectionHeader
                         subtitle="Reviews"
                         title="What Our Customers Say"
@@ -67,16 +68,16 @@ export default function Testimonial() {
                             </SwiperSlide>
                         ))}
                     </Swiper>
-                </div>
+                </FadeInUp>
 
                 {/* RIGHT: Image */}
-                <div className="hidden md:block rounded-s-full overflow-hidden max-w-full">
+                <FadeInRight className="hidden md:block rounded-s-full overflow-hidden max-w-full">
                     <img
                         src="/testimonial.png"
                         alt="testimonial"
                         className="max-w-full overflow-hidden"
                     />
-                </div>
+                </FadeInRight>
             </div>
         </div>
     );

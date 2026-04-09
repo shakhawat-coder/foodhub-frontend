@@ -31,6 +31,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ModeToggle } from "@/components/mode-toggle";
 
 interface MenuItem {
   title: string;
@@ -141,7 +142,8 @@ const Navbar = ({
               </NavigationMenu>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <ModeToggle />
             {!sessionUser ? (
               <>
                 <Button asChild variant="outline" size="lg">
@@ -190,6 +192,7 @@ const Navbar = ({
             </Link>
 
             <div className="flex items-center gap-4">
+              <ModeToggle />
               {sessionUser && (sessionUser as any).role === "USER" && (
                 <Link href={"/cart"} className="relative">
                   <ShoppingCart className="size-5" />

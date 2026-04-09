@@ -2,6 +2,7 @@ import { PopularMealsCard } from '@/components/common/PopularMealsCard';
 import SectionHeader from '@/components/common/SectionHeader'
 import React from 'react'
 import { mealsAPI } from '@/lib/api';
+import { StaggerContainer, StaggerItemScale } from '@/components/common/MotionWrapper';
 
 export default async function PopularMeals() {
     let meals: any[] = [];
@@ -19,11 +20,13 @@ export default async function PopularMeals() {
     return (
         <div className='py-12 lg:py-20 px-3'>
             <SectionHeader subtitle='Popular Meals' title='Delicious Meals Loved by Our Customers' description='Discover our most popular meals, crafted with fresh ingredients and bursting with flavor. These customer favorites are sure to satisfy your cravings.' />
-            <div className="max-w-5xl mx-auto grid gap-6  sm:grid-cols-2 lg:grid-cols-2 mt-5">
+            <StaggerContainer className="max-w-5xl mx-auto grid gap-6  sm:grid-cols-2 lg:grid-cols-2 mt-5">
                 {meals.map((meal: any) => (
-                    <PopularMealsCard key={meal.id} meal={meal} />
+                    <StaggerItemScale key={meal.id}>
+                        <PopularMealsCard meal={meal} />
+                    </StaggerItemScale>
                 ))}
-            </div>
+            </StaggerContainer>
         </div>
     )
 }
