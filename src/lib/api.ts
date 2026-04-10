@@ -59,6 +59,35 @@ export const uploadAPI = {
   },
 };
 
+// ============== AI SEARCH (proxied to Express POST /ai-search) ==============
+export type SearchMealResult = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string | null;
+  categoryId: string;
+  categoryName: string;
+  providerId: string;
+  providerName: string;
+};
+
+export type AiSearchResponse = {
+  suggestions: string[];
+  results: SearchMealResult[];
+  didYouMean: string | null;
+  mode: "empty" | "db-only" | "ai" | "fallback";
+};
+
+export const searchAPI = {
+  aiSearch: (query: string, init?: RequestInit) =>
+    apiRequest<AiSearchResponse>("/ai-search", {
+      method: "POST",
+      body: JSON.stringify({ query }),
+      ...init,
+    }),
+};
+
 // ============== MEALS API ==============
 export const mealsAPI = {
   getAll: (options?: RequestOptions) =>

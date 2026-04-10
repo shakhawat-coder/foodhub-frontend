@@ -32,6 +32,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ModeToggle } from "@/components/mode-toggle";
+import { NavbarSearch } from "@/components/layout/navbar-search";
 
 interface MenuItem {
   title: string;
@@ -130,15 +131,16 @@ const Navbar = ({
   return (
     <section className={cn("py-2 lg:py-4 px-3 fixed w-full top-0 z-50 bg-white/20 backdrop-blur-sm", className)}>
       <div className="container mx-auto">
-        <nav className="hidden items-center justify-between lg:flex">
-          <Link href={logo.url} className="flex items-center gap-2">
+        <nav className="hidden items-center justify-between gap-4 lg:flex">
+          <Link href={logo.url} className="flex shrink-0 items-center gap-2">
             <img
               src={logo.src}
               className="max-h-8 dark:invert"
               alt={logo.alt}
             />
           </Link>
-          <div className="flex items-center gap-6">
+          <NavbarSearch className="max-w-xl flex-1" />
+          <div className="flex shrink-0 items-center gap-6">
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
@@ -253,6 +255,7 @@ const Navbar = ({
               </Sheet>
             </div>
           </div>
+          <NavbarSearch />
         </div>
       </div>
     </section>

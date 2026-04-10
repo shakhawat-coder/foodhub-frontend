@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { FoodChatbot } from "@/components/layout/food-chatbot";
 
 export default function RootLayout({
   children,
@@ -39,6 +40,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <FoodChatbot />
           <Toaster />
         </ThemeProvider>
       </body>
