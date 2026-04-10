@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -16,10 +15,16 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/c
 import * as z from "zod"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useRouter } from "next/navigation"
-export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
-  const router = useRouter()
+import { useRouter } from "next/navigation" 
+export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) { 
+  const router = useRouter() 
+  const quickLoginCredentials = [ 
+    { label: "Customer", email: "shamim5@gmail.com", password: "123456" },
+    { label: "Provider", email: "shamim1@gmail.com", password: "123456" },
+    { label: "Rider", email: "rider1@gmail.com", password: "rider1" },
+    { label: "Manager", email: "manager1@gmail.com", password: "manager1" },
+    { label: "Admin", email: "admin@example.com", password: "password" },
+  ] as const 
   const schema = z.object({
     email: z.string().min(1, "Email is required").email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
@@ -37,7 +42,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
     defaultValues: { email: "", password: "" },
   })
 
-  const onSubmit = async (values: FormValues) => {
+  const loginWithCredentials = async (values: FormValues) => {
     const toastId = toast.loading("Logging into your account...")
     try {
       const loginData: any = {
@@ -86,6 +91,9 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
       toast.error("Something went wrong. Please try again.", { id: toastId })
     }
   }
+  const onSubmit = async (values: FormValues) => {
+    await loginWithCredentials(values)
+  }
 
   return (
     <Card {...props}>
@@ -108,6 +116,32 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
             </Field>
           </FieldGroup>
         </form>
+        <div className="mt-4 space-y-2">
+          <p className="text-sm font-medium">Quick Login Credentials</p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {quickLoginCredentials.map((account) => (
+              <Button
+                key={account.label}
+                type="button"
+                variant="outline"
+                className="h-auto items-start justify-start p-3 text-left"
+                onClick={() =>
+                  loginWithCredentials({
+                    email: account.email,
+                    password: account.password,
+                  })
+                }
+                disabled={isSubmitting}
+              >
+                <div>
+                  <p className="font-medium">{account.label}</p>
+                  <p className="text-muted-foreground text-xs">{account.email}</p>
+                  <p className="text-muted-foreground text-xs">{account.password}</p>
+                </div>
+              </Button>
+            ))}
+          </div>
+        </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
         <Button form="login-form" type="submit" className="w-full mt-4 cursor-pointer" disabled={isSubmitting}>

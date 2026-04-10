@@ -305,6 +305,43 @@ export const managerAPI = {
     }),
 };
 
+export type DashboardAnalytics = {
+  ordersByDate: Array<{ date: string; count: number }>;
+  revenueByDate: Array<{ date: string; revenue: number }>;
+  categoryStats: Array<{ category: string; count: number }>;
+  deliveryStatusStats: Array<{ status: string; count: number }>;
+  summary: {
+    totalOrders: number;
+    totalRevenue: number;
+    avgOrderValue: number;
+  };
+  peakHour: string;
+  bestSellingItem: string;
+};
+
+export const analyticsAPI = {
+  getAdmin: (days = 7) =>
+    apiRequest<DashboardAnalytics>("/analytics/admin", {
+      method: "GET",
+      cache: "no-store",
+      params: { days },
+    }),
+  getProvider: (days = 7) =>
+    apiRequest<DashboardAnalytics>("/analytics/provider", {
+      method: "GET",
+      cache: "no-store",
+      params: { days },
+    }),
+};
+
+export const aiInsightsAPI = {
+  create: (analyticsData: DashboardAnalytics, role: "ADMIN" | "PROVIDER") =>
+    apiRequest<{ insights: string[] }>("/ai-insights", {
+      method: "POST",
+      body: JSON.stringify({ analyticsData, role }),
+    }),
+};
+
 // ============== BANNER API ==============
 export const bannerAPI = {
   getAll: (options?: RequestOptions) =>
@@ -327,6 +364,17 @@ export const bannerAPI = {
       body: JSON.stringify({ isActive }),
     }),
   delete: (id: string) => apiRequest(`/banner/${id}`, { method: "DELETE" }),
+};
+
+// ============== BLOGS API ==============
+export const blogsAPI = {
+  getAll: () => apiRequest<{ data: any[] }>("/blogs", { method: "GET", cache: "no-store" }),
+  getById: (id: string) => apiRequest<{ data: any }>(`/blogs/${id}`, { method: "GET" }),
+  create: (data: { title: string; content: string; image?: string }) =>
+    apiRequest("/blogs", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: string, data: { title?: string; content?: string; image?: string }) =>
+    apiRequest(`/blogs/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  delete: (id: string) => apiRequest(`/blogs/${id}`, { method: "DELETE" }),
 };
 
 export default apiRequest;

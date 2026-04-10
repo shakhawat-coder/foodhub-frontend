@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import {
     Table,
     TableBody,
@@ -12,9 +12,10 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { ordersAPI } from '@/lib/api'
 import { format } from 'date-fns'
-import { Loader2, Package, ShoppingBag, Truck, CheckCircle2, XCircle, Clock, } from 'lucide-react'
+import { Loader2, Package, ShoppingBag, Truck, CheckCircle2, XCircle, Clock, DollarSign } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface Order {
     id: string
@@ -79,6 +80,13 @@ export function MyOrdersTable() {
         fetchOrders()
     }, [])
 
+    const stats = useMemo(() => {
+        const total = orders.length;
+        const revenue = orders.reduce((acc, o) => acc + o.totalAmount, 0);
+        const delivered = orders.filter(o => o.status === 'DELIVERED').length;
+        return { total, revenue: revenue.toFixed(2), delivered };
+    }, [orders]);
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -123,25 +131,55 @@ export function MyOrdersTable() {
     }
 
     return (
-        <div className="rounded-xl border bg-card shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
-            <Table>
-                <TableHeader className="bg-muted/50">
-                    <TableRow>
-                        <TableHead className="w-25 font-bold">Order ID</TableHead>
-                        <TableHead className="font-bold">Date</TableHead>
-                        <TableHead className="font-bold">Customer</TableHead>
-                        <TableHead className="font-bold">Items</TableHead>
-                        <TableHead className="font-bold text-right">Total</TableHead>
-                        <TableHead className="font-bold text-center">Status</TableHead>
-                        <TableHead className="font-bold text-center">View Details</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {orders.map((order) => (
-                        <TableRow key={order.id} className="group hover:bg-muted/30 transition-colors">
-                            <TableCell className="font-mono text-xs text-muted-foreground">
-                                #{order.id.slice(-6).toUpperCase()}
-                            </TableCell>
+        <div className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-3">
+                <Card className="shadow-sm border-muted/60">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 text-muted-foreground uppercase tracking-tight text-[10px] font-bold">
+                        <span>Total Revenue</span>
+                        <DollarSign className="w-4 h-4 text-green-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-primary">${stats.revenue}</div>
+                    </CardContent>
+                </Card>
+                <Card className="shadow-sm border-muted/60">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 text-muted-foreground uppercase tracking-tight text-[10px] font-bold">
+                        <span>Total Orders</span>
+                        <ShoppingBag className="w-4 h-4 text-blue-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.total}</div>
+                    </CardContent>
+                </Card>
+                <Card className="shadow-sm border-muted/60">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 text-muted-foreground uppercase tracking-tight text-[10px] font-bold">
+                        <span>Completed</span>
+                        <CheckCircle2 className="w-4 h-4 text-orange-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.delivered}</div>
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="rounded-xl border bg-card shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                <Table>
+                    <TableHeader className="bg-muted/50">
+                        <TableRow>
+                            <TableHead className="w-25 font-bold">Order ID</TableHead>
+                            <TableHead className="font-bold">Date</TableHead>
+                            <TableHead className="font-bold">Customer</TableHead>
+                            <TableHead className="font-bold">Items</TableHead>
+                            <TableHead className="font-bold text-right">Total</TableHead>
+                            <TableHead className="font-bold text-center">Status</TableHead>
+                            <TableHead className="font-bold text-center">View Details</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {orders.map((order) => (
+                            <TableRow key={order.id} className="group hover:bg-muted/30 transition-colors">
+                                <TableCell className="font-mono text-xs text-muted-foreground">
+                                    #{order.id.slice(-6).toUpperCase()}
+                                </TableCell>
                             <TableCell className="text-sm">
                                 {format(new Date(order.createdAt), 'MMM dd, yyyy')}
                                 <div className="text-[10px] text-muted-foreground">
@@ -188,5 +226,6 @@ export function MyOrdersTable() {
                 </TableBody>
             </Table>
         </div>
-    )
+    </div>
+  )
 }

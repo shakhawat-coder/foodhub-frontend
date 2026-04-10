@@ -2,21 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
-import { Button } from "@/components/ui/button";
 import { providersAPI, mealsAPI, ordersAPI } from '@/lib/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Utensils, ClipboardList, TrendingUp, Store } from "lucide-react";
-import ImageUpload from "@/components/common/ImageUpload";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, Utensils, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
-
-const DEFAULT_LOGO = "/restaurantlogo.png";
+import { DashboardAnalyticsSection } from "@/components/modules/dashboard/analytics-section";
 
 export default function ProviderDashboardPage() {
     const { data: session } = authClient.useSession();
     const [provider, setProvider] = useState<any>(null);
-    const [logo, setLogo] = useState<string>(DEFAULT_LOGO);
-    const [isUpdating, setIsUpdating] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [stats, setStats] = useState({
         totalMeals: 0,
@@ -33,7 +27,6 @@ export default function ProviderDashboardPage() {
                     const providerData: any = await providersAPI.getByEmail(email);
                     if (providerData) {
                         setProvider(providerData);
-                        setLogo(providerData.logo || DEFAULT_LOGO);
                     }
 
                     const [meals, incomingOrders] = await Promise.all([
@@ -55,20 +48,6 @@ export default function ProviderDashboardPage() {
         };
         fetchData();
     }, [session]);
-
-    const handleUpdateLogo = async () => {
-        if (!provider?.id) return;
-        setIsUpdating(true);
-        try {
-            await providersAPI.update(provider.id, { logo: logo });
-            toast.success("Logo updated successfully");
-        } catch (error: any) {
-            console.error("Error updating logo:", error);
-            toast.error(error.message || "Error updating logo");
-        } finally {
-            setIsUpdating(false);
-        }
-    };
 
     if (isLoading) {
         return (
@@ -100,7 +79,7 @@ export default function ProviderDashboardPage() {
     return (
         <div className="space-y-8 p-4 md:p-6">
             <div>
-                <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-primary to-orange-600 bg-clip-text text-transparent">
                     Provider Dashboard
                 </h1>
                 <p className="text-muted-foreground mt-2">
@@ -130,72 +109,7 @@ export default function ProviderDashboardPage() {
                 ))}
             </div>
 
-            <div className="grid gap-8 lg:grid-cols-2">
-                <Card className="shadow-lg pt-0  border-primary/10">
-                    <CardHeader className="bg-primary/5 pt-4 pb-6">
-                        <div className="flex items-center gap-2">
-                            <Store className="h-5 w-5 text-primary" />
-                            <CardTitle>Restaurant Logo</CardTitle>
-                        </div>
-                        <CardDescription>
-                            Upload your restaurant's logo to represent your brand.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-8 space-y-6">
-                        <ImageUpload
-                            onUploadComplete={(url) => setLogo(url)}
-                            defaultValue={logo}
-                            label="Logo Image"
-                        />
-
-                        <div className="flex justify-end pt-4 border-t">
-                            <Button
-                                onClick={handleUpdateLogo}
-                                disabled={isUpdating || !logo}
-                                className="w-full md:w-auto px-8"
-                            >
-                                {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Save Logo
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="border shadow-sm">
-                    <CardHeader>
-                        <CardTitle>Business Information</CardTitle>
-                        <CardDescription>
-                            Your registered business details.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4 pt-4">
-                        <div className="grid grid-cols-3 py-3 border-b border-muted">
-                            <span className="text-sm font-medium text-muted-foreground">Email</span>
-                            <span className="col-span-2 text-sm">{provider?.email}</span>
-                        </div>
-                        <div className="grid grid-cols-3 py-3 border-b border-muted">
-                            <span className="text-sm font-medium text-muted-foreground">Phone</span>
-                            <span className="col-span-2 text-sm">{provider?.phone || "N/A"}</span>
-                        </div>
-                        <div className="grid grid-cols-3 py-3 border-b border-muted">
-                            <span className="text-sm font-medium text-muted-foreground">Address</span>
-                            <span className="col-span-2 text-sm">{provider?.address || "N/A"}</span>
-                        </div>
-                        <div className="grid grid-cols-3 py-3">
-                            <span className="text-sm font-medium text-muted-foreground">Status</span>
-                            <span className="col-span-2">
-                                <Badge variant={provider?.isActive ? "outline" : "destructive"} className={provider?.isActive ? "bg-green-100 text-green-700 border-green-200" : ""}>
-                                    {provider?.isActive ? "Active" : "Inactive"}
-                                </Badge>
-                            </span>
-                        </div>
-
-                        <div className="mt-8 p-4 bg-muted/50 rounded-lg text-xs text-muted-foreground">
-                            Note: To change your business details, please contact the administrator.
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+            <DashboardAnalyticsSection mode="provider" />
         </div>
     );
 }

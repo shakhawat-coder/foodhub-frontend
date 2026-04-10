@@ -27,6 +27,7 @@ interface OrderItem {
   image: string;
   price: number;
   quantity: number;
+  providerName?: string;
   details?: { label: string; value: string }[];
 }
 
@@ -105,6 +106,7 @@ const OrderSummary = ({
             image: item.meal.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
             price: item.price,
             quantity: item.quantity,
+            providerName: item.meal?.provider?.name || item.provider?.name || "Provider",
           })),
           subtotal: subtotal,
           shipping: 0,
@@ -266,6 +268,11 @@ const OrderSummary = ({
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 className="font-medium">{item.name}</h3>
+                        {item.providerName && (
+                          <p className="mt-0.5 text-sm text-muted-foreground">
+                            Provider: {item.providerName}
+                          </p>
+                        )}
                         {item.details && (
                           <p className="mt-0.5 text-sm text-muted-foreground">
                             {item.details.map((d, i) => (

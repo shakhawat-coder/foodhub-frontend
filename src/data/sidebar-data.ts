@@ -70,11 +70,11 @@ export const sidebarData = {
         { title: "Order History", url: "/provider-dashboard/order-history" },
       ],
     },
-    // {
-    //   title: "Profile",
-    //   url: "/provider-dashboard/profile",
-    //   icon: UserCog,
-    // },
+    {
+      title: "Profile",
+      url: "/provider-dashboard/profile",
+      icon: UserCog,
+    },
   ],
   ADMIN: [
     {

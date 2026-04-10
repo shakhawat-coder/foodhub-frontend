@@ -10,15 +10,20 @@ import Testimonial from "@/components/modules/homepage/Testimonial";
 import BlogSection from "@/components/modules/homepage/BlogSection";
 import FAQSection from "@/components/modules/homepage/FAQSection";
 import Newsletter from "@/components/modules/homepage/Newsletter";
-import { bannerAPI } from "@/lib/api";
+import { bannerAPI, blogsAPI } from "@/lib/api";
 
 export default async function Home() {
   let banners = [];
+  let blogs = [];
   try {
-     const data = await bannerAPI.getAll({ params: { isActive: "true" } });
-     banners = data;
+     const [bannerData, blogData] = await Promise.all([
+       bannerAPI.getAll({ params: { isActive: "true" } }),
+       blogsAPI.getAll().catch(() => ({ data: [] }))
+     ]);
+     banners = bannerData;
+     blogs = blogData.data.slice(0, 3);
   } catch (error) {
-     console.error("Failed to fetch banners:", error);
+     console.error("Failed to fetch home data:", error);
   }
 
   return (
@@ -34,7 +39,7 @@ export default async function Home() {
       <Features />
       <Statistics />
       <Testimonial />
-      <BlogSection />
+      <BlogSection blogs={blogs} />
       <FAQSection />
       <Newsletter />
     </div>

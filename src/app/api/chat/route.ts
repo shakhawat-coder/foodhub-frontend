@@ -1,5 +1,5 @@
 import { streamText, convertToModelMessages, type UIMessage } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { groq } from "@ai-sdk/groq";
 
 export const maxDuration = 60;
 
@@ -65,10 +65,10 @@ async function fetchRecentOrdersSummary(
 }
 
 export async function POST(req: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return Response.json(
-      { error: "Chat is not configured (OPENAI_API_KEY)." },
+      { error: "Chat is not configured (GROQ_API_KEY)." },
       { status: 503 }
     );
   }
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     fetchRecentOrdersSummary(baseUrl, cookie),
   ]);
 
-  const modelId = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const modelId = process.env.GROQ_MODEL || "llama-3.1-8b-instant";
 
   const system = `You are a friendly food delivery assistant for a web app called FoodHub.
 
@@ -110,7 +110,7 @@ ${ordersSummary || "(No recent orders loaded or not signed in.)"}
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
-    model: openai(modelId),
+    model: groq(modelId),
     system,
     messages: modelMessages,
   });

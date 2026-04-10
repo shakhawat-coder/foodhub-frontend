@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { headers } from "next/headers";
 
 import { categoriesAPI, usersAPI, ordersAPI, mealsAPI } from '@/lib/api'
+import { DashboardAnalyticsSection } from '@/components/modules/dashboard/analytics-section';
 
 async function getStats() {
     const headersList = await headers();
@@ -94,7 +95,7 @@ export default async function AdminDashboardPage() {
     return (
         <div className="space-y-8 p-2">
             <div>
-                <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-primary to-orange-600 bg-clip-text text-transparent">
                     Admin Overview
                 </h1>
                 <p className="text-muted-foreground mt-2">
@@ -133,6 +134,8 @@ export default async function AdminDashboardPage() {
                     </Link>
                 ))}
             </div>
+
+            <DashboardAnalyticsSection mode="admin" />
         </div>
     )
 }

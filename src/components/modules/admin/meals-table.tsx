@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
     Table,
     TableBody,
@@ -10,7 +10,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { SquarePen, Star, Search, Filter } from 'lucide-react';
+import { SquarePen, Star, Search, Filter, Utensils, TrendingUp, DollarSign, PieChart } from 'lucide-react';
 import Link from 'next/link'
 import { DeleteMealButton } from '@/components/modules/provider/delete-meal-button';
 import { Input } from "@/components/ui/input"
@@ -24,6 +24,10 @@ import {
     DropdownMenuCheckboxItem
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import dynamic from "next/dynamic";
+
+const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface Meal {
     id: string;
@@ -50,23 +54,104 @@ export function AdminMealsTable({ meals: initialMeals }: MealsTableProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
-    const filteredMeals = initialMeals.filter(meal => {
+    const filteredMeals = useMemo(() => initialMeals.filter(meal => {
         const matchesSearch = meal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             meal.category?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             meal.provider?.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = selectedCategory ? meal.category?.name === selectedCategory : true;
         return matchesSearch && matchesCategory;
-    });
+    }), [initialMeals, searchTerm, selectedCategory]);
 
     const categories = Array.from(new Set(initialMeals.map(m => m.category?.name).filter(Boolean)));
+    
+    // Stats for cards
+    const stats = useMemo(() => {
+        const popularCount = initialMeals.filter(m => m.isPopular).length;
+        const avgPrice = initialMeals.length ? initialMeals.reduce((acc, current) => acc + current.price, 0) / initialMeals.length : 0;
+        
+        // Data for category chart
+        const categoryCounts: Record<string, number> = {};
+        initialMeals.forEach(m => {
+            const cat = m.category?.name || "Other";
+            categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+        });
+        
+        return {
+            total: initialMeals.length,
+            popular: popularCount,
+            avgPrice: avgPrice.toFixed(2),
+            chartData: {
+                labels: Object.keys(categoryCounts),
+                series: Object.values(categoryCounts)
+            }
+        };
+    }, [initialMeals]);
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            <div className="grid gap-4 md:grid-cols-4">
+                <Card className="shadow-sm">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <CardTitle className="text-sm font-medium">Total Meals</CardTitle>
+                        <Utensils className="h-4 w-4 text-primary" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.total}</div>
+                        <p className="text-xs text-muted-foreground mt-1">Available on platform</p>
+                    </CardContent>
+                </Card>
+                <Card className="shadow-sm">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <CardTitle className="text-sm font-medium">Popular Items</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-green-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.popular}</div>
+                        <p className="text-xs text-muted-foreground mt-1">Stared by customers</p>
+                    </CardContent>
+                </Card>
+                <Card className="shadow-sm">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <CardTitle className="text-sm font-medium">Avg. Price</CardTitle>
+                        <DollarSign className="h-4 w-4 text-blue-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">${stats.avgPrice}</div>
+                        <p className="text-xs text-muted-foreground mt-1">Across all providers</p>
+                    </CardContent>
+                </Card>
+                <Card className="shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 opacity-10 p-2 transition-opacity group-hover:opacity-20">
+                        <PieChart className="h-16 w-16" />
+                    </div>
+                    <CardHeader className="pb-2">
+                         <CardTitle className="text-sm font-medium">Menu Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent className="h-[60px] flex items-end">
+                       <div className="w-full">
+                           {typeof window !== 'undefined' && stats.chartData.series.length > 0 && (
+                               <ReactApexChart 
+                                 type="bar" 
+                                 height={50} 
+                                 options={{
+                                     chart: { sparkline: { enabled: true } },
+                                     plotOptions: { bar: { columnWidth: '80%' } },
+                                     colors: ['#f97316'],
+                                     tooltip: { enabled: false }
+                                 }}
+                                 series={[{ data: stats.chartData.series }]} 
+                               />
+                           )}
+                       </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-muted/30 p-4 rounded-xl border border-muted/50 shadow-sm">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Meal Management</h1>
-                    <p className="text-muted-foreground">
-                        Overview of all meals offered across the platform.
+                    <h1 className="text-2xl font-bold tracking-tight bg-linear-to-r from-primary to-orange-600 bg-clip-text text-transparent">Meal Management</h1>
+                    <p className="text-muted-foreground text-sm">
+                        Oversee and manage the global menu catalog.
                     </p>
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto">
@@ -74,14 +159,14 @@ export function AdminMealsTable({ meals: initialMeals }: MealsTableProps) {
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Search meals, categories, or providers..."
-                            className="pl-8"
+                            className="pl-8 bg-background shadow-sm"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="icon">
+                            <Button variant="outline" size="icon" className="bg-background shadow-sm">
                                 <Filter className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
