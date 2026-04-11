@@ -15,7 +15,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "FoodHub",
-  description: "FoodHub",
+  description: "Your favorite food delivered fast and fresh.",
+  icons: {
+    icon: "/favicon.png", 
+  },
 };
 
 import { Toaster } from "@/components/ui/sonner";

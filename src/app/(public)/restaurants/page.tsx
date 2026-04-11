@@ -20,7 +20,7 @@ export default async function Restaurants() {
     }
 
     return (
-        <div className='py-20'>
+        <div className='pt-20 md:pt-32 pb-20'>
             <div>
                 <SectionHeader title="Discover the best dining experiences" subtitle="Top Restaurants" description=" Discover the best dining experiences around you with our curated list of top restaurants. From classic favorites to trendy new places, we've got you covered." />
             </div>

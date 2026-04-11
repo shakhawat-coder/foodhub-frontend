@@ -77,6 +77,7 @@ interface CartItemProps extends CartItem {
 interface CartProps {
   cartItems: CartItem[];
   form: UseFormReturn<CheckoutFormType>;
+  appliedCoupon?: any;
 }
 
 const PAYMENT_METHODS = {
@@ -122,6 +123,15 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
   const [loading, setLoading] = useState(!initialCartItems);
   const [activeAccordion, setActiveAccordion] = useState("item-1");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+
+  useEffect(() => {
+    const savedCoupon = sessionStorage.getItem('appliedCoupon');
+    if (savedCoupon) {
+      setAppliedCoupon(JSON.parse(savedCoupon));
+    }
+  }, []);
 
   const fetchCart = async () => {
     if (!session?.user?.id) return;
@@ -214,12 +224,15 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
     setIsSubmitting(true);
     try {
       const subtotal = cartItems.reduce((sum, item) => sum + (item.price.sale ?? item.price.regular) * item.quantity, 0);
-      const tax = 0;
-      const totalAmount = subtotal + tax;
+      const discount = appliedCoupon?.discountAmount || 0;
+      const payableAmount = subtotal - discount;
       const addressString = `${data.address.firstName} ${data.address.lastName}, Address: ${data.address.address}, PH: ${data.address.phone}`;
 
       const orderData = {
-        totalAmount,
+        totalAmount: subtotal,
+        payableAmount,
+        discountAmount: discount,
+        couponCode: appliedCoupon?.code,
         address: addressString,
         items: cartItems.map(item => ({
           mealId: item.product_id,
@@ -229,6 +242,7 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
       };
 
       const order: any = await ordersAPI.create(orderData);
+      sessionStorage.removeItem('appliedCoupon');
       toast.success("Order placed successfully!");
       router.push(`/ordersummary/${order.id}`);
     } catch (error) {
@@ -351,7 +365,7 @@ const Checkout = ({ cartItems: initialCartItems, className }: Checkout1Props) =>
                 </Accordion>
               </div>
               <div>
-                <Cart form={form} cartItems={cartItems} />
+                <Cart form={form} cartItems={cartItems} appliedCoupon={appliedCoupon} />
               </div>
             </div>
           </form>
@@ -523,7 +537,7 @@ const PaymentFields = () => {
 };
 
 
-const Cart = ({ cartItems, form }: CartProps) => {
+const Cart = ({ cartItems, form, appliedCoupon }: CartProps) => {
   const { fields, remove, update } = useFieldArray({
     control: form.control,
     name: "products",
@@ -573,7 +587,7 @@ const Cart = ({ cartItems, form }: CartProps) => {
         })}
       </ul>
       <div>
-        <div className="space-y-3.5 border-y py-7">
+        <div className="space-y-3.5 border-y py-7 text-foreground">
           <div className="flex justify-between gap-3">
             <p className="text-sm">Subtotal</p>
             <Price className="text-sm font-normal">
@@ -584,6 +598,18 @@ const Cart = ({ cartItems, form }: CartProps) => {
               />
             </Price>
           </div>
+          {appliedCoupon && appliedCoupon.discountAmount > 0 && (
+            <div className="flex justify-between gap-3 text-emerald-600">
+              <p className="text-sm">Discount ({appliedCoupon.code})</p>
+              <Price className="text-sm font-normal">
+                <PriceValue
+                  price={-appliedCoupon.discountAmount}
+                  currency={cartItems[0].price.currency}
+                  variant="regular"
+                />
+              </Price>
+            </div>
+          )}
           <div className="flex justify-between gap-3">
             <p className="text-sm">Shipping</p>
             <p className="text-sm">Free</p>
@@ -594,7 +620,7 @@ const Cart = ({ cartItems, form }: CartProps) => {
             <p className="text-lg leading-tight font-medium">Total</p>
             <Price className="text-xl font-medium">
               <PriceValue
-                price={totalPrice}
+                price={totalPrice - (appliedCoupon?.discountAmount || 0)}
                 currency={cartItems[0].price.currency}
                 variant="regular"
               />

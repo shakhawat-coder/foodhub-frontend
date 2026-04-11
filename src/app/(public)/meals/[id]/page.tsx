@@ -17,7 +17,7 @@ export default async function MealItem({ params }: { params: Promise<{ id: strin
 
   if (!meal) {
     return (
-      <div className="container  py-12 lg:py-20 text-center">
+      <div className="container pt-20 md:pt-32 pb-20 text-center">
         <h1 className="text-2xl font-bold">Meal not found</h1>
         <p className="text-muted-foreground mt-2">The meal you are looking for does not exist or has been removed.</p>
       </div>

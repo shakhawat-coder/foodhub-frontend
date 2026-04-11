@@ -18,9 +18,9 @@ export default async function PopularMeals() {
     }
 
     return (
-        <div className='py-12 lg:py-20 px-3'>
+        <div className='py-8 sm:py-12 lg:py-16 container mx-auto px-4'>
             <SectionHeader subtitle='Popular Meals' title='Delicious Meals Loved by Our Customers' description='Discover our most popular meals, crafted with fresh ingredients and bursting with flavor. These customer favorites are sure to satisfy your cravings.' />
-            <StaggerContainer className="max-w-5xl mx-auto grid gap-6  sm:grid-cols-2 lg:grid-cols-2 mt-5">
+            <StaggerContainer className="max-w-5xl mx-auto grid gap-6  sm:grid-cols-2 lg:grid-cols-2 mt-5"> 
                 {meals.map((meal: any) => (
                     <StaggerItemScale key={meal.id}>
                         <PopularMealsCard meal={meal} />

@@ -93,6 +93,13 @@ export const mealsAPI = {
   getAll: (options?: RequestOptions) =>
     apiRequest("/meal", { method: "GET", cache: "no-store", ...options }),
 
+  getReviewed: (limit: number = 6) =>
+    apiRequest<any[]>("/meal/reviewed", {
+      method: "GET",
+      cache: "no-store",
+      params: { limit },
+    }),
+
   getById: (id: string) => apiRequest(`/meal/${id}`, { method: "GET" }),
 
   create: (data: any) =>
@@ -398,6 +405,34 @@ export const blogsAPI = {
   update: (id: string, data: { title?: string; content?: string; image?: string }) =>
     apiRequest(`/blogs/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   delete: (id: string) => apiRequest(`/blogs/${id}`, { method: "DELETE" }),
+};
+
+// ============== CONTACTS API ==============
+export const contactsAPI = {
+  create: (data: { name: string; email: string; subject: string; message: string }) =>
+    apiRequest("/contacts", { method: "POST", body: JSON.stringify(data) }),
+  getAll: () => apiRequest<{ data: any[] }>("/contacts", { method: "GET", cache: "no-store" }),
+};
+
+// ============== SUBSCRIBERS API ==============
+export const subscribersAPI = {
+  subscribe: (email: string) =>
+    apiRequest("/subscribers", { method: "POST", body: JSON.stringify({ email }) }),
+  getAll: () => apiRequest<{ data: any[] }>("/subscribers", { method: "GET", cache: "no-store" }),
+  getStats: () => apiRequest<{ data: any[] }>("/subscribers/stats", { method: "GET", cache: "no-store" }),
+};
+
+// ============== COUPONS API ==============
+export const couponsAPI = {
+  getActive: () => apiRequest<{ data: any[] }>("/coupons/active", { method: "GET", cache: "no-store" }),
+  collect: (couponId: string) => apiRequest("/coupons/collect", { method: "POST", body: JSON.stringify({ couponId }) }),
+  getMy: () => apiRequest<{ data: any[] }>("/coupons/my", { method: "GET", cache: "no-store" }),
+  
+  // Manager APIs
+  getAll: () => apiRequest<{ data: any[] }>("/coupons", { method: "GET", cache: "no-store" }),
+  create: (data: any) => apiRequest("/coupons", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: string, data: any) => apiRequest(`/coupons/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id: string) => apiRequest(`/coupons/${id}`, { method: "DELETE" }),
 };
 
 export default apiRequest;

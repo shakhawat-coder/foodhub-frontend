@@ -32,14 +32,14 @@ export default function FAQSection() {
   ]
 
   return (
-    <div className="py-12 lg:py-20 px-3 container mx-auto max-w-4xl">
+    <div className="py-8 sm:py-12 lg:py-16 container mx-auto px-4 max-w-4xl">
       <SectionHeader subtitle="Questions?" title="Frequently Asked Questions" description="Find answers to common questions about our food delivery service." />
-      <FadeInUp className="mt-10">
-        <Accordion type="single" collapsible className="w-full bg-background rounded-2xl p-4 sm:p-8 border border-border shadow-sm">
+      <FadeInUp className="mt-4 md:mt-8">
+        <Accordion type="single" collapsible className="w-full bg-background rounded-2xl p-4 sm:p-6 md:p-8 border border-border shadow-sm">
           {faqs.map((faq, i) => (
             <AccordionItem key={i} value={`item-${i}`} className="border-b last:border-none">
-              <AccordionTrigger className="text-left text-lg font-medium hover:text-primary py-4 transition-colors">{faq.question}</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground leading-relaxed">
+              <AccordionTrigger className="text-left text-base sm:text-lg font-medium hover:text-primary py-4 transition-colors">{faq.question}</AccordionTrigger>
+              <AccordionContent className="text-xs sm:text-sm lg:text-base text-muted-foreground leading-relaxed">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>

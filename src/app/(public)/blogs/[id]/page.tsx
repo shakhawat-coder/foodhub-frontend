@@ -63,7 +63,7 @@ export default async function BlogDetailsPage({ params }: { params: Promise<{ id
       <div className="container mx-auto px-4 md:px-6 py-16">
         <div className="max-w-4xl mx-auto overflow-visible">
           <div 
-            className="prose prose-lg dark:prose-invert max-w-none break-words
+            className="prose prose-lg dark:prose-invert max-w-none break-words ql-editor rich-text-content
               prose-headings:font-extrabold prose-headings:tracking-tight
               prose-p:leading-relaxed prose-p:text-muted-foreground
               prose-img:rounded-3xl prose-img:shadow-2xl prose-img:mx-auto

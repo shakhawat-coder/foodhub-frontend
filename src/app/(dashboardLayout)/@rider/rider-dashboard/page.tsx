@@ -102,7 +102,7 @@ export default function RiderDashboardPage() {
     <div className="space-y-8 p-1">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-primary to-orange-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-extrabold tracking-tight text-primary">
             Rider Command Center
           </h1>
           <p className="text-muted-foreground mt-1">Real-time delivery management and coordination.</p>

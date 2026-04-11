@@ -79,12 +79,13 @@ export default function Banner({ banners = [] }: BannerProps) {
                 loop
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                className="h-[70vh] w-full group"
+                className="h-[60vh] sm:h-[70vh] w-full group"
             >
                 {displaySlides.map((slide) => (
                     <SwiperSlide key={slide.id}>
                         <div className="relative h-full w-full">
                             {/* Background Image */}
+                            {/* ... previous img/Image logic ... */}
                             {typeof slide.image === 'string' ? (
                                 <img
                                     src={slide.image}
@@ -105,22 +106,22 @@ export default function Banner({ banners = [] }: BannerProps) {
                             <div className={`absolute inset-0 bg-linear-to-r ${slide.color} via-black/40 to-transparent`} />
 
                             {/* Content Layer */}
-                            <div className="absolute inset-0 flex items-center pt-20 px-6 md:px-20 lg:px-32">
+                            <div className="absolute inset-0 flex items-center pt-12 sm:pt-20 px-6 md:px-20 lg:px-32">
                                 <div className="max-w-2xl text-white">
-                                    <p className="text-orange-400 font-bold tracking-[0.2em] uppercase text-[10px] md:text-xs mb-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                    <p className="text-orange-400 font-extrabold tracking-[0.2em] uppercase text-[9px] sm:text-xs mb-2 sm:mb-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
                                         {slide.subtitle}
                                     </p>
-                                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 leading-none md:leading-tight animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                                    <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 leading-tight animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                                         {slide.title}
                                     </h1>
-                                    <p className="text-gray-200 text-xs md:text-base mb-6 max-w-lg leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
+                                    <p className="text-gray-200 text-[11px] sm:text-sm lg:text-base mb-5 sm:mb-6 max-w-lg leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
                                         {slide.description}
                                     </p>
                                     <div className="animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
                                         <Link href={slide.url}>
-                                            <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full px-6 py-2 h-10 text-sm group/btn">
+                                            <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full px-5 sm:px-8 py-2 h-9 sm:h-11 text-xs sm:text-sm group/btn shadow-lg shadow-orange-500/20">
                                                 {slide.buttonText}
-                                                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                                                <ArrowRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover/btn:translate-x-1" />
                                             </Button>
                                         </Link>
                                     </div>

@@ -164,3 +164,59 @@
 .quill-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke {
   stroke: var(--primary);
 }
+
+/* Rich Text & Quill Content Rendering */
+.ql-editor {
+  height: auto !important;
+  padding: 0 !important;
+  overflow-y: visible !important;
+}
+
+.ql-editor p {
+  margin-bottom: 1.25rem;
+}
+
+.ql-editor ul, .ql-editor ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+  list-style-type: initial;
+}
+
+.ql-editor ol {
+  list-style-type: decimal;
+}
+
+.ql-editor blockquote {
+  border-left: 4px solid var(--primary);
+  padding-left: 1.5rem;
+  font-style: italic;
+  margin-bottom: 1.25rem;
+  background: var(--muted);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.ql-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  margin: 1.5rem 0;
+}
+
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ql-align-justify {
+  text-align: justify;
+}
+
+/* Summernote Compatibility */
+.note-editable p {
+  margin-bottom: 1.25rem;
+}

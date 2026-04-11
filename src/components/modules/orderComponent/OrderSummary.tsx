@@ -48,6 +48,13 @@ interface PaymentMethod {
   email?: string;
 }
 
+interface ProviderInfo {
+  id: string;
+  name: string;
+  phone: string;
+  address: string;
+}
+
 interface OrderSummaryData {
   orderNumber: string;
   orderDate: string;
@@ -63,6 +70,7 @@ interface OrderSummaryData {
   shippingMethod: string;
   estimatedDelivery: string;
   paymentMethod: PaymentMethod;
+  providers: ProviderInfo[];
 }
 
 
@@ -87,8 +95,22 @@ const OrderSummary = ({
         const data: any = await ordersAPI.getById(orderId);
 
 
-        const subtotal = data.items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
-        const tax = data.totalAmount - subtotal;
+        const subtotal = data.totalAmount;
+        const discount = data.discountAmount || 0;
+        const total = data.payableAmount || (subtotal - discount);
+
+        const uniqueProviders = new Map();
+        data.items.forEach((item: any) => {
+           const p = item.meal?.provider;
+           if (p && !uniqueProviders.has(p.id)) {
+             uniqueProviders.set(p.id, {
+               id: p.id,
+               name: p.name,
+               phone: p.phone,
+               address: p.address
+             });
+           }
+        });
 
         // Map backend order to frontend OrderSummaryData
         const mappedOrder: OrderSummaryData = {
@@ -110,8 +132,9 @@ const OrderSummary = ({
           })),
           subtotal: subtotal,
           shipping: 0,
-          tax: tax,
-          total: data.totalAmount,
+          tax: 0,
+          discount: discount,
+          total: total,
           shippingAddress: {
             name: data.address.split(',')[0].trim(),
             street: data.address.split(',')[1]?.trim() || "",
@@ -127,7 +150,8 @@ const OrderSummary = ({
             type: "bank",
             lastFour: "",
             cardBrand: "Cash on Delivery",
-          }
+          },
+          providers: Array.from(uniqueProviders.values()),
         };
         setOrder(mappedOrder);
       } catch (error) {
@@ -383,7 +407,6 @@ const OrderSummary = ({
                 </div>
               </CardContent>
             </Card>
-
             {/* Payment Information */}
             <Card className="shadow-none">
               <CardHeader className="pb-4">
@@ -445,8 +468,38 @@ const OrderSummary = ({
                 )}
               </CardContent>
             </Card>
+
+            {/* Provider Information */}
+            <Card className="shadow-none mt-6">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold">
+                  <div className="bg-primary/10 p-1.5 rounded-lg">
+                    <Truck className="size-4 text-primary" />
+                  </div>
+                  Restaurant Info
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {order.providers.map((p, i) => (
+                  <div key={p.id} className="space-y-2">
+                    <p className="font-bold text-base text-primary">{p.name}</p>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground flex items-center gap-2">
+                         <MapPin className="size-3" />
+                         {p.address}
+                      </p>
+                      <p className="text-sm text-muted-foreground flex items-center gap-2">
+                         <CreditCard className="size-3" /> 
+                         Phone: <span className="text-foreground font-medium">{p.phone}</span>
+                      </p>
+                    </div>
+                    {i < order.providers.length - 1 && <Separator className="mt-4" />}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
-        </div>
+        </div>  
 
         {/* Continue Shopping */}
         <div className="mt-10 text-center">

@@ -57,16 +57,16 @@ export default function Statistics() {
   ];
 
   return (
-    <div className="py-16 bg-primary text-primary-foreground relative overflow-hidden my-10">
+    <div className="py-8 sm:py-12 lg:py-16 bg-primary text-primary-foreground relative overflow-hidden">
       <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]"></div>
       <div className="container px-4 mx-auto relative z-10">
-        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 text-center">
           {stats.map((stat, i) => (
             <StaggerItemScale key={i} className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-4 shadow-sm">
-                {stat.icon}
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/20 flex items-center justify-center mb-4 shadow-sm">
+                <div className="scale-75 sm:scale-100">{stat.icon}</div>
               </div>
-              <div className="text-4xl md:text-5xl font-extrabold mb-2">
+              <div className="text-2xl sm:text-4xl lg:text-5xl font-extrabold mb-1 sm:mb-2 text-white">
                 <CountUp 
                   end={stat.value} 
                   prefix={stat.prefix} 
@@ -78,7 +78,7 @@ export default function Statistics() {
                   duration={2.5}
                 />
               </div>
-              <div className="text-sm md:text-base font-medium opacity-80 uppercase tracking-wide">{stat.label}</div>
+              <div className="text-[10px] sm:text-xs lg:text-sm font-bold opacity-90 uppercase tracking-widest">{stat.label}</div>
             </StaggerItemScale>
           ))}
         </StaggerContainer>

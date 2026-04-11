@@ -19,6 +19,9 @@ import {
   UserPlus,
   BarChart3,
   Newspaper,
+  MessageSquare,
+  Mail,
+  Ticket,
 } from "lucide-react";
 
 export const sidebarData = {
@@ -126,6 +129,11 @@ export const sidebarData = {
       url: "/admin-dashboard/create-manager",
       icon: UserPlus,
     },
+    {
+      title: "Subscribers",
+      url: "/admin-dashboard/subscribers",
+      icon: Mail,
+    },
   ],
   RIDER: [
     {
@@ -183,6 +191,16 @@ export const sidebarData = {
       title: "Assignments",
       url: "/manager-dashboard/assign-rider",
       icon: ShieldCheck,
+    },
+    {
+      title: "Contacts",
+      url: "/manager-dashboard/contacts",
+      icon: MessageSquare,
+    },
+    {
+      title: "Coupons",
+      url: "/manager-dashboard/coupons",
+      icon: Ticket,
     },
   ],
 };

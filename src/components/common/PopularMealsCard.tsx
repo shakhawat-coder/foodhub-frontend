@@ -19,7 +19,7 @@ export function PopularMealsCard({ meal }: { meal: MealCardProps }) {
     return (
         <Link href={`/meals/${meal.id}`} className="overflow-hidden relative transitionp-0 block w-full items-center">
             <div className="flex items-center gap-4 pb-5 mb-5 group">
-                <div className="h-24 w-24 md:h-28 md:w-28 shrink-0 rounded-lg overflow-hidden border">
+                <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 shrink-0 rounded-lg overflow-hidden border">
                     <img
                         src={meal.image || '/placeholder-meal.jpg'}
                         alt={meal.name}
@@ -28,14 +28,14 @@ export function PopularMealsCard({ meal }: { meal: MealCardProps }) {
                 </div>
                 <div className="flex-1 min-w-0 space-y-2">
                     <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-bold whitespace-nowrap group-hover:text-primary transition-colors">{meal.name}</h3>
+                        <h3 className="text-sm sm:text-lg font-bold truncate w-36 sm:w-auto group-hover:text-primary transition-colors">{meal.name}</h3>
                         <div className="flex-1 border-b border-muted-foreground/20 h-0 mt-1"></div>
-                        <span className="text-lg font-black text-primary shrink-0">
+                        <span className="text-sm sm:text-lg font-black text-primary shrink-0">
                             ${meal.price}
                         </span>
                     </div>
 
-                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed truncate">
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                         {meal.description}
                     </p>
                 </div>

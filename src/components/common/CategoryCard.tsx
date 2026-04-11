@@ -23,15 +23,15 @@ export default function CategoryCard({ id, name, image, itemCount, meals }: Cate
 
     return (
         <Link href={`/menu/${id}`} className="w-full">
-            <Card className="relative mx-auto w-full h-full aspect-square max-w-sm p-0 rounded-2xl overflow-hidden">
+            <Card className="relative w-full h-full aspect-square max-w-sm p-0 rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 z-30 bg-black/15" />
                 <img
                     src={image}
                     alt={name}
                     className="relative z-20 aspect-auto w-full h-full object-cover brightness-60 dark:brightness-40"
                 />
-                <CardHeader className="absolute w-full bottom-5 z-50 text-white">
-                    <CardTitle className="text-2xl">{name}</CardTitle>
+                <CardHeader className="absolute w-full bottom-5 z-30 text-white">
+                    <CardTitle className="text-2xl truncate">{name}</CardTitle>
                     <span className="w-full">{totalItems} items</span>
                     <span className="w-full text-sm text-white/90">View Menu</span>
                 </CardHeader>

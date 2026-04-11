@@ -39,9 +39,6 @@ export default function Footer() {
                             <li>
                                 <Link href="/restaurants" className="hover:text-yellow-500">Restaurants</Link>
                             </li>
-                            <li>
-                                <Link href="user-dashboard/order-tracking" className="hover:text-yellow-500">Track Your Order</Link>
-                            </li>
                         </ul>
                     </div>
 

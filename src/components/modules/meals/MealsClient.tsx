@@ -127,7 +127,7 @@ export function MealsClient({ initialMeals }: MealsClientProps) {
                 <div>
                     {/* Mobile Filter Button */}
                     <div className="mb-6 flex items-center justify-between lg:hidden">
-                        <h2 className="text-2xl font-bold">Menu</h2>
+                        <h2 className="text-2xl font-bold">All Meals</h2>
                         <Sheet>
                             <SheetTrigger asChild>
                                 <Button variant="outline" size="sm">

@@ -164,7 +164,7 @@ export function NavbarSearch({ className }: { className?: string }) {
     <div ref={wrapRef} className={cn("relative w-full min-w-0", className)}>
       <div
         className={cn(
-          "relative flex items-center gap-2 rounded-full border border-border/80 bg-background/90 px-1 py-1 shadow-sm transition-shadow",
+          "relative flex items-center gap-2 rounded-full border border-border/80 bg-background/90 px-1 shadow-sm transition-shadow",
           open && "ring-ring/40 ring-[3px]"
         )}
       >
@@ -177,7 +177,7 @@ export function NavbarSearch({ className }: { className?: string }) {
           }}
           onFocus={() => setOpen(true)}
           placeholder="Search for food, restaurants..."
-          className="h-10 flex-1 border-0 bg-transparent pl-9 pr-20 shadow-none focus-visible:ring-0"
+          className="h-9 flex-1 border-0 bg-transparent dark:bg-transparent pl-9 pr-20 shadow-none focus-visible:ring-0"
           aria-autocomplete="list"
           aria-expanded={showPanel}
           autoComplete="off"

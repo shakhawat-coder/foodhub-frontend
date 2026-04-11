@@ -36,7 +36,7 @@ export default function TopRestaurants() {
     }, []);
 
     return (
-        <section className="py-12 lg:py-20 px-3">
+        <section className="py-8 sm:py-12 lg:py-16 container mx-auto px-4">
             <div>
                 <SectionHeader
                     title="Discover the best dining experiences"

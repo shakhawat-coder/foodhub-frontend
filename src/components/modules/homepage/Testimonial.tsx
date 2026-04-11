@@ -60,9 +60,9 @@ export default function Testimonial() {
     if (loading) return null;
 
     return (
-        <div className="py-12 lg:py-20 overflow-hidden">
-            <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
-                <FadeInUp className="bg-yellow-100/50 dark:bg-yellow-900/10 backdrop-blur-3xl md:rounded-e-full overflow-hidden p-3 lg:p-10 h-full flex flex-col items-center justify-center md:-me-32 z-10">
+        <div className="py-8 sm:py-12 lg:py-16 overflow-hidden">
+            <div className="mt-4 md:mt-8 grid items-center gap-10 md:grid-cols-2">
+                <FadeInUp className="bg-yellow-100/50 dark:bg-yellow-900/10 backdrop-blur-3xl md:rounded-e-full overflow-hidden p-6 sm:p-8 lg:p-10 h-full flex flex-col items-center justify-center md:-me-32 z-10">
                     <SectionHeader
                         subtitle="Reviews"
                         title="What Our Customers Say"
@@ -75,16 +75,16 @@ export default function Testimonial() {
                     >
                         {data.map((item) => (
                             <SwiperSlide key={item.id}>
-                                <div className="rounded-2xl border p-8 shadow-sm max-w-full bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md">
+                                <div className="rounded-2xl border p-4 sm:p-8 shadow-sm max-w-full bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md">
                                     <div className="flex gap-1 mb-4 text-orange-500">
                                         {[...Array(5)].map((_, i) => (
                                             <Star
                                                 key={i}
-                                                className={`size-4 ${i < Math.floor(Number(item.rating)) ? 'fill-current' : 'text-gray-300'}`}
+                                                className={`size-3 sm:size-4 ${i < Math.floor(Number(item.rating)) ? 'fill-current' : 'text-gray-300'}`}
                                             />
                                         ))}
                                     </div>
-                                    <p className="mb-6 text-base leading-relaxed text-gray-600 dark:text-gray-300 italic">
+                                    <p className="mb-6 text-xs sm:text-sm lg:text-base leading-relaxed text-gray-700 dark:text-gray-300 italic font-medium">
                                         “{item.comment}”
                                     </p>
 
@@ -93,16 +93,16 @@ export default function Testimonial() {
                                             <img
                                                 src={item.user.image}
                                                 alt={item.user.name}
-                                                className="size-10 rounded-full object-cover border-2 border-primary/20"
+                                                className="size-8 sm:size-10 rounded-full object-cover border-2 border-primary/20"
                                             />
                                         ) : (
-                                            <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                                            <div className="size-8 sm:size-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs sm:text-sm">
                                                 {item.user?.name?.charAt(0).toUpperCase() || "?"}
                                             </div>
                                         )}
-                                        <div>
-                                            <h4 className="font-semibold text-sm">{item.user?.name}</h4>
-                                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                                        <div className="min-w-0">
+                                            <h4 className="font-bold text-xs sm:text-sm truncate">{item.user?.name}</h4>
+                                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
                                                 Happy Customer
                                             </span>
                                         </div>
