@@ -19,6 +19,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 import { authClient } from "@/lib/auth-client"
+import { riderAPI } from "@/lib/api"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -94,6 +95,14 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={async () => {
+              const { data: session } = await authClient.getSession();
+              if ((session?.user as any)?.role === "RIDER") {
+                try {
+                  await riderAPI.updateAvailability(false);
+                } catch (e) {
+                  console.error("Failed to set rider offline on logout", e);
+                }
+              }
               await authClient.signOut({
                 fetchOptions: {
                   onSuccess: () => {

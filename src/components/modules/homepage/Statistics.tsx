@@ -1,16 +1,60 @@
 "use client";
-
-import { Users, UtensilsCrossed, Star, Truck } from 'lucide-react'
-import { StaggerContainer, StaggerItemScale } from '@/components/common/MotionWrapper'
-import CountUp from 'react-countup'
+import React, { useEffect, useState } from 'react';
+import { Users, UtensilsCrossed, Star, Truck } from 'lucide-react';
+import { StaggerContainer, StaggerItemScale } from '@/components/common/MotionWrapper';
+import CountUp from 'react-countup';
+import { analyticsAPI, type PublicStats } from '@/lib/api';
 
 export default function Statistics() {
+  const [data, setData] = useState<PublicStats | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const stats = await analyticsAPI.getPublic();
+        setData(stats);
+      } catch (error) {
+        console.error("Failed to fetch public stats", error);
+      }
+    };
+    fetchStats();
+  }, []);
+
   const stats = [
-    { label: "Happy Customers", prefix: "", suffix: "K+", value: 10, separator: "", icon: <Users className="w-8 h-8" /> },
-    { label: "Restaurants", prefix: "", suffix: "+", value: 500, separator: "", icon: <UtensilsCrossed className="w-8 h-8" /> },
-    { label: "Food Items", prefix: "", suffix: "+", value: 2000, separator: ",", icon: <Star className="w-8 h-8" /> },
-    { label: "Delivery Drivers", prefix: "", suffix: "+", value: 150, separator: "", icon: <Truck className="w-8 h-8" /> }
-  ]
+    { 
+      label: "Happy Customers", 
+      prefix: "", 
+      suffix: data?.customers && data.customers >= 1000 ? "K+" : "+", 
+      value: data ? (data.customers >= 1000 ? data.customers / 1000 : data.customers) : 0, 
+      separator: "", 
+      icon: <Users className="w-8 h-8" />,
+      decimals: data?.customers && data.customers >= 1000 ? 1 : 0
+    },
+    { 
+      label: "Restaurants", 
+      prefix: "", 
+      suffix: "+", 
+      value: data?.restaurants ?? 0, 
+      separator: "", 
+      icon: <UtensilsCrossed className="w-8 h-8" /> 
+    },
+    { 
+      label: "Food Items", 
+      prefix: "", 
+      suffix: "+", 
+      value: data?.meals ?? 0, 
+      separator: ",", 
+      icon: <Star className="w-8 h-8" /> 
+    },
+    { 
+      label: "Delivery Drivers", 
+      prefix: "", 
+      suffix: "+", 
+      value: data?.riders ?? 0, 
+      separator: "", 
+      icon: <Truck className="w-8 h-8" /> 
+    }
+  ];
 
   return (
     <div className="py-16 bg-primary text-primary-foreground relative overflow-hidden my-10">
@@ -28,6 +72,7 @@ export default function Statistics() {
                   prefix={stat.prefix} 
                   suffix={stat.suffix} 
                   separator={stat.separator}
+                  decimals={stat.decimals ?? 0}
                   enableScrollSpy 
                   scrollSpyOnce 
                   duration={2.5}
@@ -39,5 +84,5 @@ export default function Statistics() {
         </StaggerContainer>
       </div>
     </div>
-  )
+  );
 }

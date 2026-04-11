@@ -139,7 +139,6 @@ const Navbar = ({
               alt={logo.alt}
             />
           </Link>
-          <NavbarSearch className="max-w-xl flex-1" />
           <div className="flex shrink-0 items-center gap-6">
             <div className="flex items-center">
               <NavigationMenu>
@@ -149,6 +148,7 @@ const Navbar = ({
               </NavigationMenu>
             </div>
           </div>
+          <NavbarSearch className="max-w-[250px] flex-1" />
           <div className="flex gap-2 items-center">
             <ModeToggle />
             {!sessionUser ? (
@@ -255,7 +255,9 @@ const Navbar = ({
               </Sheet>
             </div>
           </div>
-          <NavbarSearch />
+          <div className="px-2 pb-2">
+            <NavbarSearch className="max-w-md mx-auto" />
+          </div>
         </div>
       </div>
     </section>

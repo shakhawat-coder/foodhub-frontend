@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   UserPlus,
   BarChart3,
+  Newspaper,
 } from "lucide-react";
 
 export const sidebarData = {
@@ -112,6 +113,15 @@ export const sidebarData = {
       icon: Image,
     },
     {
+      title: "Blogs",
+      url: "/admin-dashboard/blogs",
+      icon: Newspaper,
+      items: [
+        { title: "All Blogs", url: "/admin-dashboard/blogs" },
+        { title: "Add Blog", url: "/admin-dashboard/blogs/create" },
+      ],
+    },
+    {
       title: "Create Manager",
       url: "/admin-dashboard/create-manager",
       icon: UserPlus,
@@ -149,6 +159,15 @@ export const sidebarData = {
       title: "Orders",
       url: "/manager-dashboard/orders",
       icon: ShoppingBasket,
+    },
+    {
+      title: "Blogs",
+      url: "/manager-dashboard/blogs",
+      icon: Newspaper,
+      items: [
+        { title: "All Blogs", url: "/manager-dashboard/blogs" },
+        { title: "Add Blog", url: "/manager-dashboard/blogs/create" },
+      ],
     },
     {
       title: "Riders",

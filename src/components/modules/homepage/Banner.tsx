@@ -105,22 +105,22 @@ export default function Banner({ banners = [] }: BannerProps) {
                             <div className={`absolute inset-0 bg-linear-to-r ${slide.color} via-black/40 to-transparent`} />
 
                             {/* Content Layer */}
-                            <div className="absolute inset-0 flex items-center px-6 md:px-20 lg:px-32">
+                            <div className="absolute inset-0 flex items-center pt-20 px-6 md:px-20 lg:px-32">
                                 <div className="max-w-2xl text-white">
-                                    <p className="text-orange-400 font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                    <p className="text-orange-400 font-bold tracking-[0.2em] uppercase text-[10px] md:text-xs mb-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
                                         {slide.subtitle}
                                     </p>
-                                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-none md:leading-tight animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 leading-none md:leading-tight animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                                         {slide.title}
                                     </h1>
-                                    <p className="text-gray-200 text-sm md:text-xl mb-10 max-w-lg leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
+                                    <p className="text-gray-200 text-xs md:text-base mb-6 max-w-lg leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
                                         {slide.description}
                                     </p>
                                     <div className="animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
                                         <Link href={slide.url}>
-                                            <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full px-10 py-6 h-auto text-base group/btn">
+                                            <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full px-6 py-2 h-10 text-sm group/btn">
                                                 {slide.buttonText}
-                                                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
+                                                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                                             </Button>
                                         </Link>
                                     </div>
@@ -149,8 +149,8 @@ export default function Banner({ banners = [] }: BannerProps) {
                 .swiper-button-next, .swiper-button-prev {
                     color: white !important;
                     background: rgba(0, 0, 0, 0.3);
-                    width: 50px !important;
-                    height: 50px !important;
+                    width: 36px !important;
+                    height: 36px !important;
                     border-radius: 50%;
                     backdrop-filter: blur(4px);
                     transition: all 0.3s ease;
@@ -165,7 +165,7 @@ export default function Banner({ banners = [] }: BannerProps) {
                     transform: scale(1.1);
                 }
                 .swiper-button-next::after, .swiper-button-prev::after {
-                    font-size: 20px !important;
+                    font-size: 16px !important;
                     font-weight: bold;
                 }
             `}</style>

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import type { ApexOptions } from "apexcharts";
 import { Sparkles } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { analyticsAPI, aiInsightsAPI, type DashboardAnalytics } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export function DashboardAnalyticsSection({ mode, days = 7 }: Props) {
+  const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState<DashboardAnalytics | null>(null);
   const [insights, setInsights] = useState<string[]>([]);
@@ -93,8 +95,28 @@ export function DashboardAnalyticsSection({ mode, days = 7 }: Props) {
         speed: 700,
       } as any,
     },
+    tooltip: {
+      theme: theme === "dark" ? "dark" : "light",
+    },
+    grid: {
+      borderColor: theme === "dark" ? "#1e293b" : "#e2e8f0",
+    },
     stroke: { curve: "smooth", width: 3 },
-    xaxis: { categories: labels },
+    xaxis: { 
+      categories: labels,
+      labels: {
+        style: {
+          colors: theme === "dark" ? "#94a3b8" : "#64748b",
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: theme === "dark" ? "#94a3b8" : "#64748b",
+        }
+      }
+    },
     dataLabels: { enabled: false },
     responsive: [{ breakpoint: 640, options: { legend: { position: "bottom" } } }],
   };
@@ -242,19 +264,32 @@ export function DashboardAnalyticsSection({ mode, days = 7 }: Props) {
           <CardHeader>
             <CardTitle className="text-lg font-bold">Logistics Status</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ReactApexChart
-              type="pie"
-              height={280}
-              options={{
-                labels: analytics.deliveryStatusStats.map((s) => s.status),
-                chart: baseChart.chart,
-                legend: { position: "bottom" },
-                responsive: baseChart.responsive,
-                colors: ["#fbbf24", "#3b82f6", "#8b5cf6", "#f97316", "#22c55e", "#ef4444"]
-              }}
-              series={analytics.deliveryStatusStats.map((s) => s.count)}
-            />
+          <CardContent className="flex flex-col items-center justify-center min-h-[280px]">
+            {analytics.deliveryStatusStats && analytics.deliveryStatusStats.some(s => s.count > 0) ? (
+              <ReactApexChart
+                type="pie"
+                height={280}
+                width="100%"
+                options={{
+                  labels: analytics.deliveryStatusStats.map((s) => 
+                    s.status.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                  ),
+                  chart: baseChart.chart,
+                  legend: { position: "bottom" },
+                  responsive: baseChart.responsive,
+                  colors: ["#fbbf24", "#3b82f6", "#8b5cf6", "#f97316", "#22c55e", "#ef4444"],
+                  tooltip: baseChart.tooltip,
+                }}
+                series={analytics.deliveryStatusStats.map((s) => s.count)}
+              />
+            ) : (
+              <div className="text-center py-10">
+                <div className="bg-muted/30 p-4 rounded-full inline-block mb-3">
+                  <Sparkles className="h-8 w-8 text-muted-foreground/30" />
+                </div>
+                <p className="text-sm text-muted-foreground italic">No recent logistics data available.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

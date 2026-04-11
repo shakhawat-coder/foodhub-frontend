@@ -190,6 +190,13 @@ export const reviewsAPI = {
   // Get meal reviews
   getByMeal: (mealId: string) =>
     apiRequest(`/review/${mealId}`, { method: "GET" }),
+
+  // Get testimonials
+  getTestimonials: () =>
+    apiRequest<any[]>("/review/testimonials", {
+      method: "GET",
+      cache: "no-store",
+    }),
 };
 
 // ============== PROVIDER API ==============
@@ -241,6 +248,10 @@ export const riderAPI = {
     }),
   getAvailableOrders: () =>
     apiRequest("/rider/available-orders", { method: "GET", cache: "no-store" }),
+  getMyOrders: () =>
+    apiRequest("/rider/my-orders", { method: "GET", cache: "no-store" }),
+  getProfile: () =>
+    apiRequest<any>("/rider/profile", { method: "GET", cache: "no-store" }),
   acceptOrder: (orderId: string) =>
     apiRequest(`/rider/accept-order/${orderId}`, { method: "POST" }),
   updateOrderStatus: (
@@ -319,6 +330,13 @@ export type DashboardAnalytics = {
   bestSellingItem: string;
 };
 
+export type PublicStats = {
+  customers: number;
+  restaurants: number;
+  meals: number;
+  riders: number;
+};
+
 export const analyticsAPI = {
   getAdmin: (days = 7) =>
     apiRequest<DashboardAnalytics>("/analytics/admin", {
@@ -331,6 +349,11 @@ export const analyticsAPI = {
       method: "GET",
       cache: "no-store",
       params: { days },
+    }),
+  getPublic: () =>
+    apiRequest<PublicStats>("/analytics/public", {
+      method: "GET",
+      cache: "no-store",
     }),
 };
 

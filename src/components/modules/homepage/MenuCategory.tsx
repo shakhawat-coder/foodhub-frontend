@@ -4,6 +4,7 @@ import React from 'react'
 import { categoriesAPI } from '@/lib/api';
 import Link from 'next/link';
 import { StaggerContainer, StaggerItem, FadeInUp } from '@/components/common/MotionWrapper';
+import { Button } from '@/components/ui/button';
 
 
 export default async function MenuCategory() {
@@ -28,9 +29,11 @@ export default async function MenuCategory() {
             <FadeInUp delay={0.6} className='flex justify-center mt-8'>
                 <Link
                     href="/menu"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90"
                 >
-                    View All Menu
+                    <Button variant="outline" className="rounded-full px-8 py-6 font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-white transition-all shadow-md">
+                        View All Menu
+                    </Button>
+
                 </Link>
             </FadeInUp>
         </div>

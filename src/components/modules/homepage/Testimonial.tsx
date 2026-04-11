@@ -1,68 +1,111 @@
 "use client";
 
 import SectionHeader from "@/components/common/SectionHeader";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FadeInUp, FadeInRight } from "@/components/common/MotionWrapper";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
+import { Star } from "lucide-react";
+import { reviewsAPI } from "@/lib/api";
 
 import "swiper/css";
 import "swiper/css/pagination";
-const testimonials = [
+
+const fallbackTestimonials = [
     {
-        id: 1,
-        name: "Rahim Ahmed",
-        role: "Food Lover",
-        message:
-            "The food quality is outstanding and delivery is always on time. FoodHub has become my go-to app for ordering meals.",
+        id: "fb1",
+        rating: 5,
+        comment: "The food quality is outstanding and delivery is always on time. FoodHub has become my go-to app for ordering meals.",
+        user: { name: "Rahim Ahmed", image: null }
     },
     {
-        id: 2,
-        name: "Nusrat Jahan",
-        role: "Regular Customer",
-        message:
-            "Amazing variety of restaurants and very easy to order. The interface is clean and user-friendly.",
+        id: "fb2",
+        rating: 5,
+        comment: "Amazing variety of restaurants and very easy to order. The interface is clean and user-friendly.",
+        user: { name: "Nusrat Jahan", image: null }
     },
     {
-        id: 3,
-        name: "Tanvir Hasan",
-        role: "Office Worker",
-        message:
-            "Fast delivery and great taste. I especially love the healthy meal options available here.",
+        id: "fb3",
+        rating: 5,
+        comment: "Fast delivery and great taste. I especially love the healthy meal options available here.",
+        user: { name: "Tanvir Hasan", image: null }
     },
 ];
 
-
 export default function Testimonial() {
-    return (
-        <div className="py-12 lg:py-20">
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        const fetchTestimonials = async () => {
+            try {
+                const res = await reviewsAPI.getTestimonials();
+                console.log(res);
+                if (Array.isArray(res) && res.length > 0) {
+                    setData(res);
+                } else {
+                    setData(fallbackTestimonials);
+                }
+            } catch (error) {
+                console.error("Failed to fetch testimonials", error);
+                setData(fallbackTestimonials);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTestimonials();
+    }, []);
+
+    if (loading) return null;
+
+    return (
+        <div className="py-12 lg:py-20 overflow-hidden">
             <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
-                <FadeInUp className="bg-yellow-100/50 backdrop:blur-3xl md:rounded-e-full overflow-hidden p-3 lg:p-10 h-full flex flex-col items-center justify-center md:-me-32 z-10">
+                <FadeInUp className="bg-yellow-100/50 dark:bg-yellow-900/10 backdrop-blur-3xl md:rounded-e-full overflow-hidden p-3 lg:p-10 h-full flex flex-col items-center justify-center md:-me-32 z-10">
                     <SectionHeader
                         subtitle="Reviews"
                         title="What Our Customers Say"
-
                     />
                     <Swiper
                         modules={[Autoplay]}
                         autoplay={{ delay: 4500, disableOnInteraction: false }}
-                        loop
-                        className="max-w-full"
+                        loop={data.length > 1}
+                        className="max-w-full w-full"
                     >
-                        {testimonials.map((item) => (
+                        {data.map((item) => (
                             <SwiperSlide key={item.id}>
-                                <div className="rounded-2xl border p-8 shadow-sm max-w-full">
-                                    <p className="mb-6 text-base leading-relaxed text-gray-600">
-                                        “{item.message}”
+                                <div className="rounded-2xl border p-8 shadow-sm max-w-full bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md">
+                                    <div className="flex gap-1 mb-4 text-orange-500">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className={`size-4 ${i < Math.floor(Number(item.rating)) ? 'fill-current' : 'text-gray-300'}`}
+                                            />
+                                        ))}
+                                    </div>
+                                    <p className="mb-6 text-base leading-relaxed text-gray-600 dark:text-gray-300 italic">
+                                        “{item.comment}”
                                     </p>
 
-                                    <div>
-                                        <h4 className="font-semibold">{item.name}</h4>
-                                        <span className="text-sm text-muted-foreground">
-                                            {item.role}
-                                        </span>
+                                    <div className="flex items-center gap-3">
+                                        {item.user?.image ? (
+                                            <img
+                                                src={item.user.image}
+                                                alt={item.user.name}
+                                                className="size-10 rounded-full object-cover border-2 border-primary/20"
+                                            />
+                                        ) : (
+                                            <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                                                {item.user?.name?.charAt(0).toUpperCase() || "?"}
+                                            </div>
+                                        )}
+                                        <div>
+                                            <h4 className="font-semibold text-sm">{item.user?.name}</h4>
+                                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                                                Happy Customer
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </SwiperSlide>
