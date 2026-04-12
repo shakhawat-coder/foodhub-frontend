@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FoodChatbot } from "@/components/layout/food-chatbot";
+import ScrollManager from "@/components/common/ScrollManager";
 
 export default function RootLayout({
   children,
@@ -42,6 +43,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <ScrollManager />
           {children}
           <FoodChatbot />
           <Toaster />

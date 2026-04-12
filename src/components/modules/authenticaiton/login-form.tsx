@@ -16,6 +16,9 @@ import * as z from "zod"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation" 
+import { IconBrandGoogle } from "@tabler/icons-react"
+import { Separator } from "@/components/ui/separator"
+
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) { 
   const router = useRouter() 
   const quickLoginCredentials = [ 
@@ -91,6 +94,19 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
       toast.error("Something went wrong. Please try again.", { id: toastId })
     }
   }
+
+  const handleGoogleLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: `${window.location.origin}/auth-callback`, 
+      })
+    } catch (error) {
+      console.error("Google login error:", error)
+      toast.error("Failed to initiate Google login.")
+    }
+  }
+
   const onSubmit = async (values: FormValues) => {
     await loginWithCredentials(values)
   }
@@ -135,8 +151,8 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
               >
                 <div>
                   <p className="font-medium">{account.label}</p>
-                  <p className="text-muted-foreground text-xs">{account.email}</p>
-                  <p className="text-muted-foreground text-xs">{account.password}</p>
+                  {/* <p className="text-muted-foreground text-xs">{account.email}</p>
+                  <p className="text-muted-foreground text-xs">{account.password}</p> */}
                 </div>
               </Button>
             ))}
@@ -146,6 +162,23 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
       <CardFooter className="flex flex-col gap-4">
         <Button form="login-form" type="submit" className="w-full mt-4 cursor-pointer" disabled={isSubmitting}>
           {isSubmitting ? "Logging in..." : "Log In"}
+        </Button>
+
+        <div className="flex items-center gap-4 w-full">
+          <Separator className="flex-1" />
+          <span className="text-muted-foreground text-xs uppercase">Or</span>
+          <Separator className="flex-1" />
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full cursor-pointer"
+          onClick={handleGoogleLogin}
+          disabled={isSubmitting}
+        >
+          <IconBrandGoogle className="mr-2 h-4 w-4" />
+          Login with Google
         </Button>
         <FieldDescription className="text-center">
           Don&apos;t have an account? <Link href="/signup">Sign Up</Link>

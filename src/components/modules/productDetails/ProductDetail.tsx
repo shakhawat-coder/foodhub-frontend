@@ -145,14 +145,14 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
 
 
   return (
-    <div className="space-y-10 px-5">
+    <div className="space-y-10 px-5 animate-in fade-in duration-1000">
       <section className={cn("pt-20", className)}>
         <div className="container">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-            <div>
+            <div className="animate-in slide-in-from-left-8 duration-700">
               <ProductImages images={productDetails.images} />
             </div>
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in slide-in-from-right-8 duration-700">
               <div className="space-y-4">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="flex-1">
@@ -239,7 +239,7 @@ const ProductDetails = ({ className, meal, relatedMeals }: ProductDetail1Props) 
             <h2 className="text-3xl font-bold tracking-tight">Customer Reviews</h2>
             <RecentReviews reviews={reviews} isLoading={isLoadingReviews} />
           </div>
-          <div className="space-y-8">
+          <div className="space-y-8 animate-in slide-in-from-right-4 duration-700">
             <h2 className="text-3xl font-bold tracking-tight">Leave a Review</h2>
             <ReviewForm mealId={meal.id} onReviewSubmit={fetchReviews} />
           </div>
@@ -297,7 +297,7 @@ const ProductImages = ({ images }: ProductImagesProps) => {
       >
         <div className="flex flex-col gap-4">
           <CarouselItem className="w-full">
-            <AspectRatio ratio={1} className="overflow-hidden rounded-lg bg-muted">
+            <AspectRatio ratio={16/10} className="overflow-hidden rounded-2xl bg-muted shadow-2xl border-4 border-background">
               <img
                 srcSet={images[selectedIndex].srcset}
                 alt={images[selectedIndex].alt}
@@ -318,7 +318,7 @@ const ProductImages = ({ images }: ProductImagesProps) => {
         <CarouselContent>
           {images.map((img, index) => (
             <CarouselItem key={`product-detail-mobile-${index}`}>
-              <AspectRatio ratio={1} className="overflow-hidden rounded-lg bg-muted">
+              <AspectRatio ratio={4/3} className="overflow-hidden rounded-lg bg-muted">
                 <img
                   srcSet={img.srcset}
                   alt={img.alt}
@@ -685,8 +685,12 @@ const RecentReviews = ({ reviews, isLoading }: { reviews: any[]; isLoading: bool
 
   return (
     <div className="space-y-6">
-      {reviews.map((review) => (
-        <div key={review.id} className="flex gap-4 p-4 rounded-xl border bg-background hover:shadow-md transition-shadow">
+      {reviews.map((review, idx) => (
+        <div 
+          key={review.id} 
+          className="flex gap-4 p-4 rounded-xl border bg-background hover:shadow-lg transition-all hover:-translate-y-1 duration-300 animate-in slide-in-from-bottom-4 fade-in"
+          style={{ animationDelay: `${idx * 100}ms` }}
+        >
           <Avatar className="h-10 w-10">
             <AvatarImage src={review.user.image} alt={review.user.name} />
             <AvatarFallback>{review.user.name[0]}</AvatarFallback>

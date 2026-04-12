@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import React, { useState, useEffect } from "react";
 import { CheckCircle, Clock, Truck, CookingPot, XCircle, Loader2, ShoppingBag } from "lucide-react";
@@ -92,12 +93,7 @@ export default function Page() {
     const canCancel = status === "PENDING" || status === "PREPARING";
 
     if (authPending || isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-muted-foreground animate-pulse">Fetching your orders...</p>
-            </div>
-        );
+        return <DashboardLoading />;
     }
 
     if (!session) {

@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { managerAPI } from "@/lib/api";
@@ -6,13 +7,23 @@ import { useEffect, useState } from "react";
 
 export default function ManagerReportsPage() {
   const [reports, setReports] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const data = await managerAPI.getReports().catch(() => null);
-      setReports(data);
+      try {
+        setLoading(true);
+        const data = await managerAPI.getReports().catch(() => null);
+        setReports(data);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
+
+  if (loading) {
+    return <DashboardLoading />;
+  }
 
   return (
     <div className="space-y-4">

@@ -54,6 +54,11 @@ export default function OffersDiscounts() {
       return;
     }
 
+    if ((session.user as any).role !== "CUSTOMER") {
+      toast.error("Only customers can collect coupons");
+      return;
+    }
+
     setClaimingId(couponId);
     try {
       await couponsAPI.collect(couponId);
@@ -102,14 +107,20 @@ export default function OffersDiscounts() {
               <p className="text-muted-foreground mb-4 sm:mb-6 text-[11px] sm:text-sm lg:text-base leading-relaxed">{coupon.description}</p>
               <div className="flex flex-col gap-1 sm:gap-2">
                 <p className="text-[10px] sm:text-xs text-muted-foreground font-medium italic">Min order: ${coupon.minOrderAmount}</p>
-                <Button 
-                  variant="default" 
-                  disabled={claimingId === coupon.id || isClaimed(coupon.id)}
-                  onClick={() => handleClaim(coupon.id)}
-                  className={`w-fit h-9 sm:h-11 px-6 sm:px-8 rounded-xl text-xs sm:text-sm font-bold transition-all hover:scale-105 active:scale-95 ${isClaimed(coupon.id) ? 'bg-gray-400 cursor-not-allowed opacity-80' : (index % 2 === 0 ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-emerald-500 hover:bg-emerald-600 text-white')}`}
-                >
-                  {claimingId === coupon.id ? <><Loader2 className="w-3 h-3 sm:w-4 h-4 mr-2 animate-spin" /> Claiming...</> : (isClaimed(coupon.id) ? "Claimed" : "Claim Now")}
-                </Button>
+                {(!session || (session.user as any).role === "CUSTOMER") ? (
+                  <Button 
+                    variant="default" 
+                    disabled={claimingId === coupon.id || isClaimed(coupon.id)}
+                    onClick={() => handleClaim(coupon.id)}
+                    className={`w-fit h-9 sm:h-11 px-6 sm:px-8 rounded-xl text-xs sm:text-sm font-bold transition-all hover:scale-105 active:scale-95 ${isClaimed(coupon.id) ? 'bg-gray-400 cursor-not-allowed opacity-80' : (index % 2 === 0 ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-emerald-500 hover:bg-emerald-600 text-white')}`}
+                  >
+                    {claimingId === coupon.id ? <><Loader2 className="w-3 h-3 sm:w-4 h-4 mr-2 animate-spin" /> Claiming...</> : (isClaimed(coupon.id) ? "Claimed" : "Claim Now")}
+                  </Button>
+                ) : (
+                  <div className="w-fit h-9 sm:h-11 px-6 sm:px-8 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center bg-muted text-muted-foreground cursor-not-allowed">
+                     Customers Only
+                  </div>
+                )}
               </div>
             </div>
             

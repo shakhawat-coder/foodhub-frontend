@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { riderAPI } from "@/lib/api";
@@ -23,7 +24,7 @@ export default function RiderHistoryPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Delivery History</h1>
       {loading ? (
-        <p>Loading...</p>
+        <DashboardLoading />
       ) : history.length === 0 ? (
         <p className="text-muted-foreground">No delivery history yet.</p>
       ) : (

@@ -18,6 +18,8 @@ import { riderAPI } from "@/lib/api"
 import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useRouter } from "next/navigation"
+import { IconBrandGoogle } from "@tabler/icons-react"
+import { Separator } from "@/components/ui/separator"
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -142,6 +144,18 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: `${window.location.origin}/auth-callback`,
+      })
+    } catch (error) {
+      console.error("Google login error:", error)
+      toast.error("Failed to initiate Google login.")
+    }
+  }
+
   return (
     <Card {...props}>
       <CardHeader>
@@ -225,6 +239,23 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       <CardFooter className="flex flex-col gap-4">
         <Button form="signup-form" type="submit" className="w-full mt-4 cursor-pointer" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Sign Up"}
+        </Button>
+
+        <div className="flex items-center gap-4 w-full">
+          <Separator className="flex-1" />
+          <span className="text-muted-foreground text-xs uppercase">Or</span>
+          <Separator className="flex-1" />
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full cursor-pointer"
+          onClick={handleGoogleLogin}
+          disabled={isSubmitting}
+        >
+          <IconBrandGoogle className="mr-2 h-4 w-4" />
+          Continue with Google
         </Button>
         <FieldDescription className="text-center">
           Already have an account? <Link href="/login">Sign In</Link>

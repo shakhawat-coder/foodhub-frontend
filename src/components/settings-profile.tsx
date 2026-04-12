@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { ordersAPI, usersAPI } from "@/lib/api";
+import ProfilePictureUpload from "@/components/common/ProfilePictureUpload";
 
 interface ProfileFormData {
   name: string;
@@ -179,6 +180,14 @@ const UserProfile = ({ defaultValues, className }: UserProfileProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Profile Picture */}
+        <div className="flex justify-center pb-2 border-b">
+          <ProfilePictureUpload
+            currentImage={session?.user?.image}
+            userName={session?.user?.name}
+            size="lg"
+          />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="name">Full Name</Label>
           <Input
@@ -196,6 +205,8 @@ const UserProfile = ({ defaultValues, className }: UserProfileProps) => {
             type="email"
             placeholder="Enter your email"
             value={form.email}
+            disabled
+            className="bg-muted/50 text-muted-foreground cursor-not-allowed"
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           />
         </div>
@@ -211,19 +222,21 @@ const UserProfile = ({ defaultValues, className }: UserProfileProps) => {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="address">Delivery Address</Label>
-          <Textarea
-            id="address"
-            placeholder="Enter your complete delivery address"
-            rows={3}
-            value={form.address}
-            onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-          />
-          <p className="text-xs text-muted-foreground">
-            This address will be used for your future orders
-          </p>
-        </div>
+        {(!session?.user || (session.user as any).role === "CUSTOMER") && (
+          <div className="space-y-2">
+            <Label htmlFor="address">Delivery Address</Label>
+            <Textarea
+              id="address"
+              placeholder="Enter your complete delivery address"
+              rows={3}
+              value={form.address}
+              onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+            />
+            <p className="text-xs text-muted-foreground">
+              This address will be used for your future orders
+            </p>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
         <Button

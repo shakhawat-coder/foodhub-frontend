@@ -1,7 +1,7 @@
 import { MealsClient } from '@/components/modules/meals/MealsClient';
 import React from 'react';
+import { FadeInUp } from '@/components/common/MotionWrapper';
 import { mealsAPI } from '@/lib/api';
-
 
 export default async function MealsPage() {
     let meals: any[] = [];
@@ -25,10 +25,12 @@ export default async function MealsPage() {
                     <div className="absolute inset-0 bg-black/40" />
                     <div className="absolute bottom-0 left-0 w-full p-6 text-white md:p-10">
                         <div className="container mx-auto">
-                            <h1 className="mb-2 text-4xl font-bold md:text-5xl">All Meals</h1>
-                            <p className="max-w-2xl text-lg text-gray-200 line-clamp-2">
-                                Discover a variety of delicious meals from our collection.
-                            </p>
+                            <FadeInUp>
+                                <h1 className="mb-2 text-4xl font-bold md:text-5xl">All Meals</h1>
+                                <p className="max-w-2xl text-lg text-gray-200 line-clamp-2">
+                                    Discover a variety of delicious meals from our collection.
+                                </p>
+                            </FadeInUp>
                         </div>
                     </div>
                 </div>

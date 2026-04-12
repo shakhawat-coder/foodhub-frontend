@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import { useEffect, useState } from "react";
 import { Loader2, Store } from "lucide-react";
@@ -7,9 +8,11 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { providersAPI } from "@/lib/api";
 import ImageUpload from "@/components/common/ImageUpload";
+import ProfilePictureUpload from "@/components/common/ProfilePictureUpload";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { User } from "lucide-react";
 
 const DEFAULT_LOGO = "/restaurantlogo.png";
 
@@ -51,11 +54,7 @@ export default function ProviderProfilePage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex h-[70vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   return (
@@ -68,6 +67,24 @@ export default function ProviderProfilePage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
+        {/* User Profile Picture Card (For Provider User) */}
+        <Card className="border shadow-sm lg:col-span-2">
+           <CardHeader>
+             <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5 text-primary" />
+                Personal Avatar
+             </CardTitle>
+             <CardDescription>Your personal profile picture (different from restaurant logo).</CardDescription>
+           </CardHeader>
+           <CardContent className="flex flex-col items-center py-6">
+              <ProfilePictureUpload
+                currentImage={session?.user?.image}
+                userName={session?.user?.name}
+                size="lg"
+              />
+           </CardContent>
+        </Card>
+
         <Card className="border-primary/10 pt-0 shadow-lg">
           <CardHeader className="bg-primary/5 pb-6 pt-4">
             <div className="flex items-center gap-2">

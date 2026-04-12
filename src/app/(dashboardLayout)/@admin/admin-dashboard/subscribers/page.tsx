@@ -1,4 +1,5 @@
 "use client"
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import React, { useEffect, useState } from 'react'
 import { subscribersAPI } from '@/lib/api'
@@ -40,21 +41,13 @@ export default function AdminSubscribersPage() {
     }, [])
 
     if (loading) {
-        return (
-            <div className="space-y-6">
-                <Skeleton className="h-10 w-48" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Skeleton className="h-[300px]" />
-                    <Skeleton className="h-[300px]" />
-                </div>
-            </div>
-        )
+        return <DashboardLoading />;
     }
 
     const COLORS = ['#f43f5e', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'];
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-6">
             <div className="flex flex-col gap-1">
                 <h1 className="text-3xl font-bold tracking-tight">Newsletter Subscribers</h1>
                 <p className="text-muted-foreground text-lg">Manage and analyze your email list performance.</p>

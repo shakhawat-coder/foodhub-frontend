@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import { couponsAPI } from "@/lib/api";
 import { CouponsTable } from "@/components/modules/manager/coupons-table";
@@ -45,9 +46,7 @@ export default function CouponsPage() {
             </div>
 
             {loading ? (
-                <div className="flex items-center justify-center py-20">
-                    <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                </div>
+                <DashboardLoading />
             ) : (
                 <CouponsTable coupons={coupons} />
             )}

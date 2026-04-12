@@ -26,7 +26,7 @@ export default async function ManagerBlogsPage() {
           </p>
         </div>
         <Link href="/manager-dashboard/blogs/create">
-          <Button className="font-bold gap-2 shadow-lg shadow-primary/20 bg-linear-to-r from-primary to-orange-600 border-0 hover:opacity-90">
+          <Button className="font-bold gap-2 shadow-lg shadow-primary/20 cursor-pointer border-0 hover:opacity-90">
             <Plus className="h-5 w-5" /> Start Writing
           </Button>
         </Link>

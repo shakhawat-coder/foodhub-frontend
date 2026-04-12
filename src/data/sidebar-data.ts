@@ -134,6 +134,11 @@ export const sidebarData = {
       url: "/admin-dashboard/subscribers",
       icon: Mail,
     },
+    {
+      title: "Profile",
+      url: "/admin-dashboard/profile",
+      icon: UserCog,
+    },
   ],
   RIDER: [
     {
@@ -201,6 +206,11 @@ export const sidebarData = {
       title: "Coupons",
       url: "/manager-dashboard/coupons",
       icon: Ticket,
+    },
+    {
+      title: "Profile",
+      url: "/manager-dashboard/profile",
+      icon: UserCog,
     },
   ],
 };

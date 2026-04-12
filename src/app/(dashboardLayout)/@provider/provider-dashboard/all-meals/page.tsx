@@ -1,4 +1,5 @@
 "use client"
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import React, { useState, useEffect } from 'react'
 import {
@@ -66,11 +67,7 @@ export default function AllMeals() {
     }, [session]);
 
     if (isLoading) {
-        return (
-            <div className="flex h-100 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        );
+        return <DashboardLoading />;
     }
 
     return (

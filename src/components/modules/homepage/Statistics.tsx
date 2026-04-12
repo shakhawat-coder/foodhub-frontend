@@ -57,7 +57,7 @@ export default function Statistics() {
   ];
 
   return (
-    <div className="py-8 sm:py-12 lg:py-16 bg-primary text-primary-foreground relative overflow-hidden">
+    <div className="py-8 sm:py-12 lg:py-16 bg-zinc-900 dark:bg-zinc-950 text-white relative overflow-hidden">
       <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]"></div>
       <div className="container px-4 mx-auto relative z-10">
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 text-center">

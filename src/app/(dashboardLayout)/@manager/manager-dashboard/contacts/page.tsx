@@ -1,4 +1,5 @@
 "use client"
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import React, { useEffect, useState } from 'react'
 import { contactsAPI } from '@/lib/api'
@@ -34,16 +35,11 @@ export default function ManagerContactsPage() {
     }, [])
 
     if (loading) {
-        return (
-            <div className="space-y-6">
-                <Skeleton className="h-10 w-48" />
-                <Skeleton className="h-[400px] w-full" />
-            </div>
-        )
+        return <DashboardLoading />;
     }
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold tracking-tight">Contact Messages</h1>
             </div>

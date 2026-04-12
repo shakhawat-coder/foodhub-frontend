@@ -29,7 +29,7 @@ export default function Newsletter() {
 
   return (
     <div className="py-8 sm:py-12 lg:py-16 container mx-auto px-4">
-      <FadeInScale className="bg-gradient-to-r from-orange-500 to-rose-500 rounded-3xl p-6 sm:p-10 md:p-12 text-center text-white relative overflow-hidden shadow-xl">
+      <FadeInScale className="bg-zinc-900 dark:bg-zinc-950 rounded-3xl p-6 sm:p-10 md:p-12 text-center text-white relative overflow-hidden shadow-xl border border-white/10">
         <div className="absolute -top-24 -left-24 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
         <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
         

@@ -294,9 +294,15 @@ const Navbar = ({
                 <button
                   aria-expanded={dropdownOpen}
                   onClick={() => setDropdownOpen((v) => !v)}
-                  className="inline-flex items-center bg-white text-black shadow-md cursor-pointer justify-center rounded-full w-9 h-9 "
+                  className="inline-flex overflow-hidden items-center bg-muted text-foreground shadow-md cursor-pointer justify-center rounded-full w-9 h-9 border"
                 >
-                  {((sessionUser.name ?? sessionUser.email ?? "?") as string).charAt(0).toUpperCase()}
+                  {sessionUser.image ? (
+                    <img src={sessionUser.image} alt={sessionUser.name || "profile"} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="font-medium text-sm">
+                      {((sessionUser.name ?? sessionUser.email ?? "?") as string).charAt(0).toUpperCase()}
+                    </span>
+                  )}
                 </button>
                 {dropdownOpen && (
                   <div ref={dropdownRef} className="absolute right-5 top-7 mt-2 w-40 bg-popover text-popover-foreground rounded-md border shadow-md z-50">
@@ -365,7 +371,18 @@ const Navbar = ({
                     </Accordion>
                     {sessionUser ? (
                       <div className="flex flex-col gap-3">
-                        <div className="font-medium">Hello {sessionUser.name}</div>
+                        <div className="flex items-center gap-3 py-2 border-b">
+                          <div className="w-10 h-10 rounded-full bg-muted border flex items-center justify-center overflow-hidden shrink-0">
+                            {sessionUser.image ? (
+                              <img src={sessionUser.image} alt={sessionUser.name || "profile"} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="font-medium text-sm">
+                                {((sessionUser.name ?? sessionUser.email ?? "?") as string).charAt(0).toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+                          <div className="font-medium">Hello, {sessionUser.name}</div>
+                        </div>
                         <Link href={getDashboardPath((sessionUser as any).role)} className="w-full">
                           <Button className="w-full">Dashboard</Button>
                         </Link>

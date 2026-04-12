@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,11 +69,7 @@ export default function RiderAvailableOrdersPage() {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <h3 className="text-xl font-bold">Scanning the area...</h3>
-            <p className="text-muted-foreground mt-1">Looking for fresh delivery opportunities near you.</p>
-        </div>
+        <DashboardLoading />
       ) : orders.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-16 border-2 border-dashed rounded-[2.5rem] bg-muted/20 text-center animate-in fade-in zoom-in duration-500">
            <div className="p-6 bg-primary/10 rounded-full mb-6 text-primary ring-8 ring-primary/5">

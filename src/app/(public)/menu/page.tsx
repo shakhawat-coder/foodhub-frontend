@@ -2,6 +2,7 @@ import CategoryCard from '@/components/common/CategoryCard';
 import SectionHeader from '@/components/common/SectionHeader';
 import React from 'react'
 import { categoriesAPI } from '@/lib/api';
+import { StaggerContainer, StaggerItemScale } from '@/components/common/MotionWrapper';
 
 export default async function CategoryWiseMeal() {
     const categoriesRaw = await categoriesAPI.getAll() as any[];
@@ -11,11 +12,13 @@ export default async function CategoryWiseMeal() {
     return (
         <div className='pt-20 md:pt-32 pb-20 px-3'>
             <SectionHeader subtitle='Menu' title='Explore Our Meny' description='Indulge in a curated selection of dishes crafted with the finest ingredients and culinary expertise. Every plate tells a story of tradition and innovation.' />
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 '>
+            <StaggerContainer className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 '>
                 {categories.map((category: any) => (
-                    <CategoryCard key={category.id} {...category} />
+                    <StaggerItemScale key={category.id}>
+                        <CategoryCard {...category} />
+                    </StaggerItemScale>
                 ))}
-            </div>
+            </StaggerContainer>
         </div>
     )
 }

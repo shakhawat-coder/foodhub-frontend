@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,10 +12,16 @@ const statuses = ["PENDING", "APPROVED", "BLOCKED", "REJECTED"] as const;
 
 export default function ManagerRidersPage() {
   const [riders, setRiders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const load = async () => {
-    const data: any = await managerAPI.getRiders().catch(() => []);
-    setRiders(Array.isArray(data) ? data : []);
+    try {
+      setLoading(true);
+      const data: any = await managerAPI.getRiders().catch(() => []);
+      setRiders(Array.isArray(data) ? data : []);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -30,6 +37,10 @@ export default function ManagerRidersPage() {
       toast.error(error.message || "Failed to update rider");
     }
   };
+
+  if (loading) {
+    return <DashboardLoading />;
+  }
 
   return (
     <div className="space-y-4">

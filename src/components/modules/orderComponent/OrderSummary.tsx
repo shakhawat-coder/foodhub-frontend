@@ -226,7 +226,7 @@ const OrderSummary = ({
   const statusBadge = getStatusBadge(order.status);
 
   return (
-    <section className={cn("py-16 md:py-24", className)}>
+    <section className={cn("py-16 md:py-24 animate-in fade-in slide-in-from-bottom-4 duration-700", className)}>
       <div className="container max-w-4xl mx-auto">
         {/* Success Header */}
         <div className="mb-10 text-center">

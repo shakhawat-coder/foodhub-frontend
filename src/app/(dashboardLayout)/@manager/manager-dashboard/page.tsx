@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { managerAPI } from "@/lib/api";
@@ -8,13 +9,23 @@ import { DashboardAnalyticsSection } from "@/components/modules/dashboard/analyt
 
 export default function ManagerDashboardPage() {
   const [reports, setReports] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const data = await managerAPI.getReports().catch(() => null);
-      setReports(data);
+      try {
+        setLoading(true);
+        const data = await managerAPI.getReports().catch(() => null);
+        setReports(data);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
+
+  if (loading) {
+    return <DashboardLoading />;
+  }
 
   const cards = [
     { title: "Total Orders", value: reports?.totalOrders ?? 0, icon: ShoppingBag, color: "text-blue-600", bgColor: "bg-blue-50" },

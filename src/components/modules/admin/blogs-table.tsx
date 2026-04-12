@@ -80,15 +80,6 @@ export function AdminBlogsTable({ initialBlogs, role = "admin" }: BlogsTableProp
               <div className="text-2xl font-bold">{stats.thisMonth}</div>
            </CardContent>
         </Card>
-        <Card className="shadow-sm border-muted/60 transition-all hover:shadow-md">
-           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 text-muted-foreground uppercase tracking-tight text-[10px] font-bold">
-              <span>Distribution</span>
-              <Layout className="h-4 w-4 text-orange-600" />
-           </CardHeader>
-           <CardContent>
-              <div className="text-2xl font-bold">Grid Layout</div>
-           </CardContent>
-        </Card>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-muted/20 p-4 rounded-xl border border-muted/40 shadow-sm">

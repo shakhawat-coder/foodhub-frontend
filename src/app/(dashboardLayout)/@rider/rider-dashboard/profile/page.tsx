@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -7,8 +8,11 @@ import { riderAPI } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Phone, Truck, MapPin, Save, User, Globe } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import ProfilePictureUpload from "@/components/common/ProfilePictureUpload";
 
 export default function RiderProfilePage() {
+  const { data: session } = authClient.useSession();
   const [form, setForm] = useState({
     phone: "",
     vehicleType: "",
@@ -58,21 +62,41 @@ export default function RiderProfilePage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-primary to-orange-600 bg-clip-text text-transparent">
           Rider Profile
         </h1>
         <p className="text-muted-foreground mt-1">Manage your professional delivery information.</p>
       </div>
+
+      {/* Profile Picture Card */}
+      <Card className="border-muted/60 shadow-md">
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <User className="h-5 w-5 text-primary" />
+            Profile Picture
+          </CardTitle>
+          <CardDescription>Your public avatar shown to customers and managers.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center gap-4 py-6">
+          <ProfilePictureUpload
+            currentImage={session?.user?.image}
+            userName={session?.user?.name}
+            size="lg"
+          />
+          {session?.user?.name && (
+            <div className="text-center">
+              <p className="font-semibold">{session.user.name}</p>
+              <p className="text-sm text-muted-foreground">{session.user.email}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card className="border-muted/60 shadow-md">
         <CardHeader>

@@ -1,4 +1,5 @@
 "use client";
+import DashboardLoading from "@/components/common/DashboardLoading";
 
 import React, { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
@@ -58,11 +59,7 @@ export default function UserDashboardPage() {
     }, [session, authLoading]);
 
     if (authLoading || isLoading) {
-        return (
-            <div className="flex h-[80vh] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        );
+        return <DashboardLoading />;
     }
 
     const user = session?.user;
