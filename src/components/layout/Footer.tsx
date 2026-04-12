@@ -51,14 +51,14 @@ export default function Footer() {
                         </p>
                             <div className="flex gap-2">
                                 {[
-                                    { icon: Facebook, href: "https://facebook.com/foodhub" },
-                                    { icon: Instagram, href: "https://instagram.com/foodhub" },
-                                    { icon: Youtube, href: "https://youtube.com/foodhub" },
-                                    { icon: Linkedin, href: "https://linkedin.com/company/foodhub" }
+                                    { icon: Facebook, href: "https://facebook.com/" },
+                                    { icon: Instagram, href: "https://instagram.com/" },
+                                    { icon: Youtube, href: "https://youtube.com/" },
+                                    { icon: Linkedin, href: "https://linkedin.com/company/" } 
                                 ].map((social, i) => (
                                     <a
                                         key={i}
-                                        href={social.href}
+                                        href={social.href} 
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 transition-all duration-300 text-zinc-400 hover:text-white"
@@ -85,8 +85,8 @@ export default function Footer() {
                                         href={item.href}
                                         className="text-zinc-400 hover:text-primary transition-colors flex items-center group"
                                     >
-                                        <span className="w-0 group-hover:w-4 h-[1px] bg-primary transition-all duration-300" />
-                                        <span className="group-hover:ml-2 transition-all duration-300">{item.name}</span>
+                                        <span className="w-0 group-hover:w-4 h-[1px] bg-primary  transition-all duration-300" />
+                                        <span className="group-hover:ml-2 group-hover:text-primary transition-all duration-300">{item.name}</span>
                                     </Link>
                                 </li>
                             ))}
@@ -99,7 +99,7 @@ export default function Footer() {
                         <ul className="space-y-5">
                             <li>
                                 <a href="mailto:support@foodhub.com" className="flex items-center gap-4 text-zinc-400 hover:text-white transition-colors group">
-                                    <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/50 transition-all">
+                                    <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all">
                                         <Mail className="w-4 h-4 text-primary" />
                                     </div>
                                     <div>

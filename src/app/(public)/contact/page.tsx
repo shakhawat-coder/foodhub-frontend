@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Mail, Phone, MapPin, Send, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -53,25 +53,27 @@ export default function ContactPage() {
     {
       icon: <Phone className="w-6 h-6 text-blue-500" />,
       title: "Phone Number",
-      details: ["+1 (555) 123-4567", "+1 (555) 987-6543"],
+      details: [
+        { label: "+8801711111111", href: "tel:+8801711111111" },
+        { label: "+8801711111112", href: "tel:+8801711111112" }
+      ],
     },
     {
-      icon: <Mail className="w-6 h-6 text-emerald-500" />,
+      icon: <Mail className="w-6 h-6 text-emerald-500" />,  
       title: "Email Address",
-      details: ["support@foodhub.com", "info@foodhub.com"],
+      details: [
+        { label: "support@foodhub.com", href: "mailto:support@foodhub.com" },
+        { label: "info@foodhub.com", href: "mailto:info@foodhub.com" }
+      ],
     },
-    {
+    {  
       icon: <MapPin className="w-6 h-6 text-rose-500" />,
       title: "Our Location",
-      details: ["123 Foodie Street, Gourmet City", "New York, NY 10001, USA"],
+      details: [
+        { label: "123 Foodie Street, Gourmet City", href: "https://maps.google.com/?q=123+Foodie+Street,+Gourmet+City" },
+        { label: "New York, NY 10001, USA", href: "https://maps.google.com/?q=New+York,+NY+10001,+USA" }
+      ],
     },
-  ];
-
-  const socialLinks = [
-    { icon: <Facebook className="w-5 h-5" />, href: "#", color: "hover:text-blue-600" },
-    { icon: <Twitter className="w-5 h-5" />, href: "#", color: "hover:text-sky-500" },
-    { icon: <Instagram className="w-5 h-5" />, href: "#", color: "hover:text-pink-500" },
-    { icon: <Linkedin className="w-5 h-5" />, href: "#", color: "hover:text-blue-700" },
   ];
 
   return (
@@ -97,9 +99,15 @@ export default function ContactPage() {
                       <div>
                         <h3 className="font-bold text-lg mb-1">{info.title}</h3>
                         {info.details.map((detail, idx) => (
-                          <p key={idx} className="text-muted-foreground">
-                            {detail}
-                          </p>
+                          <a 
+                            key={idx} 
+                            href={detail.href}
+                            target={detail.href.startsWith("http") ? "_blank" : undefined}
+                            rel={detail.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                            className="text-muted-foreground block hover:text-primary transition-colors"
+                          >
+                            {detail.label}
+                          </a>
                         ))}
                       </div>
                     </CardContent>
@@ -107,21 +115,6 @@ export default function ContactPage() {
                 </StaggerItem>
               ))}
             </StaggerContainer>
-
-            <FadeInUp className="pt-6">
-              <h3 className="font-bold text-xl mb-4">Follow Us</h3>
-              <div className="flex gap-4">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    className={`w-11 h-11 rounded-full bg-background border border-border flex items-center justify-center transition-all ${social.color} hover:-translate-y-1 hover:shadow-md`}
-                  >
-                    {social.icon}
-                  </a>
-                ))}
-              </div>
-            </FadeInUp>
           </div>
 
           {/* Contact Form */}
@@ -209,24 +202,6 @@ export default function ContactPage() {
             </FadeInUp>
           </div>
         </div>
-
-        {/* Map Placeholder */}
-        <FadeInUp className="mt-20">
-          <div className="w-full h-[450px] rounded-3xl overflow-hidden bg-muted relative group shadow-lg">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-1000" />
-            <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-all duration-1000" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-background/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20 text-center max-w-sm transform group-hover:scale-105 transition-transform duration-500">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <MapPin className="w-8 h-8 text-primary" />
-                </div>
-                <h4 className="font-bold text-xl mb-2">Our Headquarters</h4>
-                <p className="text-muted-foreground mb-6 leading-relaxed">123 Foodie Street, Gourmet City, NY 10001, United States</p>
-                <Button variant="outline" className="rounded-full px-8 hover:bg-primary hover:text-primary-foreground transition-all">Get Directions</Button>
-              </div>
-            </div>
-          </div>
-        </FadeInUp>
       </div>
     </main>
   );

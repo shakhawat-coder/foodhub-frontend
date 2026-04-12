@@ -134,13 +134,13 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         </form>
         <div className="mt-4 space-y-2">
           <p className="text-sm font-medium">Quick Login Credentials</p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="flex flex-wrap gap-2">
             {quickLoginCredentials.map((account) => (
               <Button
                 key={account.label}
                 type="button"
                 variant="outline"
-                className="h-auto items-start justify-start p-3 text-left"
+                className="h-auto items-start justify-start p-3 text-left cursor-pointer"
                 onClick={() =>
                   loginWithCredentials({
                     email: account.email,

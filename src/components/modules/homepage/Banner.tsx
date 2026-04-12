@@ -149,7 +149,6 @@ export default function Banner({ banners = [] }: BannerProps) {
                 }
                 .swiper-button-next, .swiper-button-prev {
                     color: white !important;
-                    background: rgba(0, 0, 0, 0.3);
                     width: 36px !important;
                     height: 36px !important;
                     border-radius: 50%;
@@ -162,7 +161,6 @@ export default function Banner({ banners = [] }: BannerProps) {
                     opacity: 1;
                 }
                 .swiper-button-next:hover, .swiper-button-prev:hover {
-                    background: #f97316 !important;
                     transform: scale(1.1);
                 }
                 .swiper-button-next::after, .swiper-button-prev::after {

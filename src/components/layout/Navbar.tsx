@@ -142,7 +142,7 @@ const Navbar = ({
     if (item.title === "Meals" && reviewedMeals.length > 0) {
       return (
         <NavigationMenuItem key={item.title}>
-          <NavigationMenuTrigger className="bg-transparent hover:bg-muted font-medium">
+          <NavigationMenuTrigger className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-white/80 backdrop-blur-sm dark:bg-black/80 dark:backdrop-blur-sm px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground">
             <Link href={item.url}>{item.title}</Link>
           </NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -203,7 +203,7 @@ const Navbar = ({
       <NavigationMenuItem key={item.title}>
         <NavigationMenuLink
           asChild
-          className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground"
+          className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-white/80 backdrop-blur-sm dark:bg-black/80 dark:backdrop-blur-sm px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground"
         >
           <Link href={item.url}>{item.title}</Link>
         </NavigationMenuLink>
@@ -222,7 +222,7 @@ const Navbar = ({
             <div className="flex flex-col gap-4 pl-4 pt-2">
               <div className="grid grid-cols-2 gap-3">
                 {reviewedMeals.slice(0, 2).map((meal) => (
-                  <Link key={meal.id} href={`/meal/${meal.id}`} className="group space-y-2">
+                  <Link key={meal.id} href={`/meals/${meal.id}`} className="group space-y-2">
                     <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
                       <img 
                         src={meal.image || '/mealbanner.jpg'} 
