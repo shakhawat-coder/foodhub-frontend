@@ -39,7 +39,7 @@ export default function Footer() {
                         <Link href="/" className="flex items-center gap-2 group">
                             <div className="bg-primary p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-primary/20">
                                 <img
-                                    src="/logo.png"
+                                    src="/logo2.png"
                                     className="h-8 w-auto invert"
                                     alt="FoodHub Logo"
                                 />
@@ -78,7 +78,7 @@ export default function Footer() {
                                 { name: "Our Menu", href: "/meals" },
                                 { name: "Restaurants", href: "/restaurants" },
                                 { name: "Stories & Blogs", href: "/blogs" },
-                                { name: "Contact Us", href: "/contact-us" }
+                                { name: "Contact Us", href: "/contact" }
                             ].map((item, i) => (
                                 <li key={i}>
                                     <Link

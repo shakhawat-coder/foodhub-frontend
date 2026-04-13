@@ -69,7 +69,7 @@ import { mealsAPI } from "@/lib/api";
 const Navbar = ({
   logo = {
     url: "/",
-    src: "/logo.png",
+    src: "/logo2.png",
     alt: "logo"
   },
   menu = [
@@ -258,10 +258,10 @@ const Navbar = ({
           <Link href={logo.url} className="flex shrink-0 items-center gap-2">
             <img
               src={logo.src}
-              className="max-h-8 dark:invert"
+              className="max-h-11"
               alt={logo.alt}
             />
-          </Link>
+          </Link> 
           <div className="flex shrink-0 items-center gap-6">
             <div className="flex items-center">
               <NavigationMenu>
@@ -322,7 +322,7 @@ const Navbar = ({
             <Link href={logo.url} className="flex shrink-0 items-center gap-2">
               <img
                 src={logo.src}
-                className="max-h-8 dark:invert"
+                className="max-h-8"
                 alt={logo.alt}
               />
             </Link>

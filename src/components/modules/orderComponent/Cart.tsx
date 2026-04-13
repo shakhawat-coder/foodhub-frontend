@@ -51,7 +51,7 @@ export default function Cart() {
     };
 
     const fetchUserCoupons = async () => {
-        if (!session?.user?.id) return;
+        if (!session?.user?.id || (session.user as any).role !== "CUSTOMER") return;
         try {
             const res = await couponsAPI.getMy();
             setUserCoupons(res.data.filter((c: any) => !c.isUsed));

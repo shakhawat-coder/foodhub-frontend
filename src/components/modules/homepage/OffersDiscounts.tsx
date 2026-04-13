@@ -20,7 +20,7 @@ export default function OffersDiscounts() {
   const router = useRouter();
 
   const fetchMyCoupons = async () => {
-    if (!session) return;
+    if (!session || (session.user as any).role !== "CUSTOMER") return;
     try {
       const res = await couponsAPI.getMy();
       setMyCoupons(res.data || []);

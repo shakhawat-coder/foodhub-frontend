@@ -62,10 +62,10 @@ export function FoodChatbot() {
 
   return (
     <>
-      <Button
+      <Button 
         type="button"
         size="icon"
-        className="fixed right-6 bottom-6 z-[70] size-14 rounded-full shadow-2xl bg-linear-to-r from-primary to-orange-600 hover:scale-110 active:scale-95 transition-all duration-300 border-none"
+        className="fixed right-6 bottom-6 z-[40] size-14 rounded-full shadow-2xl bg-linear-to-r from-primary to-orange-600 hover:scale-110 active:scale-95 transition-all duration-300 border-none"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={open ? "Close food assistant" : "Open food assistant"}

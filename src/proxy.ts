@@ -28,6 +28,14 @@ function homeForRole(role: string): string {
 
 /** Whether this pathname belongs to the given role's dashboard tree */
 function pathAllowedForRole(pathname: string, role: string): boolean {
+  if (
+    pathname === "/cart" ||
+    pathname.startsWith("/cart/") ||
+    pathname === "/checkout" ||
+    pathname.startsWith("/checkout/")
+  ) {
+    return role === "CUSTOMER";
+  }
   const prefix = homeForRole(role);
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
 }
@@ -90,6 +98,8 @@ const PROTECTED_PREFIXES = [
   "/provider-dashboard",
   "/rider-dashboard",
   "/manager-dashboard",
+  "/cart",
+  "/checkout",
 ];
 
 export const config = {
@@ -99,5 +109,7 @@ export const config = {
     "/provider-dashboard/:path*",
     "/rider-dashboard/:path*",
     "/manager-dashboard/:path*",
+    "/cart/:path*",
+    "/checkout/:path*",
   ],
 };

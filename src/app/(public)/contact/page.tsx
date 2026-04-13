@@ -65,7 +65,7 @@ export default function ContactPage() {
         { label: "support@foodhub.com", href: "mailto:support@foodhub.com" },
         { label: "info@foodhub.com", href: "mailto:info@foodhub.com" }
       ],
-    },
+    },  
     {  
       icon: <MapPin className="w-6 h-6 text-rose-500" />,
       title: "Our Location",
