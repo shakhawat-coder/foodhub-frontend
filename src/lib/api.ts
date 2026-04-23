@@ -216,6 +216,8 @@ export const providersAPI = {
     apiRequest(`/provider/email/${email}`, { method: "GET" }),
   syncFromUsers: () =>
     apiRequest("/provider/sync/from-users", { method: "POST" }),
+  syncProvider: (userId: string) =>
+    apiRequest(`/provider/sync/${userId}`, { method: "POST" }),
   update: (id: string, data: any) =>
     apiRequest(`/provider/${id}`, {
       method: "PUT",

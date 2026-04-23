@@ -21,38 +21,38 @@ export default function Statistics() {
   }, []);
 
   const stats = [
-    { 
-      label: "Happy Customers", 
-      prefix: "", 
-      suffix: data?.customers && data.customers >= 1000 ? "K+" : "+", 
-      value: data ? (data.customers >= 1000 ? data.customers / 1000 : data.customers) : 0, 
-      separator: "", 
+    {
+      label: "Happy Customers",
+      prefix: "",
+      suffix: data?.customers && data.customers >= 1000 ? "K+" : "+",
+      value: data ? (data.customers >= 1000 ? data.customers / 1000 : data.customers) : 0,
+      separator: "",
       icon: <Users className="w-8 h-8" />,
       decimals: data?.customers && data.customers >= 1000 ? 1 : 0
     },
-    { 
-      label: "Restaurants", 
-      prefix: "", 
-      suffix: "+", 
-      value: data?.restaurants ?? 0, 
-      separator: "", 
-      icon: <UtensilsCrossed className="w-8 h-8" /> 
+    {
+      label: "Restaurants",
+      prefix: "",
+      suffix: "+",
+      value: data?.restaurants ?? 0,
+      separator: "",
+      icon: <UtensilsCrossed className="w-8 h-8" />
     },
-    { 
-      label: "Food Items", 
-      prefix: "", 
-      suffix: "+", 
-      value: data?.meals ?? 0, 
-      separator: ",", 
-      icon: <Star className="w-8 h-8" /> 
+    {
+      label: "Food Items",
+      prefix: "",
+      suffix: "+",
+      value: data?.meals ?? 0,
+      separator: ",",
+      icon: <Star className="w-8 h-8" />
     },
-    { 
-      label: "Delivery Drivers", 
-      prefix: "", 
-      suffix: "+", 
-      value: data?.riders ?? 0, 
-      separator: "", 
-      icon: <Truck className="w-8 h-8" /> 
+    {
+      label: "Delivery Drivers",
+      prefix: "",
+      suffix: "+",
+      value: data?.riders ?? 0,
+      separator: "",
+      icon: <Truck className="w-8 h-8" />
     }
   ];
 
@@ -67,14 +67,14 @@ export default function Statistics() {
                 <div className="scale-75 sm:scale-100">{stat.icon}</div>
               </div>
               <div className="text-2xl sm:text-4xl lg:text-5xl font-extrabold mb-1 sm:mb-2 text-white">
-                <CountUp 
-                  end={stat.value} 
-                  prefix={stat.prefix} 
-                  suffix={stat.suffix} 
+                <CountUp
+                  end={stat.value}
+                  prefix={stat.prefix}
+                  suffix={stat.suffix}
                   separator={stat.separator}
                   decimals={stat.decimals ?? 0}
-                  enableScrollSpy 
-                  scrollSpyOnce 
+                  enableScrollSpy
+                  scrollSpyOnce
                   duration={2.5}
                 />
               </div>

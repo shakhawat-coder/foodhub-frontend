@@ -55,20 +55,20 @@ const getRoleBadge = (role: string) => {
 }
 
 export function UsersTable({ users }: UsersTableProps) {
-    const [isSyncing, setIsSyncing] = React.useState(false);
+    const [syncingUserId, setSyncingUserId] = React.useState<string | null>(null);
     const router = useRouter();
 
-    const handleSyncProvider = async () => {
+    const handleSyncProvider = async (userId: string) => {
         try {
-            setIsSyncing(true);
-            const data: any = await providersAPI.syncFromUsers();
-            toast.success(data.message || "Providers synced successfully");
+            setSyncingUserId(userId);
+            const data: any = await providersAPI.syncProvider(userId);
+            toast.success(data.message || "Provider approved successfully");
             router.refresh();
         } catch (error) {
             console.error(error);
             toast.error("Failed to sync providers");
         } finally {
-            setIsSyncing(false);
+            setSyncingUserId(null);
         }
     };
 
@@ -154,11 +154,11 @@ export function UsersTable({ users }: UsersTableProps) {
                                 {user.role === 'PROVIDER' && !user.isSynced && (
                                     <Button
                                         size="sm"
-                                        onClick={handleSyncProvider}
-                                        disabled={isSyncing}
+                                        onClick={() => handleSyncProvider(user.id)}
+                                        disabled={!!syncingUserId}
                                         className="bg-blue-600 hover:bg-blue-700 h-8"
                                     >
-                                        {isSyncing ? 'Approving...' : 'Approve'}
+                                        {syncingUserId === user.id ? 'Approving...' : 'Approve'}
                                     </Button>
                                 )}
                                 {user.role === 'PROVIDER' && user.isSynced && (

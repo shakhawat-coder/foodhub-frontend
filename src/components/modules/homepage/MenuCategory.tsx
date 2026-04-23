@@ -19,13 +19,13 @@ export default async function MenuCategory() {
     return (
         <div className='py-8 sm:py-12 lg:py-16 container mx-auto px-4'>
             <SectionHeader subtitle='Menu' title='Explore Our Menu' description='Indulge in a curated selection of dishes crafted with the finest ingredients and culinary expertise. Every plate tells a story of tradition and innovation.' />
-            <StaggerContainer className='grid grid-cols-2 md:grid-cols-4 gap-6'> 
+            <StaggerContainer className='grid grid-cols-2 md:grid-cols-4 gap-6'>
                 {categories.sort(() => 0.5 - Math.random()).slice(0, 4).map((category: any) => (
                     <StaggerItem key={category.id}>
                         <CategoryCard {...category} />
                     </StaggerItem>
                 ))}
-            </StaggerContainer> 
+            </StaggerContainer>
             <FadeInUp delay={0.6} className='flex justify-center mt-8'>
                 <Link
                     href="/menu"

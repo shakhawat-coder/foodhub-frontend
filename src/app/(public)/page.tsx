@@ -16,14 +16,14 @@ export default async function Home() {
   let banners = [];
   let blogs = [];
   try {
-     const [bannerData, blogData] = await Promise.all([
-       bannerAPI.getAll({ params: { isActive: "true" } }),
-       blogsAPI.getAll().catch(() => ({ data: [] }))
-     ]);
-     banners = bannerData;
-     blogs = blogData.data.slice(0, 3);
+    const [bannerData, blogData] = await Promise.all([
+      bannerAPI.getAll({ params: { isActive: "true" } }),
+      blogsAPI.getAll().catch(() => ({ data: [] }))
+    ]);
+    banners = bannerData;
+    blogs = blogData.data.slice(0, 3);
   } catch (error) {
-     console.error("Failed to fetch home data:", error);
+    console.error("Failed to fetch home data:", error);
   }
 
   return (

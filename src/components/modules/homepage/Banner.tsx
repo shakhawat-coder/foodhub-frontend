@@ -27,7 +27,7 @@ const slides = [
         color: "from-neutral-900/95",
         buttonText: "Order Now",
         url: "/menu",
-    },      
+    },
     {
         id: 2,
         title: "Freshcal Juices",
@@ -61,7 +61,7 @@ export default function Banner({ banners = [] }: BannerProps) {
         subtitle: b.subheading,
         description: b.shortDescription,
         image: b.images?.[0] || "/Banner1.png",
-        color: "from-neutral-900/95", 
+        color: "from-neutral-900/95",
         buttonText: b.buttonText,
         url: b.url,
     })) : slides;
@@ -79,7 +79,7 @@ export default function Banner({ banners = [] }: BannerProps) {
                 loop
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                className="h-[60vh] sm:h-[70vh] w-full group"
+                className="h-[60vh] sm:h-[80vh] w-full group"
             >
                 {displaySlides.map((slide) => (
                     <SwiperSlide key={slide.id}>
